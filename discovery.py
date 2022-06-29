@@ -45,7 +45,7 @@ class MozartListener(ServiceListener):
             print(mozart_device)
 
         # Stop discovery if the desired Mozart device has been found.
-        elif self.mode == serial_number:
+        if self.mode == serial_number:
             print(f"Desired Mozart device: {self.mode} found: {mozart_device}")
             self.event.set()
 
@@ -58,7 +58,7 @@ def discover_devices(mode: str, timeout: int, verbose: bool) -> list[MozartDevic
     listener = MozartListener(mode, verbose, event)
     browser = ServiceBrowser(zeroconf, MOZART_MDNS_TYPE, listener)
 
-    if mode == "discover":
+    if mode == "discover" or verbose:
         print("Discovering Mozart devices.")
 
     if timeout == -1:
