@@ -4,6 +4,7 @@ import argparse
 from dataclasses import dataclass
 from typing import Final
 
+import websocket
 from mozart_api.api.mozart_api import MozartApi
 from mozart_api.api_client import ApiClient
 from mozart_api.configuration import Configuration
@@ -49,6 +50,16 @@ def generate_mozart_api(host: str) -> MozartApi:
     return MozartApi(ApiClient(configuration))
 
 
+def websocket_listener(websocket_url: str) -> None:
+    """Connect to the WebSocket notification channel."""
+    websocket_object = websocket.WebSocket()
+    websocket_object.connect(websocket_url)
+
+    # While true for listening to notifications. Will be stopped when the CLI exits.
+    while True:
+        print(websocket_object.recv())
+
+
 def init_argument_parser() -> argparse.ArgumentParser:
     """Initialize  and add arguments."""
     parser = argparse.ArgumentParser(
@@ -61,6 +72,20 @@ def init_argument_parser() -> argparse.ArgumentParser:
         "-v",
         action="store_true",
         help="Specify if the output should be verbose.",
+    )
+
+    parser.add_argument(
+        "--websocket",
+        "-w",
+        action="store_true",
+        help="Specify if the websocket listener should be active.",
+    )
+
+    parser.add_argument(
+        "--remote",
+        "-r",
+        action="store_true",
+        help="Specify if the remote control websocket listener should be active.",
     )
 
     parser.add_argument(

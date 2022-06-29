@@ -2,11 +2,13 @@
 
 import re
 import time
+from threading import Thread
 
 from mozart_api.api.mozart_api import MozartApi
 from mozart_api.models import (
     BeolinkJoinRequest,
     BeolinkPeer,
+    PairedRemoteResponse,
     PowerStateEnum,
     VolumeLevel,
     VolumeMute,
@@ -18,6 +20,7 @@ from const import (
     MozartDevice,
     generate_mozart_api,
     init_argument_parser,
+    websocket_listener,
 )
 from discovery import discover_devices
 
@@ -29,6 +32,8 @@ class MozartApiCli:
         """Init the Mozart CLI."""
         self.timeout: int = MDNS_TIMEOUT
         self.verbose: bool = False
+        self.websocket: bool = False
+        self.remote: bool = False
         self.mode: str = ""
         self.command: str = ""
         self.host: str = ""
@@ -43,6 +48,8 @@ class MozartApiCli:
             self.timeout = int(args.timeout)
 
         self.verbose = bool(args.verbose)
+        self.websocket = bool(args.websocket)
+        self.remote = bool(args.remote)
         self.mode = args.mode
         self.command = args.command
         self.command_args = args.command_args
@@ -77,9 +84,36 @@ class MozartApiCli:
         # Generate MozartApi object for calling API endpoints.
         self.mozart_api = generate_mozart_api(self.host)
 
-        # Connect to the websocket notification channel (?)
+        # Connect to the websocket notification channel if defined
+        if self.websocket:
+            websocket_thread = Thread(
+                target=websocket_listener, args=(f"ws://{self.host}:9339/",)
+            )
+            websocket_thread.daemon = True
+            websocket_thread.start()
+
+        # Connect to the remote control websocket notification channel if defined
+        if self.remote:
+
+            # Check if a remote control is available
+            remote_list: PairedRemoteResponse = self.mozart_api.get_bluetooth_remotes()
+
+            if len(remote_list.items) == 0:
+                print("No available remotes paired.")
+
+            else:
+                remote_thread = Thread(
+                    target=websocket_listener,
+                    args=(f"ws://{self.host}:9339/remoteControl",),
+                )
+                remote_thread.daemon = True
+                remote_thread.start()
 
         self._command_handler()
+
+        # If websocket listener is enabled, then wait for keypress before exiting the CLI
+        if (self.websocket or self.remote) and input("Press any key to exit CLI.\n\r"):
+            return
 
     def _command_handler(self):
         """Handle commands."""

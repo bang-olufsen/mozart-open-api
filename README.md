@@ -1,12 +1,14 @@
 # Mozart Open API
 
-The Mozart API is a generated REST API with async capabilities and WebSocket notification channel for immediate state information.
+The Mozart API is a auto-generated REST API with async capabilities and WebSocket notification channel for immediate state information.
 
 ## Installation
 
 The Mozart Open API can be installed with pip. For more information about required Python version, check the PyPI page.
 
 Install using pip:
+
+__NOT WORKING__
 
 ```terminal
 pip3 install mozart-api
@@ -18,38 +20,46 @@ The CLI program carries out one command and then exits afterwards. This and the 
 
 ### verbose
 
-Add as argument to add verbose output.
+Add as option to add verbose output.
 
 ```terminal
 mozart_cli.py command command_args -v
-```
 
-Or
-
-```terminal
 mozart_cli.py command command_args --verbose
 ```
 
 ### timeout
 
-Add as argument to modify MDNS discovery timeout.
+Add as option with parameter to modify MDNS discovery timeout.
+
+Optionally use '-1' to have a user-interrupted device discovery:
 
 ```terminal
 mozart_cli.py command command_args -t 20
-```
 
-Or
-
-```terminal
 mozart_cli.py command command_args --timeout 20
+
+mozart_cli.py command command_args --timeout -1
 ```
 
-Optionally use '-1' to have a user-interrupted discovery:
+### websocket
 
-Or
+Add as option to show websocket notifications before and after command execution.
 
 ```terminal
-mozart_cli.py command command_args -t -1
+mozart_cli.py command command_args -w
+
+mozart_cli.py command command_args --websocket
+```
+
+### remote
+
+Add as option to show remote control websocket notifications.
+
+```terminal
+mozart_cli.py command command_args -r
+
+mozart_cli.py command command_args --remote
 ```
 
 ### discover
@@ -62,9 +72,7 @@ mozart_cli.py discover
 
 ### serial number
 
-Ensure that the serial number is reachable.
-
-Discover Mozart devices on the network.
+Ensure that the serial number is reachable on the network.
 
 ```terminal
 mozart_cli.py 12345678
@@ -136,19 +144,13 @@ Will modify the volume level on the device (0-100).
 
 ### join
 
+Will join a Beolink experience if available or will join a specific Beolink experience if available.
+
 ```terminal
 mozart_cli.py 12345678 join
-```
 
-Will join a Beolink experience if available.
-
-Or
-
-```terminal
 mozart_cli.py 12345678 join 23456789
 ```
-
-Will join a specific Beolink experience if available.
 
 ### reset
 
