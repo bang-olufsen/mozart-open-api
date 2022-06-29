@@ -46,6 +46,8 @@ mozart_cli.py command command_args --timeout -1
 
 Add as option to show websocket notifications before and after command execution.
 
+Upon connection the overall state of the device will be immediately transferred.
+
 ```terminal
 mozart_cli.py command command_args -w
 
