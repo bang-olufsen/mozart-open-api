@@ -1,6 +1,7 @@
 """Constants for Mozart CLI."""
 
 import argparse
+import ipaddress
 from dataclasses import dataclass
 from typing import Final
 
@@ -60,6 +61,16 @@ def websocket_listener(websocket_url: str) -> None:
         print(websocket_object.recv())
 
 
+def valid_ip_address(host: str) -> bool:
+    """Return if valid IP address or not."""
+    try:
+        ipaddress.ip_address(host)
+        return True
+
+    except ValueError:
+        return False
+
+
 def init_argument_parser() -> argparse.ArgumentParser:
     """Initialize  and add arguments."""
     parser = argparse.ArgumentParser(
@@ -98,7 +109,7 @@ def init_argument_parser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         "mode",
-        help="""Specify the serial number for command execution
+        help="""Specify the serial number or IP address for command execution
                 or 'discover' for Zeroconf discovery of Mozart devices.""",
     )
 

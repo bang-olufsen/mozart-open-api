@@ -20,6 +20,7 @@ from const import (
     MozartDevice,
     generate_mozart_api,
     init_argument_parser,
+    valid_ip_address,
     websocket_listener,
 )
 from discovery import discover_devices
@@ -54,28 +55,36 @@ class MozartApiCli:
         self.command = args.command
         self.command_args = args.command_args
 
-        # Ensure that the mode's serial number has the correct format or 'discover'
-        if self.mode != DISCOVER_MODE and re.fullmatch(r"\d{8}", self.mode) is None:
+        # Check if the mode defined is an ip address
+        if valid_ip_address(self.mode):
+            self.host = self.mode
+
+        # Ensure that the mode's serial number has the correct format or 'discover' mode.
+        elif self.mode != DISCOVER_MODE and re.fullmatch(r"\d{8}", self.mode) is None:
+            # Check if the mode is then an ip address
             raise ValueError(
-                f"'{self.mode}' has an invalid value. Must either be a serial number or 'discover'."
+                f"'{self.mode}' has an invalid value. Must either be a serial number, ip address or 'discover'."
             )
 
-        # Discover devices
-        self.mozart_devices = discover_devices(self.mode, self.timeout, self.verbose)
+        # Discover devices if host has not been defined
+        if not self.host:
+            self.mozart_devices = discover_devices(
+                self.mode, self.timeout, self.verbose
+            )
+
+            # Get the ip address from the devices Mozart devices
+            self.host = next(
+                (
+                    device
+                    for device in self.mozart_devices
+                    if device.serial_number == self.mode
+                ),
+                MozartDevice(),
+            ).ip_address
 
         # Ensure that no commands are run in discover mode or no command has been defined.
         if self.mode == DISCOVER_MODE or self.command == "":
             return
-
-        # Get the ip address from the devices Mozart devices
-        self.host = next(
-            (
-                device
-                for device in self.mozart_devices
-                if device.serial_number == self.mode
-            ),
-            MozartDevice(),
-        ).ip_address
 
         # If the desired device wasn't found then exit the CLI.
         if self.host == "":
