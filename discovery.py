@@ -29,6 +29,7 @@ class MozartListener(ServiceListener):
     def add_service(self, zc: Zeroconf, type_: str, name: str) -> None:
         info = zc.get_service_info(type_, name)
 
+        # Create MozartDevice object from MDNS discovered information.
         friendly_name = info.properties.get(b"fn").decode("utf-8")
         model_name = info.server[:-16].replace("-", " ")
         serial_number = info.properties.get(b"sn").decode("utf-8")
@@ -40,14 +41,14 @@ class MozartListener(ServiceListener):
 
         mozart_devices.append(mozart_device)
 
-        # Only print the discovered devices if in 'discover' mode or verbose is enabled.
-        if self.mode == "discover" or self.verbose:
-            print(mozart_device)
-
         # Stop discovery if the desired Mozart device has been found.
         if self.mode == serial_number:
             print(f"Desired Mozart device: {self.mode} found: {mozart_device}")
             self.event.set()
+
+        # Only print the discovered devices if in 'discover' mode or verbose is enabled.
+        elif self.mode == "discover" or self.verbose:
+            print(mozart_device)
 
 
 def discover_devices(mode: str, timeout: int, verbose: bool) -> list[MozartDevice]:

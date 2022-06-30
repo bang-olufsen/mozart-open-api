@@ -1,0 +1,377 @@
+<div class="main-content">
+  <h2><a name=""></a></h2>
+  <p>This is the  API</p>
+
+  <h2><a name="beolinkScanCurrentExperiences"></a>beolinkScanCurrentExperiences</h2>
+  <hr>
+  <p></p>
+  <p>Scans for the current available experiences. Check the websockets for the results</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/scan-experiences</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkExperiencesRequest"><a href="">BeolinkExperiencesRequest</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getBeolinkAirplay"></a>getBeolinkAirplay</h2>
+  <hr>
+  <p></p>
+  <p>Get airplay allowed value</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/airplay-allowed</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkAirplayAllowed"><a href="">BeolinkAirplayAllowed</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getBeolinkAudioLeader"></a>getBeolinkAudioLeader</h2>
+  <hr>
+  <p></p>
+  
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/audioleader</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkLeader"><a href="">BeolinkLeader</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getBeolinkAvailableListeners"></a>getBeolinkAvailableListeners</h2>
+  <hr>
+  <p></p>
+  <p>Get a list of devices that can be listening to this device active experience </p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/available-listeners</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkAvailableListener"><a href="">List</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getBeolinkConfigLeader"></a>getBeolinkConfigLeader</h2>
+  <hr>
+  <p></p>
+  
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/configleader</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkLeader"><a href="">BeolinkLeader</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getBeolinkEnabled"></a>getBeolinkEnabled</h2>
+  <hr>
+  <p></p>
+  <p>Get whether or not beolink multiroom is enabled on this device</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/enabled</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkEnabled"><a href="">BeolinkEnabled</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getBeolinkJoinResult"></a>getBeolinkJoinResult</h2>
+  <hr>
+  <p></p>
+  <p>Returns the result of a join request.  **WARNING:** This end-point is only for testing purposes. Only a limited number of results are kept, so if there are multiple API clients using the device at the same time, and you are polling this end-point, you may miss the result of your join request. </p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/join-result/{id}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkJoinResult"><a href="">BeolinkJoinResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">id</span>
+      <span class="param-type">UUID</span>
+      
+      <p class="param-description">Join request ID</p>
+	  </li>
+  </ul>
+  <h2><a name="getBeolinkLatency"></a>getBeolinkLatency</h2>
+  <hr>
+  <p></p>
+  <p>Gets the beolink latency</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/latency</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkLatency"><a href="">BeolinkLatency</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getBeolinkListeners"></a>getBeolinkListeners</h2>
+  <hr>
+  <p></p>
+  <p>Get a list of devices that are listening to this device active experience (that have joined) </p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/listeners</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkListener"><a href="">List</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getBeolinkPeers"></a>getBeolinkPeers</h2>
+  <hr>
+  <p></p>
+  <p>Get information about the beolink peers discovered by this device </p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/peers</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkPeer"><a href="">List</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getBeolinkSecurityBuffer"></a>getBeolinkSecurityBuffer</h2>
+  <hr>
+  <p></p>
+  <p>Get if the security buffer is enabled. May be needed for ASE products to perform</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/security-buffer</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkSecurityBuffer"><a href="">BeolinkSecurityBuffer</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="joinBeolinkPeer"></a>joinBeolinkPeer</h2>
+  <hr>
+  <p></p>
+  <p>Join the experience currently active on peer with Jabber ID &#x60;jid&#x60;. </p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/join/{jid}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkJoinRequest"><a href="">BeolinkJoinRequest</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">jid</span>
+      <span class="param-type">String</span>
+      
+      <p class="param-description">Jabber ID of peer to join</p>
+	  </li>
+	  <li class="parameter">
+      
+      <span class="param-in">Query: </span>
+      
+      
+      
+      <span class="param-name">source</span>
+      <span class="param-type">String</span>
+      
+      <p class="param-description">Ask to join a specific source on peer</p>
+	  </li>
+  </ul>
+  <h2><a name="joinLatestBeolinkExperience"></a>joinLatestBeolinkExperience</h2>
+  <hr>
+  <p></p>
+  <p>Touch to join</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/join</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="BeolinkJoinRequest"><a href="">BeolinkJoinRequest</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="postBeolinkAllstandby"></a>postBeolinkAllstandby</h2>
+  <hr>
+  <p></p>
+  <p>Broadcast an all standby event to turn all beolink devices off</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/allstandby</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="postBeolinkExpand"></a>postBeolinkExpand</h2>
+  <hr>
+  <p></p>
+  <p>Expand the current active experience to another device with jabber id {jid}. </p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/expand/{jid}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">jid</span>
+      <span class="param-type">String</span>
+      
+      <p class="param-description">Jabber id of peer to expand the active experience to</p>
+	  </li>
+  </ul>
+  <h2><a name="postBeolinkLeave"></a>postBeolinkLeave</h2>
+  <hr>
+  <p></p>
+  <p>Leave the ongoing experience (disconnect this device from remote)</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/leave</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="postBeolinkUnexpand"></a>postBeolinkUnexpand</h2>
+  <hr>
+  <p></p>
+  <p>Disconnect the device with jabber id {jid} from the current active experience. </p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/unexpand/{jid}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">jid</span>
+      <span class="param-type">String</span>
+      
+      <p class="param-description">Jabber id of peer to unexpand</p>
+	  </li>
+  </ul>
+  <h2><a name="setBeolinkAirplay"></a>setBeolinkAirplay</h2>
+  <hr>
+  <p></p>
+  <p>Sets airplay allowed</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/airplay-allowed</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>PUT</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">BeolinkAirplayAllowed</span>
+      <span class="param-type">BeolinkAirplayAllowed(BeolinkAirplayAllowed)</span>
+      
+      <p class="param-description">Set if airplay is allowed or not</p>
+	  </li>
+  </ul>
+  <h2><a name="setBeolinkEnabled"></a>setBeolinkEnabled</h2>
+  <hr>
+  <p></p>
+  <p>Sets whether or not beolink multiroom is enabled on this device</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/enabled</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>PUT</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">BeolinkEnabled</span>
+      <span class="param-type">BeolinkEnabled(BeolinkEnabled)</span>
+      
+      <p class="param-description">Set if beolink is enabled or not</p>
+	  </li>
+  </ul>
+  <h2><a name="setBeolinkLatency"></a>setBeolinkLatency</h2>
+  <hr>
+  <p></p>
+  <p>Sets the beolink latency</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/latency</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>PUT</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">BeolinkLatency</span>
+      <span class="param-type">BeolinkLatency(BeolinkLatency)</span>
+      
+      <p class="param-description">The desired latency</p>
+	  </li>
+  </ul>
+  <h2><a name="setBeolinkSecurityBuffer"></a>setBeolinkSecurityBuffer</h2>
+  <hr>
+  <p></p>
+  <p>Sets whether or not the security buffer is enabled on this device</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/beolink/security-buffer</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>PUT</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">BeolinkSecurityBuffer</span>
+      <span class="param-type">BeolinkSecurityBuffer(BeolinkSecurityBuffer)</span>
+      
+      <p class="param-description">Set if beolink security buffer is enabled or not</p>
+	  </li>
+  </ul>
+</div>

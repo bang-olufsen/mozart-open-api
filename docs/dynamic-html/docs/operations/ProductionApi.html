@@ -1,0 +1,558 @@
+<div class="main-content">
+  <h2><a name=""></a></h2>
+  <p>This is the  API</p>
+
+  <h2><a name="getActivationData"></a>getActivationData</h2>
+  <hr>
+  <p></p>
+  <p>Fetch activation data</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/activation-data</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="file"><a href="">File</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getLockState"></a>getLockState</h2>
+  <hr>
+  <p></p>
+  <p>Get lock state</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/lock-state</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="LockState"><a href="">LockState</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionCurtainState"></a>getProductionCurtainState</h2>
+  <hr>
+  <p></p>
+  <p>returns Curtain state</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/curtain/state</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="CurtainStatus"><a href="">CurtainStatus</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionInfo"></a>getProductionInfo</h2>
+  <hr>
+  <p></p>
+  <p>get an overview of the specific production information for the product</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionStatusInformation"><a href="">ProductionStatusInformation</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionTestingAudiopathBypass"></a>getProductionTestingAudiopathBypass</h2>
+  <hr>
+  <p></p>
+  <p>returns the state of the processing bypass</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/audiopath/processing-bypass</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionTestingAudioPathProcessingByPass"><a href="">ProductionTestingAudioPathProcessingByPass</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionTestingAudiopathChannels"></a>getProductionTestingAudiopathChannels</h2>
+  <hr>
+  <p></p>
+  <p>returns a list with the current channel status (muted/unmuted)</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/audiopath/channels</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionAudioPathChannels"><a href="">ProductionAudioPathChannels</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionTestingAudiopathMicrophonesRecordingstatus"></a>getProductionTestingAudiopathMicrophonesRecordingstatus</h2>
+  <hr>
+  <p></p>
+  <p>returns the current microphone recording state.</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/audiopath/microphones/recording</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="MicrophoneRecordingState"><a href="">MicrophoneRecordingState</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionTestingAudiopathProcessingMode"></a>getProductionTestingAudiopathProcessingMode</h2>
+  <hr>
+  <p></p>
+  <p>returns the processing mode</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/audiopath/processing-mode</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionTestingAudioPathProcessingMode"><a href="">ProductionTestingAudioPathProcessingMode</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionTestingBatteryLevelMax"></a>getProductionTestingBatteryLevelMax</h2>
+  <hr>
+  <p></p>
+  <p>returns the value of max battery level</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/battery-level-max</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionTestingBatteryLevelMax"><a href="">ProductionTestingBatteryLevelMax</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionTestingFunctionalAmplifierPowerstate"></a>getProductionTestingFunctionalAmplifierPowerstate</h2>
+  <hr>
+  <p></p>
+  <p>returns info on an amplifier on the product</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/functional/amplifier/powerstate</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="OnOffState"><a href="">OnOffState</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionTestingIoButtons"></a>getProductionTestingIoButtons</h2>
+  <hr>
+  <p></p>
+  <p>returns the current button status mask and sensitivity.</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/io/buttons</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionTestingButtonStatus"><a href="">ProductionTestingButtonStatus</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionTestingLightsensorResult"></a>getProductionTestingLightsensorResult</h2>
+  <hr>
+  <p></p>
+  <p>returns the last light sensor result</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/lightsensor</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionTestingLightSensorResult"><a href="">ProductionTestingLightSensorResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionTestingProximityResult"></a>getProductionTestingProximityResult</h2>
+  <hr>
+  <p></p>
+  <p>returns the last proximity result</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/proximity</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionTestingProximityResult"><a href="">ProductionTestingProximityResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getProductionTestingSelfTestResults"></a>getProductionTestingSelfTestResults</h2>
+  <hr>
+  <p></p>
+  <p>returns the last known FEP self-test results</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/self-test</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionTestingSelfTestResult"><a href="">ProductionTestingSelfTestResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="postProductionTestingAudiopathBypass"></a>postProductionTestingAudiopathBypass</h2>
+  <hr>
+  <p></p>
+  <p>updates the state of a identified bypass step</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/audiopath/processing-bypass/{id}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionTestingAudioPathProcessingStepByPass"><a href="">ProductionTestingAudioPathProcessingStepByPass</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">id</span>
+      <span class="param-type">String</span>
+      
+      <p class="param-description">identifies the bypass step (see get endpoint above for valid values)</p>
+	  </li>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">PostProductionTestingAudiopathBypassRequest</span>
+      <span class="param-type">PostProductionTestingAudiopathBypassRequest(PostProductionTestingAudiopathBypassRequest)</span>
+      
+      <p class="param-description">the enabled state</p>
+	  </li>
+  </ul>
+  <h2><a name="postProductionTestingAudiopathChannels"></a>postProductionTestingAudiopathChannels</h2>
+  <hr>
+  <p></p>
+  <p>updates the state of a identified channel</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/audiopath/channels/{id}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionAudioPathChannel"><a href="">ProductionAudioPathChannel</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">id</span>
+      <span class="param-type">String</span>
+      
+      <p class="param-description">identifies the channel. Must be a valid name (see get endpoint above).</p>
+	  </li>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">PostProductionTestingAudiopathChannelsRequest</span>
+      <span class="param-type">PostProductionTestingAudiopathChannelsRequest(PostProductionTestingAudiopathChannelsRequest)</span>
+      
+      <p class="param-description">the muted state</p>
+	  </li>
+  </ul>
+  <h2><a name="postProductionTestingAudiopathMicrophonesRecordingstatus"></a>postProductionTestingAudiopathMicrophonesRecordingstatus</h2>
+  <hr>
+  <p></p>
+  <p>Sets the current microphone recording state.</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/audiopath/microphones/recording</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">MicrophoneRecordingState</span>
+      <span class="param-type">MicrophoneRecordingState(MicrophoneRecordingState)</span>
+      
+      <p class="param-description"></p>
+	  </li>
+  </ul>
+  <h2><a name="postProductionTestingAudiopathProcessingMode"></a>postProductionTestingAudiopathProcessingMode</h2>
+  <hr>
+  <p></p>
+  <p>updates the processing mode</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/audiopath/processing-mode</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionTestingAudioPathProcessingMode"><a href="">ProductionTestingAudioPathProcessingMode</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">ProductionTestingAudioPathProcessingMode</span>
+      <span class="param-type">ProductionTestingAudioPathProcessingMode(ProductionTestingAudioPathProcessingMode)</span>
+      
+      <p class="param-description">the processing mode</p>
+	  </li>
+  </ul>
+  <h2><a name="postProductionTestingBatteryLevelMax"></a>postProductionTestingBatteryLevelMax</h2>
+  <hr>
+  <p></p>
+  <p>set the value of max battery level in percent.</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/battery-level-max</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">ProductionTestingBatteryLevelMax</span>
+      <span class="param-type">ProductionTestingBatteryLevelMax(ProductionTestingBatteryLevelMax)</span>
+      
+      <p class="param-description"></p>
+	  </li>
+  </ul>
+  <h2><a name="postProductionTestingFunctionalAmplifierPowerstate"></a>postProductionTestingFunctionalAmplifierPowerstate</h2>
+  <hr>
+  <p></p>
+  <p>set the powerstate of the amplifier as either &#39;on&#39; or &#39;off&#39;.</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/functional/amplifier/powerstate</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">OnOffState</span>
+      <span class="param-type">OnOffState(OnOffState)</span>
+      
+      <p class="param-description"></p>
+	  </li>
+  </ul>
+  <h2><a name="postProductionTestingIoButtons"></a>postProductionTestingIoButtons</h2>
+  <hr>
+  <p></p>
+  <p>Simulate a specific button press</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/io/buttons/{id}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="string"><a href="">String</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">id</span>
+      <span class="param-type">String</span>
+      
+      <p class="param-description">Button identifier</p>
+	  </li>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">ProductionTestingButton</span>
+      <span class="param-type">ProductionTestingButton(ProductionTestingButton)</span>
+      
+      <p class="param-description"></p>
+	  </li>
+  </ul>
+  <h2><a name="postProductionTestingIoLedId"></a>postProductionTestingIoLedId</h2>
+  <hr>
+  <p></p>
+  <p>set the state of the led</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/io/leds/{id}</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="MozartResult"><a href="">MozartResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      <span class="param-in">Path: </span>
+      
+      
+      <span class="param-name">id</span>
+      <span class="param-type">String</span>
+      
+      <p class="param-description">identifies the led by id</p>
+	  </li>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">ProductionTestingIOLEDUpdate</span>
+      <span class="param-type">ProductionTestingIOLEDUpdate(ProductionTestingIOLEDUpdate)</span>
+      
+      <p class="param-description"></p>
+	  </li>
+  </ul>
+  <h2><a name="postProductionTestingProximity"></a>postProductionTestingProximity</h2>
+  <hr>
+  <p></p>
+  <p>Initiate the proximity measurement</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/proximity</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="ProductionTestingProximityResult"><a href="">ProductionTestingProximityResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="postProductionTestingSelfTest"></a>postProductionTestingSelfTest</h2>
+  <hr>
+  <p></p>
+  <p>Initiate the self-test</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/testing/self-test</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="putProductionCurtainDebugLevel"></a>putProductionCurtainDebugLevel</h2>
+  <hr>
+  <p></p>
+  <p>Allows more details in logs when curtains move</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/curtain/debug-level</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>PUT</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="MozartResult"><a href="">MozartResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">CurtainDebugLevel</span>
+      <span class="param-type">CurtainDebugLevel(CurtainDebugLevel)</span>
+      
+      <p class="param-description">New debug level (0&#x3D;none)</p>
+	  </li>
+  </ul>
+  <h2><a name="putProductionCurtainMove"></a>putProductionCurtainMove</h2>
+  <hr>
+  <p></p>
+  <p>Move to specified position, use curtain/state to monitor progress</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/curtain/move</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>PUT</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="MozartResult"><a href="">MozartResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">CurtainPosition</span>
+      <span class="param-type">CurtainPosition(CurtainPosition)</span>
+      
+      <p class="param-description">New curtain position</p>
+	  </li>
+  </ul>
+  <h2><a name="putProductionCurtainMoveToAngle"></a>putProductionCurtainMoveToAngle</h2>
+  <hr>
+  <p></p>
+  <p>Move to specified angle, use curtain/state to monitor progress</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/curtain/move-to-angle</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>PUT</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="MozartResult"><a href="">MozartResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">CurtainAngle</span>
+      <span class="param-type">CurtainAngle(CurtainAngle)</span>
+      
+      <p class="param-description">New curtain position in degrees</p>
+	  </li>
+  </ul>
+  <h2><a name="putUuuBootMode"></a>putUuuBootMode</h2>
+  <hr>
+  <p></p>
+  <p>Invoke this endpoint to trigger UUU boot mode.</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/uuubootmode</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>PUT</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="MozartResult"><a href="">MozartResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="setLockState"></a>setLockState</h2>
+  <hr>
+  <p></p>
+  <p>Set lock state</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/production/lock-state</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>PUT</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">LockState</span>
+      <span class="param-type">LockState(LockState)</span>
+      
+      <p class="param-description">New lock state</p>
+	  </li>
+  </ul>
+</div>

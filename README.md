@@ -20,7 +20,7 @@ The CLI program carries out one command and then exits afterwards. This and the 
 
 ### Usage example
 
-![example gif](documentation/demo.gif)
+![example gif](docs/demo.gif)
 
 ### verbose
 

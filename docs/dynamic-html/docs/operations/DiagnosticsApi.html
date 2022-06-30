@@ -1,0 +1,92 @@
+<div class="main-content">
+  <h2><a name=""></a></h2>
+  <p>This is the  API</p>
+
+  <h2><a name="getDiagnosticsBattery"></a>getDiagnosticsBattery</h2>
+  <hr>
+  <p></p>
+  <p>Get the battery status of the product</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/diagnostics/battery</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="DiagnosticsBatteryValues"><a href="">DiagnosticsBatteryValues</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getDiagnosticsFlash"></a>getDiagnosticsFlash</h2>
+  <hr>
+  <p></p>
+  <p>Get the current flash memory state of the product</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/diagnostics/flash</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="DiagnosticsFlashValues"><a href="">DiagnosticsFlashValues</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="getDiagnosticsNtc"></a>getDiagnosticsNtc</h2>
+  <hr>
+  <p></p>
+  <p>Get a sample of the current NTC values of the product</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/diagnostics/ntc</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>GET</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="DiagnosticsNtcValueArray"><a href="">DiagnosticsNtcValueArray</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+  </ul>
+  <h2><a name="postLogupload"></a>postLogupload</h2>
+  <hr>
+  <p></p>
+  <p>Push logs to beocloud</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/diagnostics/logupload</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>POST</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model="MozartResult"><a href="">MozartResult</a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">LogUploadData</span>
+      <span class="param-type">LogUploadData(LogUploadData)</span>
+      
+      <p class="param-description">the log upload data</p>
+	  </li>
+  </ul>
+  <h2><a name="setLoglevel"></a>setLoglevel</h2>
+  <hr>
+  <p></p>
+  <p>Change the log level for given areas</p>
+  <h3 class="section">URL</h3>
+  <code>http://localhost/api/v1/diagnostics/loglevel</code>
+  <h3 class="section">HTTP Method</h3>
+  <code>PUT</code>
+  <h3 class="section">Response Type</h3>
+  <div class="model" data-model=""><a href=""></a></div>
+  <h3 class="section">Parameters</h3>
+  <ul>
+	  <li class="parameter">
+      
+      
+      
+      
+      <span class="param-in">Body: </span>
+      <span class="param-name">LogLevelSettings</span>
+      <span class="param-type">LogLevelSettings(LogLevelSettings)</span>
+      
+      <p class="param-description">the log level settings</p>
+	  </li>
+  </ul>
+</div>
