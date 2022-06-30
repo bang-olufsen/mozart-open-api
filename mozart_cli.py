@@ -82,12 +82,8 @@ class MozartApiCli:
                 MozartDevice(),
             ).ip_address
 
-        # Ensure that no commands are run in discover mode or no command has been defined.
-        if self.mode == DISCOVER_MODE or self.command == "":
-            return
-
-        # If the desired device wasn't found then exit the CLI.
-        if self.host == "":
+        # Exit if in discover mode, no command has been defined or desired host can't be found.
+        if self.mode == DISCOVER_MODE or self.command == "" or self.host == "":
             return
 
         # Generate MozartApi object for calling API endpoints.
@@ -95,6 +91,7 @@ class MozartApiCli:
 
         # Connect to the websocket notification channel if defined
         if self.websocket:
+
             websocket_thread = Thread(
                 target=websocket_listener, args=(f"ws://{self.host}:9339/",)
             )
@@ -118,6 +115,7 @@ class MozartApiCli:
                 remote_thread.daemon = True
                 remote_thread.start()
 
+        # Handle command
         self._command_handler()
 
         # If websocket listener is enabled, then wait for keypress before exiting the CLI
