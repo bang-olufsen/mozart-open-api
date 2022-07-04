@@ -1,7 +1,8 @@
 """Main Mozart CLI document."""
 
+import asyncio
 import re
-import time
+from datetime import time, timedelta
 from threading import Thread
 
 from mozart_api.api.mozart_api import MozartApi
@@ -12,6 +13,8 @@ from mozart_api.models import (
     PowerStateEnum,
     VolumeLevel,
     VolumeMute,
+    Timer,
+    Action,
 )
 
 from const import (
@@ -20,6 +23,7 @@ from const import (
     MozartDevice,
     generate_mozart_api,
     init_argument_parser,
+    time_to_seconds,
     valid_ip_address,
     websocket_listener,
 )
@@ -122,6 +126,44 @@ class MozartApiCli:
         if (self.websocket or self.remote) and input("Press any key to exit CLI.\n\r"):
             return
 
+    async def _beolink_join(self):
+        """Showcase async API usage of the Beolink command."""
+        # If no JID is specified, then join an active experience if available
+        if len(self.command_args) == 0:
+            status: BeolinkJoinRequest = self.mozart_api.join_latest_beolink_experience(
+                async_req=True
+            ).get()
+
+        else:
+            serial_number = self.command_args[0]
+
+            # Check if a device with specified serial number
+            # is available as a peer and get JID if available
+            peers: list[BeolinkPeer] = self.mozart_api.get_beolink_peers(
+                async_req=True
+            ).get()
+
+            # The peers may be outdated and still have now unavailable devices.
+            if len(peers) == 0:
+                print("No available Beolink peers.")
+                return
+
+            jid = [peer for peer in peers if serial_number in peer.jid][0].jid
+
+            status: BeolinkJoinRequest = self.mozart_api.join_beolink_peer(
+                jid=jid, async_req=True
+            ).get()
+
+        if self.verbose:
+            # Wait for the join-result to be available
+            time.sleep(1)
+            print("Beolink Join status:")
+            print(
+                self.mozart_api.get_beolink_join_result(
+                    id=status.request_id, async_req=True
+                ).get()
+            )
+
     def _command_handler(self):
         """Handle commands."""
 
@@ -149,34 +191,48 @@ class MozartApiCli:
             )
 
         elif self.command == "join":
+            asyncio.run(self._beolink_join())
 
-            # If no JID is specified, then join an active experience if available
-            if len(self.command_args) == 0:
-                status: BeolinkJoinRequest = (
-                    self.mozart_api.join_latest_beolink_experience()
+        elif self.command == "timer":
+            sub_command = self.command_args[0]
+
+            if sub_command != "list":
+                label = self.command_args[1]
+
+            status = None
+
+            if sub_command == "create":
+                duration = time_to_seconds(time.fromisoformat(self.command_args[2]))
+
+                status = self.mozart_api.add_timer(
+                    timer=Timer(
+                        action_list=[Action(tone_name="alarm_1", type="tone")],
+                        duration=duration,
+                        label=label,
+                        state="started",
+                    ),
                 )
 
-            else:
-                serial_number = self.command_args[0]
+            elif sub_command == "resume":
+                status = self.mozart_api.resume_timer(id=label)
 
-                # Check if a device with specified serial number
-                # is available as a peer and get JID if available
-                peers: list[BeolinkPeer] = self.mozart_api.get_beolink_peers()
+            elif sub_command == "pause":
+                status = self.mozart_api.pause_timer(id=label)
 
-                # The peers may be outdated and still have now unavailable devices.
-                if len(peers) == 0:
-                    print("No available Beolink peers.")
-                    return
+            elif sub_command == "cancel":
+                status = self.mozart_api.cancel_timer(id=label)
 
-                jid = [peer for peer in peers if serial_number in peer.jid][0].jid
-
-                status: BeolinkJoinRequest = self.mozart_api.join_beolink_peer(jid=jid)
+            elif sub_command == "list":
+                status = self.mozart_api.get_all_timers()
+                if not self.verbose:
+                    # Format the timers
+                    for timer in status.items:
+                        print(
+                            f"Label: {timer.label}, duration: {str(timedelta(seconds=timer.duration))}, will trigger: {timedelta(seconds=timer.duration + timer.last_state_change)} state: {timer.state}"
+                        )
 
             if self.verbose:
-                # Wait for the join-result to be available
-                time.sleep(1)
-                print("Beolink Join status:")
-                print(self.mozart_api.get_beolink_join_result(id=status.request_id))
+                print(status)
 
         elif self.command == "reset":
             status = self.mozart_api.post_factory_reset()

@@ -4,7 +4,7 @@ The Mozart API is a auto-generated REST API with async capabilities and WebSocke
 
 ## Installation
 
-The Mozart Open API can be installed with pip. For more information about required Python version, check the PyPI page.
+The Mozart Open API can be installed with pip. For more information about required Python version, check the [PyPI page](https://pypi.org/project/mozart-api/).
 
 Install using pip:
 
@@ -20,6 +20,36 @@ The CLI program carries out one command and then exits afterwards. This and the 
 
 ![example gif](demo.gif)
 
+### Device discovery
+
+<!--
+type: tab
+title: Discover
+-->
+
+#### discover
+
+Discover Mozart devices on the network.
+
+```terminal
+python3 mozart_cli.py discover
+```
+
+<!--
+type: tab
+title: Serial number
+-->
+
+#### serial number
+
+Ensure that the serial number is reachable on the network.
+
+```terminal
+python3 mozart_cli.py 12345678
+```
+
+<!-- type: tab-end -->
+
 ### Options
 
 <!--
@@ -32,9 +62,9 @@ title: Verbose
 Add as option to add verbose output.
 
 ```terminal
-python mozart_cli.py serial_number command command_args -v
+python3 mozart_cli.py serial_number command command_args -v
 
-python mozart_cli.py serial_number command command_args --verbose
+python3 mozart_cli.py serial_number command command_args --verbose
 ```
 
 <!--
@@ -49,11 +79,11 @@ Add as option with parameter to modify MDNS discovery timeout.
 Optionally use '-1' to have a user-interrupted device discovery:
 
 ```terminal
-python mozart_cli.py serial_number command command_args -t 20
+python3 mozart_cli.py serial_number command command_args -t 20
 
-python mozart_cli.py serial_number command command_args --timeout 20
+python3 mozart_cli.py serial_number command command_args --timeout 20
 
-python mozart_cli.py serial_number command command_args --timeout -1
+python3 mozart_cli.py serial_number command command_args --timeout -1
 ```
 
 <!--
@@ -68,9 +98,9 @@ Add as option to show websocket notifications before and after command execution
 Upon connection the overall state of the device will be immediately transferred.
 
 ```terminal
-python mozart_cli.py serial_number command command_args -w
+python3 mozart_cli.py serial_number command command_args -w
 
-python mozart_cli.py serial_number command command_args --websocket
+python3 mozart_cli.py serial_number command command_args --websocket
 ```
 
 <!--
@@ -83,39 +113,9 @@ title: Remote
 Add as option to show remote control websocket notifications.
 
 ```terminal
-python mozart_cli.py serial_number command command_args -r
+python3 mozart_cli.py serial_number command command_args -r
 
-python mozart_cli.py serial_number command command_args --remote
-```
-
-<!-- type: tab-end -->
-
-### Device discovery
-
-<!--
-type: tab
-title: Discover
--->
-
-#### discover
-
-Discover Mozart devices on the network.
-
-```terminal
-python mozart_cli.py discover
-```
-
-<!--
-type: tab
-title: Serial number
--->
-
-#### serial number
-
-Ensure that the serial number is reachable on the network.
-
-```terminal
-python mozart_cli.py 12345678
+python3 mozart_cli.py serial_number command command_args --remote
 ```
 
 <!-- type: tab-end -->
@@ -132,7 +132,7 @@ title: Preset
 Will activate the _preset_ command.
 
 ```terminal
-python mozart_cli.py 12345678 preset 1
+python3 mozart_cli.py 12345678 preset 1
 ```
 
 <!--
@@ -145,7 +145,7 @@ title: Play
 Will activate the _play_ playback command.
 
 ```terminal
-python mozart_cli.py 12345678 play
+python3 mozart_cli.py 12345678 play
 ```
 
 <!--
@@ -158,7 +158,7 @@ title: Pause
 Will activate the _pause_ playback command.
 
 ```terminal
-python mozart_cli.py 12345678 pause
+python3 mozart_cli.py 12345678 pause
 ```
 
 <!--
@@ -171,7 +171,7 @@ title: Next
 Will activate the _next_ playback command.
 
 ```terminal
-python mozart_cli.py 12345678 next
+python3 mozart_cli.py 12345678 next
 ```
 
 <!--
@@ -184,7 +184,7 @@ title: Previous
 Will activate the _previous_ playback command.
 
 ```terminal
-python mozart_cli.py 12345678 previous
+python3 mozart_cli.py 12345678 previous
 ```
 
 <!--
@@ -197,7 +197,7 @@ title: Mute
 Will activate the mute command.
 
 ```terminal
-python mozart_cli.py 12345678 mute
+python3 mozart_cli.py 12345678 mute
 ```
 
 <!--
@@ -210,7 +210,7 @@ title: Unmute
 Will activate the unmute command.
 
 ```terminal
-python mozart_cli.py 12345678 unmute
+python3 mozart_cli.py 12345678 unmute
 ```
 
 <!--
@@ -223,7 +223,7 @@ title: Volume
 Will activate the modify volume level command on the device (0-100).
 
 ```terminal
-python mozart_cli.py 12345678 volume 50
+python3 mozart_cli.py 12345678 volume 50
 ```
 
 <!--
@@ -236,9 +236,9 @@ title: Join
 Will join a Beolink experience if available or will join a specific Beolink experience if available.
 
 ```terminal
-python mozart_cli.py 12345678 join
+python3 mozart_cli.py 12345678 join
 
-python mozart_cli.py 12345678 join 23456789
+python3 mozart_cli.py 12345678 join 23456789
 ```
 
 <!--
@@ -251,7 +251,7 @@ title: Reset
 Will factory reset a Mozart device.
 
 ```terminal
-python mozart_cli.py 12345678 reset
+python3 mozart_cli.py 12345678 reset
 ```
 
 <!--
@@ -264,7 +264,7 @@ title: Info
 Will print device information.
 
 ```terminal
-python mozart_cli.py 12345678 info
+python3 mozart_cli.py 12345678 info
 ```
 
 <!--
@@ -277,7 +277,7 @@ title: Standby
 Will set a Mozart device to networkStandby.
 
 ```terminal
-python mozart_cli.py 12345678 standby
+python3 mozart_cli.py 12345678 standby
 ```
 
 <!--
@@ -290,7 +290,7 @@ title: Allstandby
 Will set all connected Beolink devices to networkStandby.
 
 ```terminal
-python mozart_cli.py 12345678 allstandby
+python3 mozart_cli.py 12345678 allstandby
 ```
 
 <!-- type: tab-end -->

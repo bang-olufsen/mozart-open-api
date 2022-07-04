@@ -3,6 +3,7 @@
 import argparse
 import ipaddress
 from dataclasses import dataclass
+from datetime import time
 from typing import Final
 
 import websocket
@@ -30,6 +31,7 @@ AVAILABLE_COMMANDS: Final[list[str]] = [
     "standby",
     "reset",
     "allstandby",
+    "timer",
 ]
 
 
@@ -69,6 +71,14 @@ def valid_ip_address(host: str) -> bool:
 
     except ValueError:
         return False
+
+
+def time_to_seconds(time_object: time) -> int:
+    """Convert time object to number of seconds."""
+    time_in_seconds = (
+        (time_object.hour * 60 * 60) + (time_object.minute * 60) + time_object.second
+    )
+    return time_in_seconds
 
 
 def init_argument_parser() -> argparse.ArgumentParser:
