@@ -7,14 +7,14 @@ from threading import Thread
 
 from mozart_api.api.mozart_api import MozartApi
 from mozart_api.models import (
+    Action,
     BeolinkJoinRequest,
     BeolinkPeer,
     PairedRemoteResponse,
     PowerStateEnum,
+    Timer,
     VolumeLevel,
     VolumeMute,
-    Timer,
-    Action,
 )
 
 from const import (
