@@ -12,13 +12,39 @@ Install using pip:
 pip3 install mozart-api
 ```
 
+### API usage
+
+Create a MozartApi object and use it to set the volume level, activate a preset and expand the Beolink session to a peer.
+
+<!-- title: "API usage example"
+lineNumbers: true
+-->
+
+```python
+from mozart_api.api import MozartApi
+from mozart_api.api_client import ApiClient
+from mozart_api.configuration import Configuration
+from mozart_api.models import VolumeLevel
+
+host = "192.168.0.1"
+
+configuration = Configuration()
+configuration.host = host
+configuration.verify_ssl = False
+mozart_api = MozartApi(ApiClient(configuration))
+
+mozart_api.set_current_volume_level(volume_level=VolumeLevel(level=50))
+mozart_api.activate_preset(id=2)
+mozart_api.post_beolink_expand(jid="1234.1234567.12345678@products.bang-olufsen.com")
+```
+
 ## Example CLI program
 
 The CLI program carries out one command and then exits afterwards. This and the fact that the serial number is used to specify devices sometimes results in slow MDNS discovery times.
 
 ### Usage example
 
-![example gif](demo.gif)
+![example gif](/docs/demo.gif)
 
 ### Device discovery
 
@@ -93,7 +119,7 @@ title: WebSocket
 
 #### websocket
 
-Add as option to show websocket notifications before and after command execution.
+Add as option to show WebSocket notifications before and after command execution.
 
 Upon connection the overall state of the device will be immediately transferred.
 
@@ -110,7 +136,7 @@ title: Remote
 
 #### remote
 
-Add as option to show remote control websocket notifications.
+Add as option to show remote control WebSocket notifications.
 
 ```terminal
 python3 mozart_cli.py serial_number command command_args -r
