@@ -67,7 +67,7 @@ class MozartApiCli:
         elif self.mode != DISCOVER_MODE and re.fullmatch(r"\d{8}", self.mode) is None:
             # Check if the mode is then an ip address
             raise ValueError(
-                f"'{self.mode}' has an invalid value. Must either be a serial number, ip address or 'discover'."
+                f"""'{self.mode}' has an invalid value. Must either be a serial number, ip address or 'discover'."""
             )
 
         # Discover devices if host has not been defined
@@ -228,7 +228,12 @@ class MozartApiCli:
                     # Format the timers
                     for timer in status.items:
                         print(
-                            f"Label: {timer.label}, duration: {str(timedelta(seconds=timer.duration))}, will trigger: {timedelta(seconds=timer.duration + timer.last_state_change)} state: {timer.state}"
+                            f"""
+                            Label: {timer.label},
+                            duration: {str(timedelta(seconds=timer.duration))},
+                            will trigger: {timedelta(seconds=timer.duration + timer.last_state_change)},
+                            state: {timer.state}
+                            """
                         )
 
             if self.verbose:

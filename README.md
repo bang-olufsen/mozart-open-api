@@ -150,7 +150,7 @@ python3 mozart_cli.py serial_number command command_args --remote
 
 <!--
 type: tab
-title: Preset
+title: Playback
 -->
 
 #### preset
@@ -161,11 +161,6 @@ Will activate the _preset_ command.
 python3 mozart_cli.py 12345678 preset 1
 ```
 
-<!--
-type: tab
-title: Play
--->
-
 #### play
 
 Will activate the _play_ playback command.
@@ -173,11 +168,6 @@ Will activate the _play_ playback command.
 ```terminal
 python3 mozart_cli.py 12345678 play
 ```
-
-<!--
-type: tab
-title: Pause
--->
 
 #### pause
 
@@ -187,11 +177,6 @@ Will activate the _pause_ playback command.
 python3 mozart_cli.py 12345678 pause
 ```
 
-<!--
-type: tab
-title: Next
--->
-
 #### next
 
 Will activate the _next_ playback command.
@@ -199,11 +184,6 @@ Will activate the _next_ playback command.
 ```terminal
 python3 mozart_cli.py 12345678 next
 ```
-
-<!--
-type: tab
-title: Previous
--->
 
 #### previous
 
@@ -215,7 +195,7 @@ python3 mozart_cli.py 12345678 previous
 
 <!--
 type: tab
-title: Mute
+title: Volume
 -->
 
 #### mute
@@ -226,11 +206,6 @@ Will activate the mute command.
 python3 mozart_cli.py 12345678 mute
 ```
 
-<!--
-type: tab
-title: Unmute
--->
-
 #### unmute
 
 Will activate the unmute command.
@@ -238,11 +213,6 @@ Will activate the unmute command.
 ```terminal
 python3 mozart_cli.py 12345678 unmute
 ```
-
-<!--
-type: tab
-title: Volume
--->
 
 #### volume
 
@@ -254,7 +224,56 @@ python3 mozart_cli.py 12345678 volume 50
 
 <!--
 type: tab
-title: Join
+title: Timer and alarms
+-->
+
+#### timer
+
+Commands for handling timers.
+
+##### create
+
+Create and start a timer with `alarm_1` as tone.
+
+```terminal
+python3 mozart_cli.py 12345678 timer create timer_name 12:34:56
+```
+
+##### resume
+
+Resume a paused timer.
+
+```terminal
+python3 mozart_cli.py 12345678 timer resume timer_name
+```
+
+##### pause
+
+Resume a running timer.
+
+```terminal
+python3 mozart_cli.py 12345678 timer pause timer_name
+```
+
+##### cancel
+
+Cancel a timer.
+
+```terminal
+python3 mozart_cli.py 12345678 timer cancel timer_name
+```
+
+##### list
+
+List all available timers.
+
+```terminal
+python3 mozart_cli.py 12345678 timer list
+```
+
+<!--
+type: tab
+title: Beolink
 -->
 
 #### join
@@ -267,9 +286,17 @@ python3 mozart_cli.py 12345678 join
 python3 mozart_cli.py 12345678 join 23456789
 ```
 
+#### allstandby
+
+Will set all connected Beolink devices to networkStandby.
+
+```terminal
+python3 mozart_cli.py 12345678 allstandby
+```
+
 <!--
 type: tab
-title: Reset
+title: Miscellaneous
 -->
 
 #### reset
@@ -280,11 +307,6 @@ Will factory reset a Mozart device.
 python3 mozart_cli.py 12345678 reset
 ```
 
-<!--
-type: tab
-title: Info
--->
-
 #### info
 
 Will print device information.
@@ -293,30 +315,12 @@ Will print device information.
 python3 mozart_cli.py 12345678 info
 ```
 
-<!--
-type: tab
-title: Standby
--->
-
 #### standby
 
 Will set a Mozart device to networkStandby.
 
 ```terminal
 python3 mozart_cli.py 12345678 standby
-```
-
-<!--
-type: tab
-title: Allstandby
--->
-
-#### allstandby
-
-Will set all connected Beolink devices to networkStandby.
-
-```terminal
-python3 mozart_cli.py 12345678 allstandby
 ```
 
 <!-- type: tab-end -->

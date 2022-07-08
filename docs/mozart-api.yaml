@@ -1644,6 +1644,11 @@ components:
                 enabled:
                     type: boolean
             type: object
+        LocalisationModeTimeout:
+            properties:
+                timeout:
+                    type: number
+            type: object
         LocalisationNoise:
             properties:
                 enabled:
@@ -5064,7 +5069,7 @@ info:
 
         <!--
         type: tab
-        title: Preset
+        title: Playback
         -->
 
         #### preset
@@ -5075,11 +5080,6 @@ info:
         python3 mozart_cli.py 12345678 preset 1
         ```
 
-        <!--
-        type: tab
-        title: Play
-        -->
-
         #### play
 
         Will activate the _play_ playback command.
@@ -5087,11 +5087,6 @@ info:
         ```terminal
         python3 mozart_cli.py 12345678 play
         ```
-
-        <!--
-        type: tab
-        title: Pause
-        -->
 
         #### pause
 
@@ -5101,11 +5096,6 @@ info:
         python3 mozart_cli.py 12345678 pause
         ```
 
-        <!--
-        type: tab
-        title: Next
-        -->
-
         #### next
 
         Will activate the _next_ playback command.
@@ -5113,11 +5103,6 @@ info:
         ```terminal
         python3 mozart_cli.py 12345678 next
         ```
-
-        <!--
-        type: tab
-        title: Previous
-        -->
 
         #### previous
 
@@ -5129,7 +5114,7 @@ info:
 
         <!--
         type: tab
-        title: Mute
+        title: Volume
         -->
 
         #### mute
@@ -5140,11 +5125,6 @@ info:
         python3 mozart_cli.py 12345678 mute
         ```
 
-        <!--
-        type: tab
-        title: Unmute
-        -->
-
         #### unmute
 
         Will activate the unmute command.
@@ -5152,11 +5132,6 @@ info:
         ```terminal
         python3 mozart_cli.py 12345678 unmute
         ```
-
-        <!--
-        type: tab
-        title: Volume
-        -->
 
         #### volume
 
@@ -5168,7 +5143,56 @@ info:
 
         <!--
         type: tab
-        title: Join
+        title: Timer and alarms
+        -->
+
+        #### timer
+
+        Commands for handling timers.
+
+        ##### create
+
+        Create and start a timer with `alarm_1` as tone.
+
+        ```terminal
+        python3 mozart_cli.py 12345678 timer create timer_name 12:34:56
+        ```
+
+        ##### resume
+
+        Resume a paused timer.
+
+        ```terminal
+        python3 mozart_cli.py 12345678 timer resume timer_name
+        ```
+
+        ##### pause
+
+        Resume a running timer.
+
+        ```terminal
+        python3 mozart_cli.py 12345678 timer pause timer_name
+        ```
+
+        ##### cancel
+
+        Cancel a timer.
+
+        ```terminal
+        python3 mozart_cli.py 12345678 timer cancel timer_name
+        ```
+
+        ##### list
+
+        List all available timers.
+
+        ```terminal
+        python3 mozart_cli.py 12345678 timer list
+        ```
+
+        <!--
+        type: tab
+        title: Beolink
         -->
 
         #### join
@@ -5181,9 +5205,17 @@ info:
         python3 mozart_cli.py 12345678 join 23456789
         ```
 
+        #### allstandby
+
+        Will set all connected Beolink devices to networkStandby.
+
+        ```terminal
+        python3 mozart_cli.py 12345678 allstandby
+        ```
+
         <!--
         type: tab
-        title: Reset
+        title: Miscellaneous
         -->
 
         #### reset
@@ -5194,11 +5226,6 @@ info:
         python3 mozart_cli.py 12345678 reset
         ```
 
-        <!--
-        type: tab
-        title: Info
-        -->
-
         #### info
 
         Will print device information.
@@ -5206,11 +5233,6 @@ info:
         ```terminal
         python3 mozart_cli.py 12345678 info
         ```
-
-        <!--
-        type: tab
-        title: Standby
-        -->
 
         #### standby
 
@@ -5220,25 +5242,12 @@ info:
         python3 mozart_cli.py 12345678 standby
         ```
 
-        <!--
-        type: tab
-        title: Allstandby
-        -->
-
-        #### allstandby
-
-        Will set all connected Beolink devices to networkStandby.
-
-        ```terminal
-        python3 mozart_cli.py 12345678 allstandby
-        ```
-
         <!-- type: tab-end -->
     license:
         name: MIT
         url: https://spdx.org/licenses/MIT
     title: Mozart platform API
-    version: 0.1.0
+    version: 0.2.0
 openapi: 3.0.0
 paths:
     /api/v1/active-state-trigger/{state}:
@@ -5382,6 +5391,7 @@ paths:
             tags:
             - Alarms
             - mozart
+            - public
     /api/v1/alarm/tone-preview:
         post:
             description: Preview an alarm tone on the speaker
@@ -5524,6 +5534,7 @@ paths:
             tags:
             - Alarms
             - mozart
+            - public
     /api/v1/alarm/{id}/enable:
         post:
             description: Enable an existing alarm
@@ -5553,6 +5564,7 @@ paths:
             tags:
             - Alarms
             - mozart
+            - public
     /api/v1/alarms:
         get:
             description: Returns a JSON containing all configured alarms
@@ -5567,6 +5579,7 @@ paths:
             tags:
             - Alarms
             - mozart
+            - public
     /api/v1/alarms/maximum-allowed:
         get:
             description: Returns the number of alarms the product supports
@@ -5658,6 +5671,7 @@ paths:
             tags:
             - Beolink
             - mozart
+            - public
     /api/v1/beolink/audioleader:
         get:
             operationId: get-beolink-audio-leader
@@ -5697,6 +5711,7 @@ paths:
             tags:
             - Beolink
             - mozart
+            - public
     /api/v1/beolink/configleader:
         get:
             operationId: get-beolink-config-leader
@@ -5769,6 +5784,7 @@ paths:
             tags:
             - Beolink
             - mozart
+            - public
     /api/v1/beolink/join:
         post:
             description: Touch to join
@@ -5781,6 +5797,7 @@ paths:
             tags:
             - Beolink
             - mozart
+            - public
     /api/v1/beolink/join-result/{id}:
         get:
             description: |
@@ -5837,6 +5854,7 @@ paths:
             tags:
             - Beolink
             - mozart
+            - public
     /api/v1/beolink/latency:
         get:
             description: Gets the beolink latency
@@ -5886,6 +5904,7 @@ paths:
             tags:
             - Beolink
             - mozart
+            - public
     /api/v1/beolink/listeners:
         get:
             description: |
@@ -5906,6 +5925,7 @@ paths:
             tags:
             - Beolink
             - mozart
+            - public
     /api/v1/beolink/peers:
         get:
             description: |
@@ -6010,6 +6030,7 @@ paths:
             tags:
             - Beolink
             - mozart
+            - public
     /api/v1/cast/accept-tos:
         post:
             description: Indicates that the user has accepted the Terms of Service
@@ -6919,6 +6940,30 @@ paths:
             tags:
             - Output
             - mozart
+    /api/v1/output/speakers/localisation-mode-timeout:
+        put:
+            description: / Sets the timeout for when we fall out of localisation mode,
+                in seconds
+            operationId: put-localisation-mode-timeout
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LocalisationModeTimeout'
+                description: The localisation mode timeout in seconds
+                required: true
+            responses:
+                '200':
+                    description: Successfully set localisation-mode-timeout.
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            tags:
+            - Output
+            - mozart
     /api/v1/output/speakers/wisa/discover:
         post:
             description: |
@@ -7187,6 +7232,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
     /api/v1/playback/deezer/flow:
         post:
             description: Play users flow if no provided user id it will play the flow
@@ -7211,6 +7257,7 @@ paths:
             - Deezer
             - Playback
             - mozart
+            - public
     /api/v1/playback/deezer/has-token:
         get:
             description: Get if a deezer access token is set or not
@@ -7292,6 +7339,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
     /api/v1/playback/preset/{id}/store:
         parameters:
         -   description: the id of the preset you want to store
@@ -7321,6 +7369,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
         put:
             description: Store a scene on preset
             operationId: store-scene-on-preset
@@ -7371,6 +7420,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
     /api/v1/playback/queue:
         get:
             description: Get playqueue items
@@ -7415,6 +7465,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
         post:
             description: Add an element to the queue
             operationId: add-to-queue
@@ -7620,6 +7671,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
     /api/v1/playback/sources:
         get:
             description: Retrieve all the available sources.
@@ -7647,6 +7699,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
     /api/v1/playback/sources/active:
         get:
             description: Retrieve the currently active source, if any
@@ -7667,6 +7720,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
     /api/v1/playback/sources/active/{sourceId}:
         post:
             description: Set the active source
@@ -7690,6 +7744,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
     /api/v1/playback/state:
         get:
             description: gets the current state of playback
@@ -7731,6 +7786,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
         post:
             description: Set the uri from which sound is streamed
             operationId: post-uri-source
@@ -7815,6 +7871,7 @@ paths:
             tags:
             - Playback
             - mozart
+            - public
         post:
             description: Set if the current uri should repeat when done
             operationId: post-uri-repeat
@@ -9683,6 +9740,7 @@ paths:
             tags:
             - Settings
             - mozart
+            - public
         put:
             description: sets the current proximity settings
             operationId: set-proximity-settings
@@ -9709,6 +9767,7 @@ paths:
             tags:
             - Settings
             - mozart
+            - public
     /api/v1/puc/files:
         get:
             description: Get all installed puc files
@@ -10680,6 +10739,7 @@ paths:
             tags:
             - LineIn
             - mozart
+            - public
         put:
             description: set the linein settings
             operationId: set-linein-settings
@@ -10702,6 +10762,7 @@ paths:
             tags:
             - LineIn
             - mozart
+            - public
     /api/v1/setup/locale:
         get:
             description: Returns the current locale.
@@ -10792,6 +10853,7 @@ paths:
             tags:
             - Settings
             - mozart
+            - public
     /api/v1/setup/presets/restore-default:
         post:
             description: Restore presets to factory default settings
@@ -10802,6 +10864,7 @@ paths:
             tags:
             - Settings
             - mozart
+            - public
     /api/v1/setup/presets/{presetId}/netradio:
         put:
             description: Stores a netradio station as preset
@@ -11225,6 +11288,12 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/ListeningModeSet'
                     description: The list of listening modes after reset
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Cannot reset listening modes
             tags:
             - Sound
             - mozart
@@ -11359,6 +11428,7 @@ paths:
             tags:
             - Sound
             - mozart
+            - public
     /api/v1/sound/settings/adjustments/ambience:
         put:
             description: update the sound settings adjustments for ambience
@@ -11427,6 +11497,7 @@ paths:
             tags:
             - Sound
             - mozart
+            - public
     /api/v1/sound/settings/adjustments/bass-management:
         put:
             operationId: set-sound-settings-adjustments-bass-management
@@ -11517,6 +11588,7 @@ paths:
             tags:
             - Sound
             - mozart
+            - public
     /api/v1/sound/settings/adjustments/fader:
         put:
             operationId: set-sound-settings-adjustments-fader
@@ -11562,6 +11634,7 @@ paths:
             tags:
             - Sound
             - mozart
+            - public
     /api/v1/sound/settings/adjustments/spatial-envelopment:
         put:
             operationId: set-sound-settings-adjustments-spatial-envelopment
@@ -11717,6 +11790,7 @@ paths:
             tags:
             - Sound
             - mozart
+            - public
     /api/v1/sound/settings/roomCompensation:
         delete:
             description: stop the room compensation and delete all ongoing measurements
@@ -12166,6 +12240,7 @@ paths:
             tags:
             - Sound
             - mozart
+            - public
     /api/v1/sound/volume/mute:
         put:
             description: set the volume mute state
@@ -12185,6 +12260,7 @@ paths:
             tags:
             - Sound
             - mozart
+            - public
     /api/v1/sound/volume/settings:
         get:
             description: |
@@ -12206,6 +12282,7 @@ paths:
             tags:
             - Sound
             - mozart
+            - public
         put:
             description: |
                 Set the current volume settings for default and maximum volume level
@@ -13529,6 +13606,7 @@ paths:
             tags:
             - Alarms
             - mozart
+            - public
     /api/v1/timer/{id}:
         get:
             description: Returns the running timer
@@ -13575,6 +13653,7 @@ paths:
             tags:
             - Alarms
             - mozart
+            - public
     /api/v1/timer/{id}/pause:
         post:
             description: Pauses the running timer
@@ -13594,6 +13673,7 @@ paths:
             tags:
             - Alarms
             - mozart
+            - public
     /api/v1/timer/{id}/resume:
         post:
             description: Resume the timer
@@ -13613,6 +13693,7 @@ paths:
             tags:
             - Alarms
             - mozart
+            - public
     /api/v1/timers:
         get:
             description: Returns a list of configured timers
@@ -13627,6 +13708,7 @@ paths:
             tags:
             - Alarms
             - mozart
+            - public
     /api/v1/timers/maximum-allowed:
         get:
             description: Returns the maximum allowed number of timers on the product
