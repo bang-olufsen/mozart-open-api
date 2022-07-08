@@ -154,15 +154,7 @@ class MozartApiCli:
                 jid=jid, async_req=True
             ).get()
 
-        if self.verbose:
-            # Wait for the join-result to be available
-            time.sleep(1)
-            print("Beolink Join status:")
-            print(
-                self.mozart_api.get_beolink_join_result(
-                    id=status.request_id, async_req=True
-                ).get()
-            )
+        return status
 
     def _command_handler(self):
         """Handle commands."""
@@ -191,7 +183,7 @@ class MozartApiCli:
             )
 
         elif self.command == "join":
-            asyncio.run(self._beolink_join())
+            status = asyncio.run(self._beolink_join())
 
         elif self.command == "timer":
             sub_command = self.command_args[0]
@@ -235,15 +227,8 @@ class MozartApiCli:
                             state: {timer.state}
                             """
                         )
-
-            if self.verbose:
-                print(status)
-
         elif self.command == "reset":
             status = self.mozart_api.post_factory_reset()
-
-            if self.verbose:
-                print(status)
 
         # Currently show playback metadata, product_info, battery state, power state, deezer state
         # product_info will not be a part of the initial public API
@@ -271,6 +256,20 @@ class MozartApiCli:
 
         elif self.command == "allstandby":
             self.mozart_api.post_beolink_allstandby()
+
+        # Print verbose status information if defined.
+        if self.verbose and self.command == "join":
+            # Wait for the join-result to be available
+            time.sleep(1)
+            print("Beolink Join status:")
+            print(
+                self.mozart_api.get_beolink_join_result(
+                    id=status.request_id, async_req=True
+                ).get()
+            )
+
+        elif self.verbose:
+            print(status)
 
 
 if __name__ == "__main__":
