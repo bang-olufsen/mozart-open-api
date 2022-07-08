@@ -40,7 +40,11 @@ mozart_api.post_beolink_expand(jid="1234.1234567.12345678@products.bang-olufsen.
 
 ## Example CLI program
 
-The CLI program carries out one command and then exits afterwards. This and the fact that the serial number is used to specify devices sometimes results in slow MDNS discovery times.
+The CLI program carries out one command and then exits afterwards. The program needs to do a device-discovery on each command, which in noisy environments could take some time.
+
+Additionally since the CLI uses MDNS for device discovery, port number 5353 needs to be open.
+
+The ip-address can be used directly as an alternative.
 
 ### Usage example
 
