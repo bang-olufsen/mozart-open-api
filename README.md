@@ -38,6 +38,48 @@ mozart_api.activate_preset(id=2)
 mozart_api.post_beolink_expand(jid="1234.1234567.12345678@products.bang-olufsen.com")
 ```
 
+#### WebSocket events
+
+Optionally listen to WebSocket events for immediate state information.
+
+<!-- title: "WebSocket event URLs"-->
+
+```yaml
+ws://192.168.0.1:9339/
+ws://192.168.0.1:9339/remoteControl
+```
+
+Code example:
+
+<!-- title: "WebSocket notification listener"
+lineNumbers: true
+-->
+
+```python
+import asyncio
+
+import websockets
+
+host = "192.168.0.1"
+
+
+async def listen_to_notifications() -> None:
+    """Listen to Mozart WebSocket notifications."""
+
+    async with websockets.connect(f"ws://{host}:9339/") as websocket:
+        
+        # Ctrl+c to exit loop
+        while True:
+            notification = await websocket.recv()
+            print(notification)
+
+
+asyncio.run(listen_to_notifications())
+
+```
+
+Where `192.168.0.1` is a Mozart device IP address.
+
 ## Example CLI program
 
 The CLI program carries out one command and then exits afterwards. The program needs to do a device-discovery on each command, which in noisy environments could take some time.
