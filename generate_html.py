@@ -33,26 +33,6 @@ class DocumentationGeneration:
             self.mozart_yaml["info"]["contact"].update(support_url)
             print(f"{self.mozart_filename} updated with {support_url}")
 
-    def update_servers(self) -> None:
-        """update YAML file with WebSocket servers."""
-
-        if "servers" not in self.mozart_yaml:
-            websocket_servers = {
-                "servers": [
-                    {
-                        "url": "ws://localhost:9339/",
-                        "description": "WebSocket notification channel",
-                    },
-                    {
-                        "url": "ws://localhost:9339/remoteControl",
-                        "description": "Remote control WebSocket notification channel",
-                    },
-                ],
-            }
-
-            self.mozart_yaml.update(websocket_servers)
-            print(f"{self.mozart_filename} updated with {websocket_servers}")
-
     def update_description(self) -> None:
         """update YAML file with WebSocket servers."""
 
@@ -89,7 +69,6 @@ def main():
 
     documentation.update_license()
     documentation.update_contact()
-    documentation.update_servers()
     documentation.update_description()
 
     documentation.write_yaml()
