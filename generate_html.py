@@ -1,5 +1,7 @@
 """Generate API documentation."""
 
+# pylint: disable=unspecified-encoding
+
 import sys
 
 import yaml
