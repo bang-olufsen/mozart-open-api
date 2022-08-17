@@ -295,28 +295,12 @@ type: tab
 title: Miscellaneous
 -->
 
-#### reset
-
-Will factory reset a Mozart device.
-
-```terminal
-mozart_api 12345678 reset
-```
-
 #### info
 
 Will print device information.
 
 ```terminal
 mozart_api 12345678 info
-```
-
-#### standby
-
-Will set a Mozart device to networkStandby.
-
-```terminal
-mozart_api 12345678 standby
 ```
 
 <!-- type: tab-end -->
