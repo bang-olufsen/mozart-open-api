@@ -19,24 +19,8 @@ class DocumentationGeneration:
         with open(self.mozart_filename, "r") as mozart_yaml_file:
             return yaml.safe_load(mozart_yaml_file)
 
-    def update_license(self) -> None:
-        """update license key with a URL."""
-        if "url" not in self.mozart_yaml["info"]["license"]:
-            mit_license_url = {"url": "https://spdx.org/licenses/MIT"}
-
-            self.mozart_yaml["info"]["license"].update(mit_license_url)
-            print(f"{self.mozart_filename} updated with {mit_license_url}")
-
-    def update_contact(self) -> None:
-        """update contact key with a URL."""
-        if "url" not in self.mozart_yaml["info"]["contact"]:
-            support_url = {"url": "https://support.bang-olufsen.com/"}
-
-            self.mozart_yaml["info"]["contact"].update(support_url)
-            print(f"{self.mozart_filename} updated with {support_url}")
-
     def update_description(self) -> None:
-        """update YAML file with WebSocket servers."""
+        """update YAML file with README.md file."""
 
         with open("README.md", "r") as readme_file:
             readme_content = readme_file.read()
@@ -63,14 +47,13 @@ class DocumentationGeneration:
 
 def main():
     """Modify the YAML file for documentation generation."""
+
     # Currently manually define a Mozart YAML file.
     # This should be pulled from somewhere in the future.
     mozart_filename = sys.argv[1]
 
     documentation = DocumentationGeneration(mozart_filename)
 
-    documentation.update_license()
-    documentation.update_contact()
     documentation.update_description()
 
     documentation.write_yaml()

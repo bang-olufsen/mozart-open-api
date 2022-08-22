@@ -407,6 +407,13 @@ components:
                     - KeyPress
                     - KeyRelease
             type: object
+        BeolinkAvailableListener:
+            properties:
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            type: object
         BeolinkEnabled:
             properties:
                 enabled:
@@ -645,6 +652,11 @@ components:
             properties:
                 value:
                     type: boolean
+        HasToken:
+            properties:
+                hasToken:
+                    type: boolean
+            type: object
         LightSensorSettings:
             properties:
                 disabled:
@@ -780,6 +792,18 @@ components:
                 result:
                     type: boolean
             type: object
+        NetRadioPreset:
+            properties:
+                stationId:
+                    type: string
+            required:
+            - stationId
+            type: object
+        NumberOfAllowedAlarms:
+            properties:
+                value:
+                    type: integer
+            type: object
         PairedRemote:
             properties:
                 address:
@@ -832,6 +856,12 @@ components:
             - type
             - uri
             type: object
+        PlayQueueItemArray:
+            properties:
+                items:
+                    items:
+                        $ref: '#/components/schemas/PlaybackContentMetadata'
+                    type: array
         PlayQueueItemType:
             properties:
                 value:
@@ -1572,9 +1602,11 @@ info:
     description: |
         # Mozart Open API
 
-        The Mozart API is a auto-generated REST API with async capabilities and WebSocket notification channel for immediate state information.
+        The Mozart API is an auto-generated REST API with async capabilities and WebSocket notification channel for immediate state information.
 
-        On top of the auto-generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. This is the version of the API that we recommend using.
+        On top of the auto-generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
+
+        Another file, mozart_cli.py, has been made for using the Mozart API in a simple CLI program. This has been set as the "entry point" for the API.
 
         ## Installation
 
@@ -1586,11 +1618,18 @@ info:
         pip3 install mozart-api
         ```
 
-        ### API usage
+        ## API usage
 
-        Create a MozartApi object and use it to set the volume level, activate a preset and expand the Beolink session to a peer.
+        Create a MozartClient object and use it to set the volume level, activate a preset and expand the Beolink session to a peer, then finally print Beolink listeners.
 
-        <!-- title: "API usage example"
+        <!--
+        type: tab
+        title: Synchronous
+        -->
+
+        ### Synchronous
+
+        <!-- title: "Synchronous API usage example"
         lineNumbers: true
         -->
 
@@ -1604,7 +1643,7 @@ info:
             print(notification)
 
         # Setup API and WebSocket listener
-        mozart_client = MozartClient("192.168.0.1")
+        mozart_client = MozartClient(host="192.168.0.1")
         mozart_client.get_all_notifications(all_notifications)
 
         # Connect to the WebSocket notification channel
@@ -1613,8 +1652,49 @@ info:
         # Run commands
         mozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50))
         mozart_client.activate_preset(id=2)
-        mozart_client.post_beolink_expand(jid="1234.1234567.23456789@products.bang-olufsen.com")
+        mozart_client.post_beolink_expand(jid="1234.1234567.12345678@products.bang-olufsen.com")
+
+        listeners = mozart_client.get_beolink_listeners()
+        print(listeners)
         ```
+
+        <!--
+        type: tab
+        title: Asynchronous
+        -->
+
+        ### Asynchronous
+
+        <!-- title: "Asynchronous API usage example"
+        lineNumbers: true
+        -->
+
+        ```python
+        from mozart_api.models import VolumeLevel
+        from mozart_api.mozart_client import MozartClient
+
+
+        def all_notifications(notification):
+            """Notification handler."""
+            print(notification)
+
+        # Setup API and WebSocket listener
+        mozart_client = MozartClient(host="192.168.0.1")
+        mozart_client.get_all_notifications(all_notifications)
+
+        # Connect to the WebSocket notification channel
+        mozart_client.connect_notifications(remote_control=True)
+
+        # Run commands
+        mozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50), async_req=True)
+        mozart_client.activate_preset(id=2, async_req=True)
+        mozart_client.post_beolink_expand(jid="1234.1234567.12345678@products.bang-olufsen.com", async_req=True)
+
+        listeners = mozart_client.get_beolink_listeners(async_req=True).get()
+        print(listeners)
+        ```
+
+        <!-- type: tab-end -->
 
         Where `192.168.0.1` is a Mozart device's IP-address.
 
@@ -1867,28 +1947,12 @@ info:
         title: Miscellaneous
         -->
 
-        #### reset
-
-        Will factory reset a Mozart device.
-
-        ```terminal
-        mozart_api 12345678 reset
-        ```
-
         #### info
 
         Will print device information.
 
         ```terminal
         mozart_api 12345678 info
-        ```
-
-        #### standby
-
-        Will set a Mozart device to networkStandby.
-
-        ```terminal
-        mozart_api 12345678 standby
         ```
 
         <!-- type: tab-end -->
@@ -1984,6 +2048,64 @@ paths:
             tags:
             - Alarms
             - mozart
+    /api/v1/alarm/{id}/disable:
+        post:
+            description: Disable an existing alarm
+            operationId: disable-alarm
+            parameters:
+            -   description: ID of the alarm to disable
+                in: path
+                name: id
+                required: true
+                schema:
+                    $ref: '#/components/schemas/AlarmId'
+            responses:
+                '200':
+                    description: Alarm disabled
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Couldn't disable the alarm
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Alarm with the given ID doesn't exist
+            tags:
+            - Alarms
+            - mozart
+    /api/v1/alarm/{id}/enable:
+        post:
+            description: Enable an existing alarm
+            operationId: enable-alarm
+            parameters:
+            -   description: ID of the alarm to enable
+                in: path
+                name: id
+                required: true
+                schema:
+                    $ref: '#/components/schemas/AlarmId'
+            responses:
+                '200':
+                    description: Alarm enabled
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Couldn't enable the alarm
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Alarm with the given ID doesn't exist
+            tags:
+            - Alarms
+            - mozart
     /api/v1/alarms:
         get:
             description: Returns a JSON containing all configured alarms
@@ -1995,6 +2117,22 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/AlarmsList'
                     description: Successful request
+            tags:
+            - Alarms
+            - mozart
+    /api/v1/alarms/maximum-allowed:
+        get:
+            description: Returns the number of alarms the product supports
+            operationId: get-maximum-allowed
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/NumberOfAllowedAlarms'
+                    description: Success
+                '400':
+                    description: Failed
             tags:
             - Alarms
             - mozart
@@ -2022,6 +2160,26 @@ paths:
                     description: successful operation
                 '400':
                     description: Beolink not enabled on this device
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/available-listeners:
+        get:
+            description: |
+                Get a list of devices that can be listening to this device active experience
+            operationId: get-beolink-available-listeners
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: '#/components/schemas/BeolinkAvailableListener'
+                                type: array
+                    description: Success
+                '400':
+                    description: Beolink not enabled on this device
+            summary: null
             tags:
             - Beolink
             - mozart
@@ -2091,6 +2249,35 @@ paths:
             tags:
             - Beolink
             - mozart
+    /api/v1/beolink/join-result/{id}:
+        get:
+            description: |
+                Returns the result of a join request.
+
+                **WARNING:** This end-point is only for testing purposes. Only a limited
+                number of results are kept, so if there are multiple API clients using
+                the device at the same time, and you are polling this end-point, you may
+                miss the result of your join request.
+            operationId: get-beolink-join-result
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BeolinkJoinResult'
+                    description: Join result available
+                '404':
+                    description: Join result unavailable
+            tags:
+            - Beolink
+            - mozart
+        parameters:
+        -   description: Join request ID
+            in: path
+            name: id
+            required: true
+            schema:
+                $ref: '#/components/schemas/BeolinkRequestID'
     /api/v1/beolink/join/{jid}:
         parameters:
         -   description: Jabber ID of peer to join
@@ -2329,6 +2516,20 @@ paths:
             - Deezer
             - Playback
             - mozart
+    /api/v1/playback/deezer/has-token:
+        get:
+            description: Get if a deezer access token is set or not
+            operationId: get-deezer-has-token
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HasToken'
+                    description: successful operation
+            tags:
+            - Playback
+            - mozart
     /api/v1/playback/netradio-station/{stationId}:
         put:
             description: Plays the selected netradio station
@@ -2432,6 +2633,49 @@ paths:
             - Playback
             - mozart
     /api/v1/playback/queue:
+        get:
+            description: Get playqueue items
+            operationId: get-pq-items
+            parameters:
+            -   description: get queue after specified queue id
+                in: query
+                name: after_id
+                required: false
+                schema:
+                    $ref: '#/components/schemas/PlayQueueIdType'
+            -   description: get count number of items. Default value is 20. Minimum
+                    value is 1 and maximum is 1000
+                in: query
+                name: count
+                required: false
+                schema:
+                    format: int32
+                    maximum: 1000
+                    minimum: 1
+                    type: integer
+            -   description: set to true if all metadata is wanted. When false or
+                    not specified only id, type and uri/trackId is returned
+                in: query
+                name: details
+                required: false
+                schema:
+                    type: boolean
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PlayQueueItemArray'
+                    description: Returns a list of items in the playqueue
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            tags:
+            - Playback
+            - mozart
         post:
             description: Add an element to the queue
             operationId: add-to-queue
@@ -2570,6 +2814,26 @@ paths:
             tags:
             - Playback
             - mozart
+    /api/v1/playback/sources/active:
+        get:
+            description: Retrieve the currently active source, if any
+            operationId: get-active-source
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Source'
+                    description: Returns the currently active source
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            tags:
+            - Playback
+            - mozart
     /api/v1/playback/sources/active/{sourceId}:
         post:
             description: Set the active source
@@ -2594,6 +2858,25 @@ paths:
             - Playback
             - mozart
     /api/v1/playback/uri:
+        get:
+            description: Retrieves the current uri from which sound is streamed.
+            operationId: get-uri-source
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Uri'
+                    description: The current uri being streamed.
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            tags:
+            - Playback
+            - mozart
         post:
             description: Set the uri from which sound is streamed
             operationId: post-uri-source
@@ -2790,6 +3073,36 @@ paths:
             tags:
             - Settings
             - mozart
+    /api/v1/setup/presets/{presetId}/netradio:
+        put:
+            description: Stores a netradio station as preset
+            operationId: set-preset-netradio
+            parameters:
+            -   description: The key identifying the preset to update
+                in: path
+                name: presetId
+                required: true
+                schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/NetRadioPreset'
+                description: The netradio station to store as preset
+                required: true
+            responses:
+                '204':
+                    description: Successfully stored netradio preset
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            tags:
+            - Settings
+            - mozart
     /api/v1/setup/remotes:
         get:
             description: Gets a list of paired bluetooth remotes
@@ -2983,6 +3296,26 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/SoundSettings'
                     description: sound settings returned
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/settings/adjustments:
+        get:
+            description: get the sound settings adjustments
+            operationId: get-sound-settings-adjustments
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SoundAdjustments'
+                    description: sound settings adjustments returned
                 '400':
                     content:
                         application/json:
@@ -3293,29 +3626,6 @@ paths:
                     description: invalid request
             tags:
             - Microphone
-            - mozart
-    /api/v1/state/power:
-        put:
-            description: Changes the power state of the product
-            operationId: set-power-state
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/PowerStateEnum'
-                description: The power state to be set
-                required: true
-            responses:
-                '201':
-                    description: Accepted the updated power state
-                '400':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ErrorModel'
-                    description: invalid request
-            tags:
-            - Power
             - mozart
     /api/v1/timer:
         post:
