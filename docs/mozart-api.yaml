@@ -713,7 +713,8 @@ components:
                     $ref: '#/components/schemas/ToneTouch'
             type: object
         ListeningModeID:
-            format: uint32
+            format: int32
+            minimum: 0
             type: integer
         ListeningModeProps:
             properties:
@@ -749,7 +750,8 @@ components:
                     description: |
                         ID of the active listening mode or `null` if there is no active
                         listening mode.
-                    format: uint32
+                    format: int32
+                    minimum: 0
                     nullable: true
                     type: integer
             required:
@@ -1171,10 +1173,12 @@ components:
         RoomCompensationVersion:
             properties:
                 algorithm:
-                    format: uint32
+                    format: int32
+                    minimum: 0
                     type: integer
                 coefficients:
-                    format: uint32
+                    format: int32
+                    minimum: 0
                     type: integer
         SoftwareUpdateSettings:
             properties:
@@ -1331,7 +1335,7 @@ components:
                     $ref: '#/components/schemas/ActionList'
                 duration:
                     description: The duration of the timer in seconds
-                    format: uint32
+                    format: int32
                     minimum: 0
                     type: integer
                 id:
