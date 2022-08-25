@@ -657,11 +657,6 @@ components:
                 hasToken:
                     type: boolean
             type: object
-        LightSensorSettings:
-            properties:
-                disabled:
-                    type: boolean
-            type: object
         LineInSettings:
             properties:
                 delayMs:
@@ -2420,52 +2415,6 @@ paths:
             summary: Unexpand (disconnect) a device from the multiroom session
             tags:
             - Beolink
-            - mozart
-    /api/v1/lightsensor/settings:
-        get:
-            description: get the current light sensor settings
-            operationId: get-lightsensor-settings
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/LightSensorSettings'
-                    description: the light sensor settings
-                '400':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ErrorModel'
-                    description: invalid request
-            tags:
-            - Settings
-            - mozart
-        put:
-            description: sets the current light sensor settings
-            operationId: set-lightsensor-settings
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/LightSensorSettings'
-                description: the light sensor settings
-                required: true
-            responses:
-                '201':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/LightSensorSettings'
-                    description: the new settings were accepted
-                '400':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ErrorModel'
-                    description: invalid request
-            tags:
-            - Settings
             - mozart
     /api/v1/playback/command/{command}:
         post:
