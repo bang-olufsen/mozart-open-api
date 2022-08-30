@@ -191,6 +191,8 @@ mozart_api serial_number command command_args -w
 mozart_api serial_number command command_args --websocket
 ```
 
+<!-- type: tab-end -->
+
 ### Commands
 
 <!--
