@@ -6,6 +6,13 @@ On top of the auto-generated API, a helper file, mozart_client.py, has been made
 
 Another file, mozart_cli.py, has been made for using the Mozart API in a simple CLI program. This has been set as the "entry point" for the API.
 
+Currently supported by:
+
+- [BeoLab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)
+- [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)
+- [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)
+- [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)
+
 ## Installation
 
 The Mozart Open API can be installed with pip. For more information about required Python version, check the [PyPI page](https://pypi.org/project/mozart-api/).
