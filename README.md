@@ -278,56 +278,6 @@ mozart_api 12345678 volume 50
 
 <!--
 type: tab
-title: Timer and alarms
--->
-
-#### timer
-
-Commands for handling timers.
-
-##### create
-
-Create and start a timer with `alarm_1` as tone.
-
-```terminal
-mozart_api 12345678 timer create timer_name 12:34:56
-```
-
-##### resume
-
-Resume a paused timer.
-
-```terminal
-mozart_api 12345678 timer resume timer_name
-```
-
-<!--markdownlint-disable-next-line-->
-##### pause
-
-Resume a running timer.
-
-```terminal
-mozart_api 12345678 timer pause timer_name
-```
-
-##### cancel
-
-Cancel a timer.
-
-```terminal
-mozart_api 12345678 timer cancel timer_name
-```
-
-##### list
-
-List all available timers.
-
-```terminal
-mozart_api 12345678 timer list
-```
-
-<!--
-type: tab
 title: Beolink
 -->
 
