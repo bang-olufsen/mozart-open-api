@@ -2790,6 +2790,22 @@ paths:
             tags:
             - Beolink
             - mozart
+    /api/v1/beolink/self:
+        get:
+            description: |
+                Returns Beolink information like about this device. This can be useful if you want to expand _to_ this device.
+            operationId: get-beolink-self
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BeolinkPeer'
+                    description: successful operation
+            summary: Information about this device
+            tags:
+            - Beolink
+            - mozart
     /api/v1/beolink/unexpand/{jid}:
         parameters:
         -   description: Jabber id of peer to unexpand
