@@ -1464,6 +1464,23 @@ components:
                 format: uuid
                 type: string
             type: array
+        SceneProperties:
+            properties:
+                actionList:
+                    $ref: '#/components/schemas/ActionList'
+                label:
+                    nullable: true
+                    type: string
+                tags:
+                    description: A list of user defined tags. This allows a client
+                        to create virtual lists
+                    items:
+                        type: string
+                    nullable: true
+                    type: array
+            required:
+            - actionList
+            type: object
         SceneTriggerBaseProperties:
             description: Base properties for a scene trigger
             properties:
@@ -3166,6 +3183,23 @@ paths:
                     description: invalid request
             tags:
             - Playback
+            - mozart
+    /api/v1/scene/run:
+        post:
+            description: Run provided scene
+            operationId: run-provided-scene
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SceneProperties'
+                description: The scene you want to run
+                required: true
+            responses:
+                '204':
+                    description: Successful request
+            tags:
+            - Scenes
             - mozart
     /api/v1/setup/bluetooth/devices:
         get:
