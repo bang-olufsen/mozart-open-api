@@ -5,6 +5,7 @@
 import sys
 
 import yaml
+from inflection import underscore
 
 
 class DocumentationGeneration:
@@ -24,10 +25,51 @@ class DocumentationGeneration:
 
         with open("README.md", "r") as readme_file:
             readme_content = readme_file.read()
-            print(readme_content)
 
         self.mozart_yaml["info"]["description"] = readme_content
         print(f"{self.mozart_filename} updated with README.md")
+
+    def add_usage_descriptions(self) -> None:
+        """Add python endpoint name and partial API usage example."""
+
+        # Get the endpoint
+        for path in self.mozart_yaml["paths"].copy():
+            for http_method in self.mozart_yaml["paths"][path].copy():
+                if http_method not in ("get", "put", "post", "delete"):
+                    continue
+
+                # Create the descriptions
+                operation_id = self.mozart_yaml["paths"][path][http_method][
+                    "operationId"
+                ]
+                method_name = underscore(operation_id)
+
+                # Add text and mozart_client
+                description = f"""Use the `{operation_id}` endpoint with one of:
+```mozart_client
+mozart_client.{method_name}()
+```"""
+                # Add the rest of the api's that can be used
+                # Reverse in order to get mozart_api right after mozart_client
+                for tag in reversed(
+                    self.mozart_yaml["paths"][path][http_method]["tags"]
+                ):
+                    description += f"""
+```{tag.lower()}_api
+{tag.lower()}_api.{method_name}()
+```"""
+                # Keep the original description if it exists.
+                if "description" in self.mozart_yaml["paths"][path][http_method]:
+                    self.mozart_yaml["paths"][path][http_method][
+                        "description"
+                    ] += f"""
+{description}"""
+                else:
+                    self.mozart_yaml["paths"][path][http_method][
+                        "description"
+                    ] = description
+
+                print("Descriptions updated with usage descriptions.")
 
     def write_yaml(self) -> None:
         """Save the yaml dict as a file."""
@@ -55,6 +97,7 @@ def main():
     documentation = DocumentationGeneration(mozart_filename)
 
     documentation.update_description()
+    documentation.add_usage_descriptions()
 
     documentation.write_yaml()
 
