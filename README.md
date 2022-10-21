@@ -25,7 +25,7 @@ pip3 install mozart-api
 
 ## API usage
 
-Create a MozartClient object and use it to set the volume level, activate a preset and expand the Beolink session to a peer, then finally print Beolink listeners.
+Create a MozartClient object, listen to all WebSocket notifications, set the volume level, activate a preset and expand the Beolink session to a peer, then finally print Beolink listeners.
 
 <!--
 type: tab
