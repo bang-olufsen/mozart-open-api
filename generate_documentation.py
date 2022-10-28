@@ -1,6 +1,4 @@
-"""Generate API documentation."""
-
-# pylint: disable=unspecified-encoding
+"""Generate API documentation and README."""
 
 import sys
 
@@ -14,20 +12,39 @@ class DocumentationGeneration:
     def __init__(self, mozart_filename: str) -> None:
         self.mozart_filename = mozart_filename
         self.mozart_yaml = self._load_yaml()
+        self.common_content = None
 
     def _load_yaml(self) -> dict:
         """Load the yaml file as a dict."""
-        with open(self.mozart_filename, "r") as mozart_yaml_file:
+        with open(self.mozart_filename, "r", encoding="utf-8") as mozart_yaml_file:
             return yaml.safe_load(mozart_yaml_file)
 
-    def update_description(self) -> None:
-        """update YAML file with README.md file."""
+    def update_readme(self) -> None:
+        """Update README with common.md and readme.md"""
 
-        with open("README.md", "r") as readme_file:
+        with open("docs/common.md", "r", encoding="utf-8") as common_file:
+            self.common_content = common_file.read()
+
+        with open("docs/readme.md", "r", encoding="utf-8") as readme_file:
             readme_content = readme_file.read()
 
-        self.mozart_yaml["info"]["description"] = readme_content
-        print(f"{self.mozart_filename} updated with README.md")
+        final_readme_content = self.common_content + "\n" + readme_content
+
+        with open("README.md", "w", encoding="utf-8") as readme_file:
+            readme_file.write(final_readme_content)
+
+        print("Generated README.md")
+
+    def update_description(self) -> None:
+        """update YAML file with overview.md file."""
+
+        with open("docs/overview.md", "r", encoding="utf-8") as overview_file:
+            overview_content = overview_file.read()
+
+        self.mozart_yaml["info"]["description"] = (
+            self.common_content + "\n" + overview_content
+        )
+        print(f"{self.mozart_filename} updated with common.md and overview.md")
 
     def add_usage_descriptions(self) -> None:
         """Add python endpoint name and partial API usage example."""
@@ -45,12 +62,12 @@ class DocumentationGeneration:
                 method_name = underscore(operation_id)
 
                 # Add text and mozart_client
-                description = f"""Use the `{operation_id}` endpoint with one of:
+                description = f"""Use the `{operation_id}` method in the Python package with one of:
 ```mozart_client
 mozart_client.{method_name}()
 ```"""
                 # Add the rest of the api's that can be used
-                # Reverse in order to get mozart_api right after mozart_client
+                # Reverse order to get mozart_api right after mozart_client
                 for tag in reversed(
                     self.mozart_yaml["paths"][path][http_method]["tags"]
                 ):
@@ -69,7 +86,7 @@ mozart_client.{method_name}()
                         "description"
                     ] = description
 
-                print("Descriptions updated with usage descriptions.")
+        print("Descriptions updated with usage descriptions.")
 
     def write_yaml(self) -> None:
         """Save the yaml dict as a file."""
@@ -83,7 +100,7 @@ mozart_client.{method_name}()
             else dumper.represent_scalar("tag:yaml.org,2002:str", data),
         )
 
-        with open("docs/mozart-api.yaml", "w") as mozart_yaml_file:
+        with open("docs/mozart-api.yaml", "w", encoding="utf-8") as mozart_yaml_file:
             yaml.dump(self.mozart_yaml, mozart_yaml_file, indent=4)
 
 
@@ -96,6 +113,7 @@ def main():
 
     documentation = DocumentationGeneration(mozart_filename)
 
+    documentation.update_readme()
     documentation.update_description()
     documentation.add_usage_descriptions()
 

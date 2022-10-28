@@ -9,5 +9,3 @@ Supported by:
 - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)
 - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)
 - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
-
-API documentation can be found on the [Github page](placeholder).

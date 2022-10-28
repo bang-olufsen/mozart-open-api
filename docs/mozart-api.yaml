@@ -5007,18 +5007,19 @@ info:
     description: |
         # Mozart Open API
 
-        The Mozart API is an auto-generated REST API with async capabilities and WebSocket notification channel for immediate state information.
+        The Mozart API is a REST API with async capabilities and WebSocket notification channel for immediate state information. Currently the API is distributed as a Python package and as an OpenAPI document that can be found in the [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).
 
-        On top of the auto-generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
-
-        Another file, mozart_cli.py, has been made for using the Mozart API in a simple CLI program. This has been set as the "entry point" for the API.
-
-        Currently supported by:
+        Supported by:
 
         - [BeoLab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)
         - [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)
         - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)
+        - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
+
+        The Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/). On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
+
+        Another file, mozart_cli.py, has been made for using the Mozart API in a simple CLI program. This has been set as the "entry point" for the Python package.
 
         ## Installation
 
@@ -5330,7 +5331,7 @@ paths:
     /api/v1/active-state-trigger/{state}:
         put:
             description: |-
-                Use the `put-active-state-trigger` endpoint with one of:
+                Use the `put-active-state-trigger` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_active_state_trigger()
                 ```
@@ -5376,7 +5377,7 @@ paths:
                 Get active state triggers
                 This will trigger when this device goes into standby/inactive and streaming/active
 
-                Use the `get-active-state-triggers` endpoint with one of:
+                Use the `get-active-state-triggers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_active_state_triggers()
                 ```
@@ -5401,7 +5402,7 @@ paths:
     /api/v1/airplay/password:
         delete:
             description: |-
-                Use the `delete-airplay-password` endpoint with one of:
+                Use the `delete-airplay-password` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_airplay_password()
                 ```
@@ -5431,7 +5432,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-airplay-password-state` endpoint with one of:
+                Use the `get-airplay-password-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_airplay_password_state()
                 ```
@@ -5461,7 +5462,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-airplay-password` endpoint with one of:
+                Use the `post-airplay-password` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_airplay_password()
                 ```
@@ -5500,7 +5501,7 @@ paths:
     /api/v1/alarm:
         post:
             description: |-
-                Use the `add-alarm` endpoint with one of:
+                Use the `add-alarm` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.add_alarm()
                 ```
@@ -5538,7 +5539,7 @@ paths:
     /api/v1/alarm/tone-preview:
         post:
             description: |-
-                Use the `post-tone-preview` endpoint with one of:
+                Use the `post-tone-preview` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_tone_preview()
                 ```
@@ -5578,7 +5579,7 @@ paths:
     /api/v1/alarm/{id}:
         delete:
             description: |-
-                Use the `delete-alarm` endpoint with one of:
+                Use the `delete-alarm` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_alarm()
                 ```
@@ -5611,7 +5612,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-alarm` endpoint with one of:
+                Use the `get-alarm` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_alarm()
                 ```
@@ -5648,7 +5649,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `edit-alarm` endpoint with one of:
+                Use the `edit-alarm` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.edit_alarm()
                 ```
@@ -5695,7 +5696,7 @@ paths:
     /api/v1/alarm/{id}/disable:
         post:
             description: |-
-                Use the `disable-alarm` endpoint with one of:
+                Use the `disable-alarm` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.disable_alarm()
                 ```
@@ -5735,7 +5736,7 @@ paths:
     /api/v1/alarm/{id}/enable:
         post:
             description: |-
-                Use the `enable-alarm` endpoint with one of:
+                Use the `enable-alarm` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.enable_alarm()
                 ```
@@ -5775,7 +5776,7 @@ paths:
     /api/v1/alarms:
         get:
             description: |-
-                Use the `get-all-alarms` endpoint with one of:
+                Use the `get-all-alarms` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_all_alarms()
                 ```
@@ -5800,7 +5801,7 @@ paths:
     /api/v1/alarms/maximum-allowed:
         get:
             description: |-
-                Use the `get-maximum-allowed` endpoint with one of:
+                Use the `get-maximum-allowed` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_maximum_allowed()
                 ```
@@ -5827,7 +5828,7 @@ paths:
     /api/v1/alarms/tones-available:
         get:
             description: |-
-                Use the `get-available-tones` endpoint with one of:
+                Use the `get-available-tones` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_available_tones()
                 ```
@@ -5852,7 +5853,7 @@ paths:
     /api/v1/battery:
         get:
             description: |-
-                Use the `get-battery-state` endpoint with one of:
+                Use the `get-battery-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_battery_state()
                 ```
@@ -5881,7 +5882,7 @@ paths:
     /api/v1/beolink/airplay-allowed:
         get:
             description: |-
-                Use the `get-beolink-airplay` endpoint with one of:
+                Use the `get-beolink-airplay` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_airplay()
                 ```
@@ -5907,7 +5908,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-beolink-airplay` endpoint with one of:
+                Use the `set-beolink-airplay` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_beolink_airplay()
                 ```
@@ -5937,7 +5938,7 @@ paths:
     /api/v1/beolink/allstandby:
         post:
             description: |-
-                Use the `post-beolink-allstandby` endpoint with one of:
+                Use the `post-beolink-allstandby` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_beolink_allstandby()
                 ```
@@ -5968,7 +5969,7 @@ paths:
     /api/v1/beolink/audioleader:
         get:
             description: |-
-                Use the `get-beolink-audio-leader` endpoint with one of:
+                Use the `get-beolink-audio-leader` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_audio_leader()
                 ```
@@ -6004,7 +6005,7 @@ paths:
             description: |-
                 Get a list of devices that can be listening to this device active experience
 
-                Use the `get-beolink-available-listeners` endpoint with one of:
+                Use the `get-beolink-available-listeners` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_available_listeners()
                 ```
@@ -6041,7 +6042,7 @@ paths:
     /api/v1/beolink/configleader:
         get:
             description: |-
-                Use the `get-beolink-config-leader` endpoint with one of:
+                Use the `get-beolink-config-leader` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_config_leader()
                 ```
@@ -6075,7 +6076,7 @@ paths:
         get:
             description: |-
                 Get whether or not beolink multiroom is enabled on this device
-                Use the `get-beolink-enabled` endpoint with one of:
+                Use the `get-beolink-enabled` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_enabled()
                 ```
@@ -6100,7 +6101,7 @@ paths:
         put:
             description: |-
                 Sets whether or not beolink multiroom is enabled on this device
-                Use the `set-beolink-enabled` endpoint with one of:
+                Use the `set-beolink-enabled` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_beolink_enabled()
                 ```
@@ -6137,7 +6138,7 @@ paths:
             description: |-
                 Expand the current active experience to another device with jabber id {jid}.
 
-                Use the `post-beolink-expand` endpoint with one of:
+                Use the `post-beolink-expand` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_beolink_expand()
                 ```
@@ -6176,7 +6177,7 @@ paths:
     /api/v1/beolink/join:
         post:
             description: |-
-                Use the `join-latest-beolink-experience` endpoint with one of:
+                Use the `join-latest-beolink-experience` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.join_latest_beolink_experience()
                 ```
@@ -6220,7 +6221,7 @@ paths:
                 the device at the same time, and you are polling this end-point, you may
                 miss the result of your join request.
 
-                Use the `get-beolink-join-result` endpoint with one of:
+                Use the `get-beolink-join-result` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_join_result()
                 ```
@@ -6273,7 +6274,7 @@ paths:
             description: |-
                 Join the experience currently active on peer with Jabber ID `jid`.
 
-                Use the `join-beolink-peer` endpoint with one of:
+                Use the `join-beolink-peer` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.join_beolink_peer()
                 ```
@@ -6310,7 +6311,7 @@ paths:
     /api/v1/beolink/latency:
         get:
             description: |-
-                Use the `get-beolink-latency` endpoint with one of:
+                Use the `get-beolink-latency` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_latency()
                 ```
@@ -6336,7 +6337,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-beolink-latency` endpoint with one of:
+                Use the `set-beolink-latency` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_beolink_latency()
                 ```
@@ -6366,7 +6367,7 @@ paths:
     /api/v1/beolink/leave:
         post:
             description: |-
-                Use the `post-beolink-leave` endpoint with one of:
+                Use the `post-beolink-leave` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_beolink_leave()
                 ```
@@ -6401,7 +6402,7 @@ paths:
             description: |-
                 Get a list of devices that are listening to this device active experience (that have joined)
 
-                Use the `get-beolink-listeners` endpoint with one of:
+                Use the `get-beolink-listeners` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_listeners()
                 ```
@@ -6440,7 +6441,7 @@ paths:
             description: |-
                 Get information about the beolink peers discovered by this device
 
-                Use the `get-beolink-peers` endpoint with one of:
+                Use the `get-beolink-peers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_peers()
                 ```
@@ -6478,7 +6479,7 @@ paths:
         post:
             description: |-
                 Scans for the current available experiences. Check the websockets for the results
-                Use the `beolink-scan-current-experiences` endpoint with one of:
+                Use the `beolink-scan-current-experiences` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.beolink_scan_current_experiences()
                 ```
@@ -6506,7 +6507,7 @@ paths:
         get:
             description: |-
                 Get if the security buffer is enabled. May be needed for ASE products to perform
-                Use the `get-beolink-security-buffer` endpoint with one of:
+                Use the `get-beolink-security-buffer` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_security_buffer()
                 ```
@@ -6531,7 +6532,7 @@ paths:
         put:
             description: |-
                 Sets whether or not the security buffer is enabled on this device
-                Use the `set-beolink-security-buffer` endpoint with one of:
+                Use the `set-beolink-security-buffer` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_beolink_security_buffer()
                 ```
@@ -6561,7 +6562,7 @@ paths:
             description: |-
                 Returns Beolink information like about this device. This can be useful if you want to expand _to_ this device.
 
-                Use the `get-beolink-self` endpoint with one of:
+                Use the `get-beolink-self` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_beolink_self()
                 ```
@@ -6599,7 +6600,7 @@ paths:
             description: |-
                 Disconnect the device with jabber id {jid} from the current active experience.
 
-                Use the `post-beolink-unexpand` endpoint with one of:
+                Use the `post-beolink-unexpand` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_beolink_unexpand()
                 ```
@@ -6632,7 +6633,7 @@ paths:
     /api/v1/cast/accept-tos:
         post:
             description: |-
-                Use the `set-cast-tos-accepted` endpoint with one of:
+                Use the `set-cast-tos-accepted` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_cast_tos_accepted()
                 ```
@@ -6670,7 +6671,7 @@ paths:
     /api/v1/cast/setup-state:
         get:
             description: |-
-                Use the `get-cast-setup-state` endpoint with one of:
+                Use the `get-cast-setup-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_cast_setup_state()
                 ```
@@ -6701,7 +6702,7 @@ paths:
     /api/v1/cast/tos-accepted:
         get:
             description: |-
-                Use the `get-cast-tos-accepted` endpoint with one of:
+                Use the `get-cast-tos-accepted` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_cast_tos_accepted()
                 ```
@@ -6733,7 +6734,7 @@ paths:
     /api/v1/cast/version:
         get:
             description: |-
-                Use the `get-cast-version` endpoint with one of:
+                Use the `get-cast-version` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_cast_version()
                 ```
@@ -6764,7 +6765,7 @@ paths:
     /api/v1/content:
         get:
             description: |-
-                Use the `get-content` endpoint with one of:
+                Use the `get-content` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_content()
                 ```
@@ -6804,7 +6805,7 @@ paths:
                 type: string
         put:
             description: |-
-                Use the `put-modify-content-trigger` endpoint with one of:
+                Use the `put-modify-content-trigger` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_modify_content_trigger()
                 ```
@@ -6844,7 +6845,7 @@ paths:
                 type: string
         post:
             description: |-
-                Use the `post-reset-content-trigger` endpoint with one of:
+                Use the `post-reset-content-trigger` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_reset_content_trigger()
                 ```
@@ -6871,7 +6872,7 @@ paths:
     /api/v1/content-triggers:
         get:
             description: |-
-                Use the `get-content-triggers` endpoint with one of:
+                Use the `get-content-triggers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_content_triggers()
                 ```
@@ -6904,7 +6905,7 @@ paths:
     /api/v1/content-triggers/reset:
         post:
             description: |-
-                Use the `post-content-triggers-reset` endpoint with one of:
+                Use the `post-content-triggers-reset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_content_triggers_reset()
                 ```
@@ -6932,7 +6933,7 @@ paths:
                 type: string
         post:
             description: |-
-                Use the `post-content-trigger` endpoint with one of:
+                Use the `post-content-trigger` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_content_trigger()
                 ```
@@ -6965,7 +6966,7 @@ paths:
     /api/v1/develop/output/client-deactivation:
         get:
             description: |-
-                Use the `get-output-client-deactivation` endpoint with one of:
+                Use the `get-output-client-deactivation` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_output_client_deactivation()
                 ```
@@ -6995,7 +6996,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `set-output-client-deactivation` endpoint with one of:
+                Use the `set-output-client-deactivation` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_output_client_deactivation()
                 ```
@@ -7029,7 +7030,7 @@ paths:
     /api/v1/developer/hdmi/debug-uart:
         post:
             description: |-
-                Use the `post-hdmi-debug-uart` endpoint with one of:
+                Use the `post-hdmi-debug-uart` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_hdmi_debug_uart()
                 ```
@@ -7071,7 +7072,7 @@ paths:
                 $ref: '#/components/schemas/HdmiIdType'
         post:
             description: |-
-                Use the `post-hdmi-hot-plug` endpoint with one of:
+                Use the `post-hdmi-hot-plug` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_hdmi_hot_plug()
                 ```
@@ -7098,7 +7099,7 @@ paths:
     /api/v1/developer/tvsources:
         get:
             description: |-
-                Use the `get-available-tv-sources` endpoint with one of:
+                Use the `get-available-tv-sources` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_available_tv_sources()
                 ```
@@ -7129,7 +7130,7 @@ paths:
     /api/v1/developer/tvsources/active:
         get:
             description: |-
-                Use the `get-active-tv-source` endpoint with one of:
+                Use the `get-active-tv-source` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_active_tv_source()
                 ```
@@ -7160,7 +7161,7 @@ paths:
     /api/v1/developer/tvsources/active/{sourceId}:
         post:
             description: |-
-                Use the `set-active-tv-source` endpoint with one of:
+                Use the `set-active-tv-source` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_active_tv_source()
                 ```
@@ -7194,7 +7195,7 @@ paths:
     /api/v1/diagnostics/battery:
         get:
             description: |-
-                Use the `get-diagnostics-battery` endpoint with one of:
+                Use the `get-diagnostics-battery` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_diagnostics_battery()
                 ```
@@ -7225,7 +7226,7 @@ paths:
     /api/v1/diagnostics/flash:
         get:
             description: |-
-                Use the `get-diagnostics-flash` endpoint with one of:
+                Use the `get-diagnostics-flash` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_diagnostics_flash()
                 ```
@@ -7256,7 +7257,7 @@ paths:
     /api/v1/diagnostics/loglevel:
         put:
             description: |-
-                Use the `set-loglevel` endpoint with one of:
+                Use the `set-loglevel` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_loglevel()
                 ```
@@ -7290,7 +7291,7 @@ paths:
     /api/v1/diagnostics/logupload:
         post:
             description: |-
-                Use the `post-logupload` endpoint with one of:
+                Use the `post-logupload` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_logupload()
                 ```
@@ -7328,7 +7329,7 @@ paths:
     /api/v1/diagnostics/ntc:
         get:
             description: |-
-                Use the `get-diagnostics-ntc` endpoint with one of:
+                Use the `get-diagnostics-ntc` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_diagnostics_ntc()
                 ```
@@ -7359,7 +7360,7 @@ paths:
     /api/v1/diagnostics/wisa-tx:
         get:
             description: |-
-                Use the `get-wisa-tx-diagnostics` endpoint with one of:
+                Use the `get-wisa-tx-diagnostics` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wisa_tx_diagnostics()
                 ```
@@ -7390,7 +7391,7 @@ paths:
     /api/v1/hdmi:
         get:
             description: |-
-                Use the `get-hdmi-all` endpoint with one of:
+                Use the `get-hdmi-all` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_hdmi_all()
                 ```
@@ -7415,7 +7416,7 @@ paths:
     /api/v1/hdmi/active-input:
         get:
             description: |-
-                Use the `get-hdmi-active-input` endpoint with one of:
+                Use the `get-hdmi-active-input` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_hdmi_active_input()
                 ```
@@ -7440,7 +7441,7 @@ paths:
     /api/v1/hdmi/fast-switch:
         get:
             description: |-
-                Use the `get-hdmi-fast-switch` endpoint with one of:
+                Use the `get-hdmi-fast-switch` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_hdmi_fast_switch()
                 ```
@@ -7464,7 +7465,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-hdmi-fast-switch` endpoint with one of:
+                Use the `set-hdmi-fast-switch` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_hdmi_fast_switch()
                 ```
@@ -7498,7 +7499,7 @@ paths:
     /api/v1/hdmi/reset:
         post:
             description: |-
-                Use the `post-hdmi-reset-all` endpoint with one of:
+                Use the `post-hdmi-reset-all` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_hdmi_reset_all()
                 ```
@@ -7519,7 +7520,7 @@ paths:
     /api/v1/hdmi/video-format:
         get:
             description: |-
-                Use the `get-hdmi-video-format` endpoint with one of:
+                Use the `get-hdmi-video-format` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_hdmi_video_format()
                 ```
@@ -7551,7 +7552,7 @@ paths:
                 $ref: '#/components/schemas/HdmiIdType'
         put:
             description: |-
-                Use the `put-hdmi-settings` endpoint with one of:
+                Use the `put-hdmi-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_hdmi_settings()
                 ```
@@ -7601,7 +7602,7 @@ paths:
                 $ref: '#/components/schemas/HdmiIdType'
         post:
             description: |-
-                Use the `post-hdmi-reset` endpoint with one of:
+                Use the `post-hdmi-reset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_hdmi_reset()
                 ```
@@ -7628,7 +7629,7 @@ paths:
     /api/v1/lightsensor/settings:
         get:
             description: |-
-                Use the `get-lightsensor-settings` endpoint with one of:
+                Use the `get-lightsensor-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_lightsensor_settings()
                 ```
@@ -7658,7 +7659,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-lightsensor-settings` endpoint with one of:
+                Use the `set-lightsensor-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_lightsensor_settings()
                 ```
@@ -7696,7 +7697,7 @@ paths:
     /api/v1/network:
         get:
             description: |-
-                Use the `get-network-status` endpoint with one of:
+                Use the `get-network-status` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_network_status()
                 ```
@@ -7727,7 +7728,7 @@ paths:
     /api/v1/network/wired:
         get:
             description: |-
-                Use the `get-wired-network-status` endpoint with one of:
+                Use the `get-wired-network-status` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wired_network_status()
                 ```
@@ -7758,7 +7759,7 @@ paths:
     /api/v1/network/wired/config:
         post:
             description: |-
-                Use the `post-wired-network-config` endpoint with one of:
+                Use the `post-wired-network-config` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_wired_network_config()
                 ```
@@ -7798,7 +7799,7 @@ paths:
     /api/v1/network/wireless:
         get:
             description: |-
-                Use the `get-wireless-network-status` endpoint with one of:
+                Use the `get-wireless-network-status` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wireless_network_status()
                 ```
@@ -7829,7 +7830,7 @@ paths:
     /api/v1/network/wireless/config:
         post:
             description: |-
-                Use the `post-wireless-network-config` endpoint with one of:
+                Use the `post-wireless-network-config` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_wireless_network_config()
                 ```
@@ -7870,7 +7871,7 @@ paths:
     /api/v1/network/wireless/{ssid}:
         delete:
             description: |-
-                Use the `post-wireless-network-forget` endpoint with one of:
+                Use the `post-wireless-network-forget` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_wireless_network_forget()
                 ```
@@ -7914,7 +7915,7 @@ paths:
     /api/v1/output/latency:
         get:
             description: |-
-                Use the `get-output-latency` endpoint with one of:
+                Use the `get-output-latency` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_output_latency()
                 ```
@@ -7938,7 +7939,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-output-latency` endpoint with one of:
+                Use the `post-output-latency` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_output_latency()
                 ```
@@ -7975,7 +7976,7 @@ paths:
                 Delete multiple speakers (async)
                 See also: get-wisa-state or WebSocketEventWisaOutState when deleting a wisa speaker
 
-                Use the `delete-multiple-speakers` endpoint with one of:
+                Use the `delete-multiple-speakers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_multiple_speakers()
                 ```
@@ -8011,7 +8012,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-speakers` endpoint with one of:
+                Use the `get-speakers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakers()
                 ```
@@ -8052,7 +8053,7 @@ paths:
                 **Note:** this mode has a 20 second timeout, so you have to request the
                 mode periodically to keep the outputs on.
 
-                Use the `force-outputs-on` endpoint with one of:
+                Use the `force-outputs-on` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.force_outputs_on()
                 ```
@@ -8081,7 +8082,7 @@ paths:
             deprecated: true
             description: |-
                 / Enable/disable localisation-mode. Localisation-mode will mute all inputs and activate all outputs. Useful for eg. localisation noise. This mode has a 20 second timeout. You need to set the mode to true within this window to keep it going.
-                Use the `post-localisation-mode` endpoint with one of:
+                Use the `post-localisation-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_localisation_mode()
                 ```
@@ -8112,7 +8113,7 @@ paths:
                 Request discovery of speakers (async)
                 See also: get-wisa-state or WebSocketEventWisaOutState
 
-                Use the `post-wisa-discovery` endpoint with one of:
+                Use the `post-wisa-discovery` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_wisa_discovery()
                 ```
@@ -8139,7 +8140,7 @@ paths:
     /api/v1/output/speakers/wisa/state:
         get:
             description: |-
-                Use the `get-wisa-state` endpoint with one of:
+                Use the `get-wisa-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wisa_state()
                 ```
@@ -8167,7 +8168,7 @@ paths:
                 Delete speaker `{id}`. For WISA speakers, see `/api/v1/output/speakers/wisa/state`
                 and the `WebSocketEventWisaOutState` event.
 
-                Use the `delete-speaker` endpoint with one of:
+                Use the `delete-speaker` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_speaker()
                 ```
@@ -8198,7 +8199,7 @@ paths:
         get:
             description: |-
                 Returns configuration for speaker `{id}`.
-                Use the `get-speaker` endpoint with one of:
+                Use the `get-speaker` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speaker()
                 ```
@@ -8227,7 +8228,7 @@ paths:
         put:
             description: |-
                 Modify configuration for speaker `{id}`
-                Use the `modify-speaker` endpoint with one of:
+                Use the `modify-speaker` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.modify_speaker()
                 ```
@@ -8264,7 +8265,7 @@ paths:
                 calibration noise or being identified, that speaker will go silent
                 automatically.
 
-                Use the `play-calibration-noise` endpoint with one of:
+                Use the `play-calibration-noise` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.play_calibration_noise()
                 ```
@@ -8300,7 +8301,7 @@ paths:
                 calibration noise or being identified, that speaker will go silent
                 automatically.
 
-                Use the `play-identification-sound` endpoint with one of:
+                Use the `play-identification-sound` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.play_identification_sound()
                 ```
@@ -8333,7 +8334,7 @@ paths:
             deprecated: true
             description: |-
                 / Enable/disable localisation noise for speaker with given id. Only one speaker can be enabled at once. If enabling for a speaker while another is enabled then the former will be disabled.
-                Use the `post-localisation-noise` endpoint with one of:
+                Use the `post-localisation-noise` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_localisation_noise()
                 ```
@@ -8365,7 +8366,7 @@ paths:
     /api/v1/output/supported-speakers:
         get:
             description: |-
-                Use the `get-supported-speakers` endpoint with one of:
+                Use the `get-supported-speakers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_supported_speakers()
                 ```
@@ -8392,7 +8393,7 @@ paths:
             description: |-
                 Play some audio as an overlay. This will duck currently playing music while the audio is playing
 
-                Use the `post-overlay-play` endpoint with one of:
+                Use the `post-overlay-play` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_overlay_play()
                 ```
@@ -8426,7 +8427,7 @@ paths:
     /api/v1/playback/art/{source}/{id}/{size}:
         get:
             description: |-
-                Use the `get-local-image` endpoint with one of:
+                Use the `get-local-image` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_local_image()
                 ```
@@ -8481,7 +8482,7 @@ paths:
     /api/v1/playback/command/{command}:
         post:
             description: |-
-                Use the `post-playback-command` endpoint with one of:
+                Use the `post-playback-command` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_playback_command()
                 ```
@@ -8525,7 +8526,7 @@ paths:
     /api/v1/playback/deezer/flow:
         post:
             description: |-
-                Use the `start-deezer-flow` endpoint with one of:
+                Use the `start-deezer-flow` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.start_deezer_flow()
                 ```
@@ -8567,7 +8568,7 @@ paths:
     /api/v1/playback/deezer/has-token:
         get:
             description: |-
-                Use the `get-deezer-has-token` endpoint with one of:
+                Use the `get-deezer-has-token` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_deezer_has_token()
                 ```
@@ -8592,7 +8593,7 @@ paths:
     /api/v1/playback/multiroom/settings:
         get:
             description: |-
-                Use the `get-playback-multiroom-settings` endpoint with one of:
+                Use the `get-playback-multiroom-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_playback_multiroom_settings()
                 ```
@@ -8625,7 +8626,7 @@ paths:
             description: |-
                 Set the given multiroom settings. Restart is required when updating multiroom provider.
 
-                Use the `set-playback-multiroom-settings` endpoint with one of:
+                Use the `set-playback-multiroom-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_playback_multiroom_settings()
                 ```
@@ -8659,7 +8660,7 @@ paths:
     /api/v1/playback/netradio-station/{stationId}:
         put:
             description: |-
-                Use the `set-netradio-station` endpoint with one of:
+                Use the `set-netradio-station` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_netradio_station()
                 ```
@@ -8700,7 +8701,7 @@ paths:
                 type: integer
         post:
             description: |-
-                Use the `store-preset` endpoint with one of:
+                Use the `store-preset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.store_preset()
                 ```
@@ -8732,7 +8733,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `store-scene-on-preset` endpoint with one of:
+                Use the `store-scene-on-preset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.store_scene_on_preset()
                 ```
@@ -8765,7 +8766,7 @@ paths:
     /api/v1/playback/preset/{id}/trigger:
         post:
             description: |-
-                Use the `activate-preset` endpoint with one of:
+                Use the `activate-preset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.activate_preset()
                 ```
@@ -8809,7 +8810,7 @@ paths:
     /api/v1/playback/queue:
         get:
             description: |-
-                Use the `get-pq-items` endpoint with one of:
+                Use the `get-pq-items` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_pq_items()
                 ```
@@ -8863,7 +8864,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `add-to-queue` endpoint with one of:
+                Use the `add-to-queue` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.add_to_queue()
                 ```
@@ -8901,7 +8902,7 @@ paths:
     /api/v1/playback/queue/clear:
         post:
             description: |-
-                Use the `post-clear-queue` endpoint with one of:
+                Use the `post-clear-queue` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_clear_queue()
                 ```
@@ -8932,7 +8933,7 @@ paths:
     /api/v1/playback/queue/count:
         get:
             description: |-
-                Use the `get-count-queue` endpoint with one of:
+                Use the `get-count-queue` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_count_queue()
                 ```
@@ -8967,7 +8968,7 @@ paths:
     /api/v1/playback/queue/move:
         post:
             description: |-
-                Use the `move-item-queue` endpoint with one of:
+                Use the `move-item-queue` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.move_item_queue()
                 ```
@@ -9008,7 +9009,7 @@ paths:
     /api/v1/playback/queue/settings:
         get:
             description: |-
-                Use the `get-settings-queue` endpoint with one of:
+                Use the `get-settings-queue` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_settings_queue()
                 ```
@@ -9043,7 +9044,7 @@ paths:
             - public
         put:
             description: |-
-                Use the `set-settings-queue` endpoint with one of:
+                Use the `set-settings-queue` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_settings_queue()
                 ```
@@ -9081,7 +9082,7 @@ paths:
     /api/v1/playback/queue/start:
         post:
             description: |-
-                Use the `post-start-queue` endpoint with one of:
+                Use the `post-start-queue` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_start_queue()
                 ```
@@ -9115,7 +9116,7 @@ paths:
     /api/v1/playback/queue/{id}:
         delete:
             description: |-
-                Use the `remove-pq-element` endpoint with one of:
+                Use the `remove-pq-element` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.remove_pq_element()
                 ```
@@ -9149,7 +9150,7 @@ paths:
     /api/v1/playback/seek:
         put:
             description: |-
-                Use the `seek-to-position` endpoint with one of:
+                Use the `seek-to-position` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.seek_to_position()
                 ```
@@ -9188,7 +9189,7 @@ paths:
     /api/v1/playback/sources:
         get:
             description: |-
-                Use the `get-available-sources` endpoint with one of:
+                Use the `get-available-sources` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_available_sources()
                 ```
@@ -9230,7 +9231,7 @@ paths:
     /api/v1/playback/sources/active:
         get:
             description: |-
-                Use the `get-active-source` endpoint with one of:
+                Use the `get-active-source` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_active_source()
                 ```
@@ -9261,7 +9262,7 @@ paths:
     /api/v1/playback/sources/active/{sourceId}:
         post:
             description: |-
-                Use the `set-active-source` endpoint with one of:
+                Use the `set-active-source` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_active_source()
                 ```
@@ -9299,7 +9300,7 @@ paths:
     /api/v1/playback/state:
         get:
             description: |-
-                Use the `get-playback-state` endpoint with one of:
+                Use the `get-playback-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_playback_state()
                 ```
@@ -9331,7 +9332,7 @@ paths:
     /api/v1/playback/uri:
         get:
             description: |-
-                Use the `get-uri-source` endpoint with one of:
+                Use the `get-uri-source` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_uri_source()
                 ```
@@ -9361,7 +9362,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-uri-source` endpoint with one of:
+                Use the `post-uri-source` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_uri_source()
                 ```
@@ -9395,7 +9396,7 @@ paths:
     /api/v1/playback/uri/dlna:
         get:
             description: |-
-                Use the `get-dlna-uri-source` endpoint with one of:
+                Use the `get-dlna-uri-source` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_dlna_uri_source()
                 ```
@@ -9425,7 +9426,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-dlna-uri-source` endpoint with one of:
+                Use the `post-dlna-uri-source` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_dlna_uri_source()
                 ```
@@ -9459,7 +9460,7 @@ paths:
     /api/v1/playback/uri/repeat:
         get:
             description: |-
-                Use the `get-uri-repeat` endpoint with one of:
+                Use the `get-uri-repeat` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_uri_repeat()
                 ```
@@ -9489,7 +9490,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-uri-repeat` endpoint with one of:
+                Use the `post-uri-repeat` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_uri_repeat()
                 ```
@@ -9523,7 +9524,7 @@ paths:
     /api/v1/powerlink/settings:
         get:
             description: |-
-                Use the `get-powerlink-settings` endpoint with one of:
+                Use the `get-powerlink-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_powerlink_settings()
                 ```
@@ -9553,7 +9554,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-powerlink-settings` endpoint with one of:
+                Use the `set-powerlink-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_powerlink_settings()
                 ```
@@ -9587,7 +9588,7 @@ paths:
     /api/v1/powerlink/status:
         get:
             description: |-
-                Use the `get-powerlink-status` endpoint with one of:
+                Use the `get-powerlink-status` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_powerlink_status()
                 ```
@@ -9618,7 +9619,7 @@ paths:
     /api/v1/product/curtain/position:
         get:
             description: |-
-                Use the `get-product-curtain-position` endpoint with one of:
+                Use the `get-product-curtain-position` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_product_curtain_position()
                 ```
@@ -9648,7 +9649,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `put-product-curtain-position` endpoint with one of:
+                Use the `put-product-curtain-position` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_product_curtain_position()
                 ```
@@ -9686,7 +9687,7 @@ paths:
     /api/v1/product/curtain/toggle:
         post:
             description: |-
-                Use the `post-product-curtain-toggle` endpoint with one of:
+                Use the `post-product-curtain-toggle` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_product_curtain_toggle()
                 ```
@@ -9718,7 +9719,7 @@ paths:
     /api/v1/product/info:
         get:
             description: |-
-                Use the `get-product-info` endpoint with one of:
+                Use the `get-product-info` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_product_info()
                 ```
@@ -9749,7 +9750,7 @@ paths:
     /api/v1/product/info/friendlyname:
         put:
             description: |-
-                Use the `set-product-friendly-name` endpoint with one of:
+                Use the `set-product-friendly-name` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_product_friendly_name()
                 ```
@@ -9783,7 +9784,7 @@ paths:
     /api/v1/product/licenses:
         get:
             description: |-
-                Use the `get-licence-info` endpoint with one of:
+                Use the `get-licence-info` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_licence_info()
                 ```
@@ -9808,7 +9809,7 @@ paths:
     /api/v1/product/placement:
         get:
             description: |-
-                Use the `get-placement` endpoint with one of:
+                Use the `get-placement` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_placement()
                 ```
@@ -9839,7 +9840,7 @@ paths:
     /api/v1/product/settings/dailyreboot:
         get:
             description: |-
-                Use the `get-daily-reboot` endpoint with one of:
+                Use the `get-daily-reboot` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_daily_reboot()
                 ```
@@ -9869,7 +9870,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-daily-reboot` endpoint with one of:
+                Use the `set-daily-reboot` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_daily_reboot()
                 ```
@@ -9903,7 +9904,7 @@ paths:
     /api/v1/product/unlocktoken:
         delete:
             description: |-
-                Use the `clear-unlock-token` endpoint with one of:
+                Use the `clear-unlock-token` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.clear_unlock_token()
                 ```
@@ -9929,7 +9930,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-unlock-token` endpoint with one of:
+                Use the `get-unlock-token` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_unlock_token()
                 ```
@@ -9961,7 +9962,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-unlock-token` endpoint with one of:
+                Use the `set-unlock-token` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_unlock_token()
                 ```
@@ -9995,7 +9996,7 @@ paths:
     /api/v1/production:
         get:
             description: |-
-                Use the `get-production-info` endpoint with one of:
+                Use the `get-production-info` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_info()
                 ```
@@ -10033,7 +10034,7 @@ paths:
     /api/v1/production/activation-data:
         get:
             description: |-
-                Use the `get-activation-data` endpoint with one of:
+                Use the `get-activation-data` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_activation_data()
                 ```
@@ -10065,7 +10066,7 @@ paths:
     /api/v1/production/auto-calibration:
         get:
             description: |-
-                Use the `get-production-auto-calibration` endpoint with one of:
+                Use the `get-production-auto-calibration` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_auto_calibration()
                 ```
@@ -10095,7 +10096,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `start-production-auto-calibration` endpoint with one of:
+                Use the `start-production-auto-calibration` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.start_production_auto_calibration()
                 ```
@@ -10126,7 +10127,7 @@ paths:
     /api/v1/production/calibration:
         get:
             description: |-
-                Use the `get-production-calibration` endpoint with one of:
+                Use the `get-production-calibration` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_calibration()
                 ```
@@ -10158,7 +10159,7 @@ paths:
     /api/v1/production/calibration/amplifiers:
         get:
             description: |-
-                Use the `get-production-calibration-amplifiers` endpoint with one of:
+                Use the `get-production-calibration-amplifiers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_calibration_amplifiers()
                 ```
@@ -10188,7 +10189,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-production-calibration-amplifiers` endpoint with one of:
+                Use the `post-production-calibration-amplifiers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_calibration_amplifiers()
                 ```
@@ -10220,7 +10221,7 @@ paths:
     /api/v1/production/calibration/{id}:
         get:
             description: |-
-                Use the `get-production-calibration-id` endpoint with one of:
+                Use the `get-production-calibration-id` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_calibration_id()
                 ```
@@ -10257,7 +10258,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-production-calibration-id` endpoint with one of:
+                Use the `post-production-calibration-id` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_calibration_id()
                 ```
@@ -10302,7 +10303,7 @@ paths:
     /api/v1/production/country-code:
         get:
             description: |-
-                Use the `get-country-code` endpoint with one of:
+                Use the `get-country-code` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_country_code()
                 ```
@@ -10338,7 +10339,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `put-country-code` endpoint with one of:
+                Use the `put-country-code` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_country_code()
                 ```
@@ -10381,7 +10382,7 @@ paths:
     /api/v1/production/curtain-calibration:
         get:
             description: |-
-                Use the `get-production-curtain-calibration` endpoint with one of:
+                Use the `get-production-curtain-calibration` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_curtain_calibration()
                 ```
@@ -10411,7 +10412,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `start-production-curtain-calibration` endpoint with one of:
+                Use the `start-production-curtain-calibration` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.start_production_curtain_calibration()
                 ```
@@ -10442,7 +10443,7 @@ paths:
     /api/v1/production/curtain/debug-level:
         put:
             description: |-
-                Use the `put-production-curtain-debug-level` endpoint with one of:
+                Use the `put-production-curtain-debug-level` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_production_curtain_debug_level()
                 ```
@@ -10486,7 +10487,7 @@ paths:
     /api/v1/production/curtain/move:
         put:
             description: |-
-                Use the `put-production-curtain-move` endpoint with one of:
+                Use the `put-production-curtain-move` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_production_curtain_move()
                 ```
@@ -10530,7 +10531,7 @@ paths:
     /api/v1/production/curtain/move-to-angle:
         put:
             description: |-
-                Use the `put-production-curtain-move-to-angle` endpoint with one of:
+                Use the `put-production-curtain-move-to-angle` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_production_curtain_move_to_angle()
                 ```
@@ -10574,7 +10575,7 @@ paths:
     /api/v1/production/curtain/state:
         get:
             description: |-
-                Use the `get-production-curtain-state` endpoint with one of:
+                Use the `get-production-curtain-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_curtain_state()
                 ```
@@ -10611,7 +10612,7 @@ paths:
     /api/v1/production/decoder/run:
         post:
             description: |-
-                Use the `run-decoder-command` endpoint with one of:
+                Use the `run-decoder-command` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.run_decoder_command()
                 ```
@@ -10644,7 +10645,7 @@ paths:
     /api/v1/production/hdmi/hdcp-license:
         get:
             description: |-
-                Use the `get-hdcp-activation-data` endpoint with one of:
+                Use the `get-hdcp-activation-data` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_hdcp_activation_data()
                 ```
@@ -10668,7 +10669,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `put-hdcp-activation-data` endpoint with one of:
+                Use the `put-hdcp-activation-data` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_hdcp_activation_data()
                 ```
@@ -10711,7 +10712,7 @@ paths:
                 $ref: '#/components/schemas/ProductionHdmiPortId'
         post:
             description: |-
-                Use the `post-hdmi-port` endpoint with one of:
+                Use the `post-hdmi-port` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_hdmi_port()
                 ```
@@ -10738,7 +10739,7 @@ paths:
     /api/v1/production/hdmi/ports:
         get:
             description: |-
-                Use the `get-hdmi-ports` endpoint with one of:
+                Use the `get-hdmi-ports` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_hdmi_ports()
                 ```
@@ -10763,7 +10764,7 @@ paths:
     /api/v1/production/hdmi/test-image:
         get:
             description: |-
-                Use the `get-test-image` endpoint with one of:
+                Use the `get-test-image` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_test_image()
                 ```
@@ -10793,7 +10794,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `put-test-image` endpoint with one of:
+                Use the `put-test-image` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_test_image()
                 ```
@@ -10827,7 +10828,7 @@ paths:
     /api/v1/production/lock-state:
         get:
             description: |-
-                Use the `get-lock-state` endpoint with one of:
+                Use the `get-lock-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_lock_state()
                 ```
@@ -10857,7 +10858,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-lock-state` endpoint with one of:
+                Use the `set-lock-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_lock_state()
                 ```
@@ -10900,7 +10901,7 @@ paths:
     /api/v1/production/serial-ports:
         get:
             description: |-
-                Use the `get-serial-ports` endpoint with one of:
+                Use the `get-serial-ports` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_serial_ports()
                 ```
@@ -10932,7 +10933,7 @@ paths:
                 $ref: '#/components/schemas/SerialPortIdType'
         put:
             description: |-
-                Use the `put-serial-port` endpoint with one of:
+                Use the `put-serial-port` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_serial_port()
                 ```
@@ -10964,7 +10965,7 @@ paths:
     /api/v1/production/store-production-data:
         post:
             description: |-
-                Use the `store-production-data` endpoint with one of:
+                Use the `store-production-data` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.store_production_data()
                 ```
@@ -10991,7 +10992,7 @@ paths:
     /api/v1/production/testing/audiopath/channels:
         get:
             description: |-
-                Use the `get-production-testing-audiopath-channels` endpoint with one of:
+                Use the `get-production-testing-audiopath-channels` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_testing_audiopath_channels()
                 ```
@@ -11029,7 +11030,7 @@ paths:
     /api/v1/production/testing/audiopath/channels/{id}:
         post:
             description: |-
-                Use the `post-production-testing-audiopath-channels` endpoint with one of:
+                Use the `post-production-testing-audiopath-channels` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_testing_audiopath_channels()
                 ```
@@ -11085,7 +11086,7 @@ paths:
     /api/v1/production/testing/audiopath/microphones/recording:
         get:
             description: |-
-                Use the `get-production-testing-audiopath-microphones-recordingstatus` endpoint with one of:
+                Use the `get-production-testing-audiopath-microphones-recordingstatus` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_testing_audiopath_microphones_recordingstatus()
                 ```
@@ -11121,7 +11122,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-production-testing-audiopath-microphones-recordingstatus` endpoint with one of:
+                Use the `post-production-testing-audiopath-microphones-recordingstatus` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_testing_audiopath_microphones_recordingstatus()
                 ```
@@ -11160,7 +11161,7 @@ paths:
     /api/v1/production/testing/audiopath/processing-bypass:
         get:
             description: |-
-                Use the `get-production-testing-audiopath-bypass` endpoint with one of:
+                Use the `get-production-testing-audiopath-bypass` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_testing_audiopath_bypass()
                 ```
@@ -11198,7 +11199,7 @@ paths:
     /api/v1/production/testing/audiopath/processing-bypass/{id}:
         post:
             description: |-
-                Use the `post-production-testing-audiopath-bypass` endpoint with one of:
+                Use the `post-production-testing-audiopath-bypass` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_testing_audiopath_bypass()
                 ```
@@ -11254,7 +11255,7 @@ paths:
     /api/v1/production/testing/audiopath/processing-mode:
         get:
             description: |-
-                Use the `get-production-testing-audiopath-processing-mode` endpoint with one of:
+                Use the `get-production-testing-audiopath-processing-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_testing_audiopath_processing_mode()
                 ```
@@ -11291,7 +11292,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-production-testing-audiopath-processing-mode` endpoint with one of:
+                Use the `post-production-testing-audiopath-processing-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_testing_audiopath_processing_mode()
                 ```
@@ -11336,7 +11337,7 @@ paths:
     /api/v1/production/testing/battery-level-max:
         get:
             description: |-
-                Use the `get-production-testing-battery-level-max` endpoint with one of:
+                Use the `get-production-testing-battery-level-max` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_testing_battery_level_max()
                 ```
@@ -11372,7 +11373,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-production-testing-battery-level-max` endpoint with one of:
+                Use the `post-production-testing-battery-level-max` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_testing_battery_level_max()
                 ```
@@ -11411,7 +11412,7 @@ paths:
     /api/v1/production/testing/functional/amplifier/powerstate:
         get:
             description: |-
-                Use the `get-production-testing-functional-amplifier-powerstate` endpoint with one of:
+                Use the `get-production-testing-functional-amplifier-powerstate` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_testing_functional_amplifier_powerstate()
                 ```
@@ -11448,7 +11449,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-production-testing-functional-amplifier-powerstate` endpoint with one of:
+                Use the `post-production-testing-functional-amplifier-powerstate` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_testing_functional_amplifier_powerstate()
                 ```
@@ -11487,7 +11488,7 @@ paths:
     /api/v1/production/testing/io/buttons:
         get:
             description: |-
-                Use the `get-production-testing-io-buttons` endpoint with one of:
+                Use the `get-production-testing-io-buttons` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_testing_io_buttons()
                 ```
@@ -11524,7 +11525,7 @@ paths:
     /api/v1/production/testing/io/buttons/{id}:
         post:
             description: |-
-                Use the `post-production-testing-io-buttons` endpoint with one of:
+                Use the `post-production-testing-io-buttons` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_testing_io_buttons()
                 ```
@@ -11587,7 +11588,7 @@ paths:
     /api/v1/production/testing/io/leds/{id}:
         post:
             description: |-
-                Use the `post-production-testing-io-led-id` endpoint with one of:
+                Use the `post-production-testing-io-led-id` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_testing_io_led_id()
                 ```
@@ -11637,7 +11638,7 @@ paths:
     /api/v1/production/testing/lightsensor:
         get:
             description: |-
-                Use the `get-production-testing-lightsensor-result` endpoint with one of:
+                Use the `get-production-testing-lightsensor-result` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_testing_lightsensor_result()
                 ```
@@ -11674,7 +11675,7 @@ paths:
     /api/v1/production/testing/proximity:
         get:
             description: |-
-                Use the `get-production-testing-proximity-result` endpoint with one of:
+                Use the `get-production-testing-proximity-result` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_testing_proximity_result()
                 ```
@@ -11710,7 +11711,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-production-testing-proximity` endpoint with one of:
+                Use the `post-production-testing-proximity` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_testing_proximity()
                 ```
@@ -11747,7 +11748,7 @@ paths:
     /api/v1/production/testing/puc:
         put:
             description: |-
-                Use the `put-puc-output-state` endpoint with one of:
+                Use the `put-puc-output-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_puc_output_state()
                 ```
@@ -11782,7 +11783,7 @@ paths:
     /api/v1/production/testing/self-test:
         get:
             description: |-
-                Use the `get-production-testing-self-test-results` endpoint with one of:
+                Use the `get-production-testing-self-test-results` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_production_testing_self_test_results()
                 ```
@@ -11818,7 +11819,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-production-testing-self-test` endpoint with one of:
+                Use the `post-production-testing-self-test` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_production_testing_self_test()
                 ```
@@ -11851,7 +11852,7 @@ paths:
     /api/v1/production/uuubootmode:
         put:
             description: |-
-                Use the `put-uuu-boot-mode` endpoint with one of:
+                Use the `put-uuu-boot-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_uuu_boot_mode()
                 ```
@@ -11888,7 +11889,7 @@ paths:
     /api/v1/production/wisa-tx/channel:
         get:
             description: |-
-                Use the `get-wisa-tx-channel` endpoint with one of:
+                Use the `get-wisa-tx-channel` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wisa_tx_channel()
                 ```
@@ -11924,7 +11925,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `put-wisa-tx-channel` endpoint with one of:
+                Use the `put-wisa-tx-channel` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_wisa_tx_channel()
                 ```
@@ -11970,7 +11971,7 @@ paths:
                 Get list of speakers allowed to be discovered or any if empty.
                 Speaker MAC addresses returned by api/v1/output/speakers/{id}
 
-                Use the `get-wisa-discover-filter` endpoint with one of:
+                Use the `get-wisa-discover-filter` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wisa_discover_filter()
                 ```
@@ -11997,7 +11998,7 @@ paths:
                 Set list of speakers allowed to be discovered or any if empty.
                 Speaker MAC addresses returned by api/v1/output/speakers/{id}
 
-                Use the `put-wisa-discover-filter` endpoint with one of:
+                Use the `put-wisa-discover-filter` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_wisa_discover_filter()
                 ```
@@ -12040,7 +12041,7 @@ paths:
                 type: integer
         post:
             description: |-
-                Use the `post-wisa-tx-transmit` endpoint with one of:
+                Use the `post-wisa-tx-transmit` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_wisa_tx_transmit()
                 ```
@@ -12077,7 +12078,7 @@ paths:
     /api/v1/production/wisa/reboot:
         post:
             description: |-
-                Use the `post-wisa-reboot` endpoint with one of:
+                Use the `post-wisa-reboot` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_wisa_reboot()
                 ```
@@ -12114,7 +12115,7 @@ paths:
     /api/v1/production/wisa/register/{address}:
         get:
             description: |-
-                Use the `get-wisa-register` endpoint with one of:
+                Use the `get-wisa-register` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wisa_register()
                 ```
@@ -12157,7 +12158,7 @@ paths:
                 type: string
         put:
             description: |-
-                Use the `put-wisa-register` endpoint with one of:
+                Use the `put-wisa-register` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_wisa_register()
                 ```
@@ -12200,7 +12201,7 @@ paths:
     /api/v1/proximity/settings:
         get:
             description: |-
-                Use the `get-proximity-settings` endpoint with one of:
+                Use the `get-proximity-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_proximity_settings()
                 ```
@@ -12230,7 +12231,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-proximity-settings` endpoint with one of:
+                Use the `set-proximity-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_proximity_settings()
                 ```
@@ -12268,7 +12269,7 @@ paths:
     /api/v1/puc/files:
         get:
             description: |-
-                Use the `get-all-puc-files` endpoint with one of:
+                Use the `get-all-puc-files` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_all_puc_files()
                 ```
@@ -12299,7 +12300,7 @@ paths:
     /api/v1/puc/install-record-status:
         get:
             description: |-
-                Use the `get-puc-install-record-status` endpoint with one of:
+                Use the `get-puc-install-record-status` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_puc_install_record_status()
                 ```
@@ -12332,7 +12333,7 @@ paths:
         -   $ref: '#/components/parameters/RecordId'
         put:
             description: |-
-                Use the `set-puc-record-id` endpoint with one of:
+                Use the `set-puc-record-id` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_puc_record_id()
                 ```
@@ -12359,7 +12360,7 @@ paths:
     /api/v1/puc/settings:
         get:
             description: |-
-                Use the `get-all-puc-source-settings` endpoint with one of:
+                Use the `get-all-puc-source-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_all_puc_source_settings()
                 ```
@@ -12390,7 +12391,7 @@ paths:
     /api/v1/puc/settings/{id}/pucSettings:
         delete:
             description: |-
-                Use the `reset-source-puc-settings` endpoint with one of:
+                Use the `reset-source-puc-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.reset_source_puc_settings()
                 ```
@@ -12416,7 +12417,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-source-puc-settings` endpoint with one of:
+                Use the `get-source-puc-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_source_puc_settings()
                 ```
@@ -12448,7 +12449,7 @@ paths:
         -   $ref: '#/components/parameters/SourceId'
         put:
             description: |-
-                Use the `set-source-puc-settings` endpoint with one of:
+                Use the `set-source-puc-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_source_puc_settings()
                 ```
@@ -12481,7 +12482,7 @@ paths:
     /api/v1/remote:
         get:
             description: |-
-                Use the `get-remote-menu` endpoint with one of:
+                Use the `get-remote-menu` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_remote_menu()
                 ```
@@ -12533,7 +12534,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `post-remote-add` endpoint with one of:
+                Use the `post-remote-add` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_remote_add()
                 ```
@@ -12569,7 +12570,7 @@ paths:
     /api/v1/remote/key/{id}/trigger:
         post:
             description: |-
-                Use the `post-remote-key-trigger` endpoint with one of:
+                Use the `post-remote-key-trigger` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_remote_key_trigger()
                 ```
@@ -12615,7 +12616,7 @@ paths:
     /api/v1/remote/keys:
         get:
             description: |-
-                Use the `get-remote-keys` endpoint with one of:
+                Use the `get-remote-keys` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_remote_keys()
                 ```
@@ -12640,7 +12641,7 @@ paths:
     /api/v1/remote/reset:
         post:
             description: |-
-                Use the `post-remote-reset` endpoint with one of:
+                Use the `post-remote-reset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_remote_reset()
                 ```
@@ -12661,7 +12662,7 @@ paths:
     /api/v1/remote/{id}:
         delete:
             description: |-
-                Use the `delete-remote-item` endpoint with one of:
+                Use the `delete-remote-item` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_remote_item()
                 ```
@@ -12695,7 +12696,7 @@ paths:
                 type: string
         put:
             description: |-
-                Use the `put-remote-modify` endpoint with one of:
+                Use the `put-remote-modify` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_remote_modify()
                 ```
@@ -12757,7 +12758,7 @@ paths:
                 type: string
         post:
             description: |-
-                Use the `post-remote-move` endpoint with one of:
+                Use the `post-remote-move` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_remote_move()
                 ```
@@ -12799,7 +12800,7 @@ paths:
                 type: string
         post:
             description: |-
-                Use the `post-remote-trigger` endpoint with one of:
+                Use the `post-remote-trigger` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_remote_trigger()
                 ```
@@ -12826,7 +12827,7 @@ paths:
     /api/v1/scene:
         post:
             description: |-
-                Use the `post-add-scene` endpoint with one of:
+                Use the `post-add-scene` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_add_scene()
                 ```
@@ -12863,7 +12864,7 @@ paths:
     /api/v1/scene/match-trigger:
         post:
             description: |-
-                Use the `post-scene-match-trigger` endpoint with one of:
+                Use the `post-scene-match-trigger` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_scene_match_trigger()
                 ```
@@ -12903,7 +12904,7 @@ paths:
     /api/v1/scene/run:
         post:
             description: |-
-                Use the `run-provided-scene` endpoint with one of:
+                Use the `run-provided-scene` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.run_provided_scene()
                 ```
@@ -12931,7 +12932,7 @@ paths:
     /api/v1/scene/{id}:
         delete:
             description: |-
-                Use the `delete-scene` endpoint with one of:
+                Use the `delete-scene` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_scene()
                 ```
@@ -12963,7 +12964,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-scene` endpoint with one of:
+                Use the `get-scene` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_scene()
                 ```
@@ -13007,7 +13008,7 @@ paths:
                 type: string
         put:
             description: |-
-                Use the `put-modify-scene` endpoint with one of:
+                Use the `put-modify-scene` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_modify_scene()
                 ```
@@ -13047,7 +13048,7 @@ paths:
     /api/v1/scene/{id}/trigger:
         post:
             description: |-
-                Use the `post-scene-trigger` endpoint with one of:
+                Use the `post-scene-trigger` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_scene_trigger()
                 ```
@@ -13088,7 +13089,7 @@ paths:
     /api/v1/scenes:
         get:
             description: |-
-                Use the `get-all-scenes` endpoint with one of:
+                Use the `get-all-scenes` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_all_scenes()
                 ```
@@ -13113,7 +13114,7 @@ paths:
     /api/v1/setup/allowuserdataupload:
         get:
             description: |-
-                Use the `get-user-data-upload-allowed` endpoint with one of:
+                Use the `get-user-data-upload-allowed` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_user_data_upload_allowed()
                 ```
@@ -13144,7 +13145,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-user-data-upload-allowed` endpoint with one of:
+                Use the `set-user-data-upload-allowed` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_user_data_upload_allowed()
                 ```
@@ -13179,7 +13180,7 @@ paths:
     /api/v1/setup/available-countries:
         get:
             description: |-
-                Use the `get-setup-countrylist` endpoint with one of:
+                Use the `get-setup-countrylist` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_setup_countrylist()
                 ```
@@ -13210,7 +13211,7 @@ paths:
     /api/v1/setup/available-timezones:
         get:
             description: |-
-                Use the `get-setup-timezonelist` endpoint with one of:
+                Use the `get-setup-timezonelist` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_setup_timezonelist()
                 ```
@@ -13241,7 +13242,7 @@ paths:
     /api/v1/setup/bluetooth/devices:
         get:
             description: |-
-                Use the `get-bluetooth-devices-status` endpoint with one of:
+                Use the `get-bluetooth-devices-status` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_bluetooth_devices_status()
                 ```
@@ -13276,7 +13277,7 @@ paths:
     /api/v1/setup/bluetooth/devices/{deviceAddress}:
         delete:
             description: |-
-                Use the `unpair-device` endpoint with one of:
+                Use the `unpair-device` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.unpair_device()
                 ```
@@ -13310,7 +13311,7 @@ paths:
     /api/v1/setup/bluetooth/visibility:
         get:
             description: |-
-                Use the `get-bluetooth-visibility` endpoint with one of:
+                Use the `get-bluetooth-visibility` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_bluetooth_visibility()
                 ```
@@ -13334,7 +13335,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-bluetooth-visibility-on` endpoint with one of:
+                Use the `set-bluetooth-visibility-on` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_bluetooth_visibility_on()
                 ```
@@ -13368,7 +13369,7 @@ paths:
     /api/v1/setup/bootNotificationSound:
         get:
             description: |-
-                Use the `get-notification-on-boot` endpoint with one of:
+                Use the `get-notification-on-boot` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_notification_on_boot()
                 ```
@@ -13399,7 +13400,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-notification-on-boot` endpoint with one of:
+                Use the `set-notification-on-boot` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_notification_on_boot()
                 ```
@@ -13434,7 +13435,7 @@ paths:
     /api/v1/setup/datetime:
         get:
             description: |-
-                Use the `get-setup-datetime` endpoint with one of:
+                Use the `get-setup-datetime` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_setup_datetime()
                 ```
@@ -13464,7 +13465,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-setup-datetime` endpoint with one of:
+                Use the `set-setup-datetime` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_setup_datetime()
                 ```
@@ -13502,7 +13503,7 @@ paths:
     /api/v1/setup/enableusagereport:
         get:
             description: |-
-                Use the `get-usage-report-enabled` endpoint with one of:
+                Use the `get-usage-report-enabled` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_usage_report_enabled()
                 ```
@@ -13533,7 +13534,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-usage-report-enabled` endpoint with one of:
+                Use the `set-usage-report-enabled` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_usage_report_enabled()
                 ```
@@ -13573,7 +13574,7 @@ paths:
         get:
             description: |-
                 get the currently active environment (live, development, integration). This is used to target the device to e.g. use an alternate server
-                Use the `get-product-environment` endpoint with one of:
+                Use the `get-product-environment` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_product_environment()
                 ```
@@ -13604,7 +13605,7 @@ paths:
         post:
             description: |-
                 sets the currently active environment (live, development, integration). This is used to target the device to e.g. use an alternate server
-                Use the `set-product-environment` endpoint with one of:
+                Use the `set-product-environment` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_product_environment()
                 ```
@@ -13642,7 +13643,7 @@ paths:
     /api/v1/setup/factoryreset:
         put:
             description: |-
-                Use the `post-factory-reset` endpoint with one of:
+                Use the `post-factory-reset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_factory_reset()
                 ```
@@ -13679,7 +13680,7 @@ paths:
     /api/v1/setup/generator:
         get:
             description: |-
-                Use the `get-generator-settings` endpoint with one of:
+                Use the `get-generator-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_generator_settings()
                 ```
@@ -13709,7 +13710,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-generator-settings` endpoint with one of:
+                Use the `set-generator-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_generator_settings()
                 ```
@@ -13743,7 +13744,7 @@ paths:
     /api/v1/setup/linein:
         get:
             description: |-
-                Use the `get-linein-settings` endpoint with one of:
+                Use the `get-linein-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_linein_settings()
                 ```
@@ -13773,7 +13774,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-linein-settings` endpoint with one of:
+                Use the `set-linein-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_linein_settings()
                 ```
@@ -13807,7 +13808,7 @@ paths:
     /api/v1/setup/locale:
         get:
             description: |-
-                Use the `get-locale` endpoint with one of:
+                Use the `get-locale` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_locale()
                 ```
@@ -13831,7 +13832,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-locale` endpoint with one of:
+                Use the `set-locale` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_locale()
                 ```
@@ -13865,7 +13866,7 @@ paths:
     /api/v1/setup/mode:
         get:
             description: |-
-                Use the `get-product-mode` endpoint with one of:
+                Use the `get-product-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_product_mode()
                 ```
@@ -13890,7 +13891,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-product-mode` endpoint with one of:
+                Use the `set-product-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_product_mode()
                 ```
@@ -13927,7 +13928,7 @@ paths:
     /api/v1/setup/preset/{id}/restore-default:
         post:
             description: |-
-                Use the `restore-preset` endpoint with one of:
+                Use the `restore-preset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.restore_preset()
                 ```
@@ -13955,7 +13956,7 @@ paths:
     /api/v1/setup/presets:
         get:
             description: |-
-                Use the `get-presets` endpoint with one of:
+                Use the `get-presets` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_presets()
                 ```
@@ -13984,7 +13985,7 @@ paths:
     /api/v1/setup/presets/restore-default:
         post:
             description: |-
-                Use the `restore-default-presets` endpoint with one of:
+                Use the `restore-default-presets` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.restore_default_presets()
                 ```
@@ -14005,7 +14006,7 @@ paths:
     /api/v1/setup/presets/{presetId}/netradio:
         put:
             description: |-
-                Use the `set-preset-netradio` endpoint with one of:
+                Use the `set-preset-netradio` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_preset_netradio()
                 ```
@@ -14046,7 +14047,7 @@ paths:
     /api/v1/setup/regional:
         get:
             description: |-
-                Use the `get-setup-regional` endpoint with one of:
+                Use the `get-setup-regional` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_setup_regional()
                 ```
@@ -14076,7 +14077,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-setup-regional` endpoint with one of:
+                Use the `set-setup-regional` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_setup_regional()
                 ```
@@ -14114,7 +14115,7 @@ paths:
     /api/v1/setup/remote/home-control-uri:
         get:
             description: |-
-                Use the `get-remote-home-control-uri` endpoint with one of:
+                Use the `get-remote-home-control-uri` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_remote_home_control_uri()
                 ```
@@ -14144,7 +14145,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-remote-home-control-uri` endpoint with one of:
+                Use the `set-remote-home-control-uri` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_remote_home_control_uri()
                 ```
@@ -14178,7 +14179,7 @@ paths:
     /api/v1/setup/remote/tv-supported-keys:
         get:
             description: |-
-                Use the `get-remote-tv-supported-keys` endpoint with one of:
+                Use the `get-remote-tv-supported-keys` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_remote_tv_supported_keys()
                 ```
@@ -14209,7 +14210,7 @@ paths:
     /api/v1/setup/remote/tv-supported-keys/{key}:
         put:
             description: |-
-                Use the `set-remote-tv-supported-key` endpoint with one of:
+                Use the `set-remote-tv-supported-key` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_remote_tv_supported_key()
                 ```
@@ -14250,7 +14251,7 @@ paths:
     /api/v1/setup/remotes:
         delete:
             description: |-
-                Use the `delete-bluetooth-remote` endpoint with one of:
+                Use the `delete-bluetooth-remote` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_bluetooth_remote()
                 ```
@@ -14283,7 +14284,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-bluetooth-remotes` endpoint with one of:
+                Use the `get-bluetooth-remotes` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_bluetooth_remotes()
                 ```
@@ -14321,7 +14322,7 @@ paths:
                 If no latency is provided by the tv we try to guess the best latency.
                 This allows you to adjust our guess with an offset.
 
-                Use the `get-tv-latency-offset` endpoint with one of:
+                Use the `get-tv-latency-offset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_tv_latency_offset()
                 ```
@@ -14349,7 +14350,7 @@ paths:
                 to guess the best latency. This allows you to adjust our guess with an offset.
                 But will have no effect if the TV tell us their latency.
 
-                Use the `put-tv-latency-offset` endpoint with one of:
+                Use the `put-tv-latency-offset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.put_tv_latency_offset()
                 ```
@@ -14383,7 +14384,7 @@ paths:
     /api/v1/setup/voice:
         get:
             description: |-
-                Use the `get-voice-settings` endpoint with one of:
+                Use the `get-voice-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_voice_settings()
                 ```
@@ -14413,7 +14414,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-voice-settings` endpoint with one of:
+                Use the `set-voice-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_voice_settings()
                 ```
@@ -14447,7 +14448,7 @@ paths:
     /api/v1/softwareupdate:
         get:
             description: |-
-                Use the `get-softwareupdate-status` endpoint with one of:
+                Use the `get-softwareupdate-status` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_softwareupdate_status()
                 ```
@@ -14482,7 +14483,7 @@ paths:
     /api/v1/softwareupdate/settings:
         get:
             description: |-
-                Use the `get-softwareupdate-settings` endpoint with one of:
+                Use the `get-softwareupdate-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_softwareupdate_settings()
                 ```
@@ -14512,7 +14513,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-softwareupdate-settings` endpoint with one of:
+                Use the `set-softwareupdate-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_softwareupdate_settings()
                 ```
@@ -14550,7 +14551,7 @@ paths:
     /api/v1/softwareupdate/{swupdatecommand}:
         post:
             description: |-
-                Use the `post-softwareupdate-command` endpoint with one of:
+                Use the `post-softwareupdate-command` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_softwareupdate_command()
                 ```
@@ -14587,7 +14588,7 @@ paths:
     /api/v1/sound/features:
         get:
             description: |-
-                Use the `get-sound-features` endpoint with one of:
+                Use the `get-sound-features` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_sound_features()
                 ```
@@ -14614,7 +14615,7 @@ paths:
     /api/v1/sound/listening-modes:
         get:
             description: |-
-                Use the `get-listening-mode-set` endpoint with one of:
+                Use the `get-listening-mode-set` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_listening_mode_set()
                 ```
@@ -14640,7 +14641,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `create-listening-mode` endpoint with one of:
+                Use the `create-listening-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.create_listening_mode()
                 ```
@@ -14674,7 +14675,7 @@ paths:
     /api/v1/sound/listening-modes/active:
         get:
             description: |-
-                Use the `get-active-listening-mode` endpoint with one of:
+                Use the `get-active-listening-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_active_listening_mode()
                 ```
@@ -14699,7 +14700,7 @@ paths:
     /api/v1/sound/listening-modes/reset:
         post:
             description: |-
-                Use the `reset-all-listening-modes` endpoint with one of:
+                Use the `reset-all-listening-modes` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.reset_all_listening_modes()
                 ```
@@ -14731,7 +14732,7 @@ paths:
     /api/v1/sound/listening-modes/{id}:
         delete:
             description: |-
-                Use the `delete-listening-mode` endpoint with one of:
+                Use the `delete-listening-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_listening_mode()
                 ```
@@ -14759,7 +14760,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-listening-mode` endpoint with one of:
+                Use the `get-listening-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_listening_mode()
                 ```
@@ -14787,7 +14788,7 @@ paths:
         -   $ref: '#/components/parameters/ListeningModeID'
         put:
             description: |-
-                Use the `update-listening-mode` endpoint with one of:
+                Use the `update-listening-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.update_listening_mode()
                 ```
@@ -14819,7 +14820,7 @@ paths:
         -   $ref: '#/components/parameters/ListeningModeID'
         post:
             description: |-
-                Use the `activate-listening-mode` endpoint with one of:
+                Use the `activate-listening-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.activate_listening_mode()
                 ```
@@ -14844,7 +14845,7 @@ paths:
         -   $ref: '#/components/parameters/ListeningModeID'
         post:
             description: |-
-                Use the `reset-listening-mode` endpoint with one of:
+                Use the `reset-listening-mode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.reset_listening_mode()
                 ```
@@ -14877,7 +14878,7 @@ paths:
     /api/v1/sound/settings:
         get:
             description: |-
-                Use the `get-sound-settings` endpoint with one of:
+                Use the `get-sound-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_sound_settings()
                 ```
@@ -14908,7 +14909,7 @@ paths:
     /api/v1/sound/settings/adjustments:
         get:
             description: |-
-                Use the `get-sound-settings-adjustments` endpoint with one of:
+                Use the `get-sound-settings-adjustments` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_sound_settings_adjustments()
                 ```
@@ -14939,7 +14940,7 @@ paths:
     /api/v1/sound/settings/adjustments/ambience:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-ambience` endpoint with one of:
+                Use the `set-sound-settings-adjustments-ambience` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_ambience()
                 ```
@@ -14973,7 +14974,7 @@ paths:
     /api/v1/sound/settings/adjustments/balance:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-balance` endpoint with one of:
+                Use the `set-sound-settings-adjustments-balance` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_balance()
                 ```
@@ -15007,7 +15008,7 @@ paths:
     /api/v1/sound/settings/adjustments/bass:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-bass` endpoint with one of:
+                Use the `set-sound-settings-adjustments-bass` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_bass()
                 ```
@@ -15045,7 +15046,7 @@ paths:
     /api/v1/sound/settings/adjustments/bass-management:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-bass-management` endpoint with one of:
+                Use the `set-sound-settings-adjustments-bass-management` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_bass_management()
                 ```
@@ -15079,7 +15080,7 @@ paths:
     /api/v1/sound/settings/adjustments/compression:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-compression` endpoint with one of:
+                Use the `set-sound-settings-adjustments-compression` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_compression()
                 ```
@@ -15113,7 +15114,7 @@ paths:
     /api/v1/sound/settings/adjustments/directivity:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-directivity` endpoint with one of:
+                Use the `set-sound-settings-adjustments-directivity` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_directivity()
                 ```
@@ -15147,7 +15148,7 @@ paths:
     /api/v1/sound/settings/adjustments/fadein:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-fade-in` endpoint with one of:
+                Use the `set-sound-settings-adjustments-fade-in` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_fade_in()
                 ```
@@ -15181,7 +15182,7 @@ paths:
     /api/v1/sound/settings/adjustments/fader:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-fader` endpoint with one of:
+                Use the `set-sound-settings-adjustments-fader` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_fader()
                 ```
@@ -15215,7 +15216,7 @@ paths:
     /api/v1/sound/settings/adjustments/loudness:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-loudness` endpoint with one of:
+                Use the `set-sound-settings-adjustments-loudness` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_loudness()
                 ```
@@ -15253,7 +15254,7 @@ paths:
     /api/v1/sound/settings/adjustments/spatial-envelopment:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-spatial-envelopment` endpoint with one of:
+                Use the `set-sound-settings-adjustments-spatial-envelopment` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_spatial_envelopment()
                 ```
@@ -15287,7 +15288,7 @@ paths:
     /api/v1/sound/settings/adjustments/spatial-height:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-spatial-height` endpoint with one of:
+                Use the `set-sound-settings-adjustments-spatial-height` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_spatial_height()
                 ```
@@ -15321,7 +15322,7 @@ paths:
     /api/v1/sound/settings/adjustments/spatial-processing:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-spatial-processing` endpoint with one of:
+                Use the `set-sound-settings-adjustments-spatial-processing` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_spatial_processing()
                 ```
@@ -15355,7 +15356,7 @@ paths:
     /api/v1/sound/settings/adjustments/spatial-surround:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-spatial-surround` endpoint with one of:
+                Use the `set-sound-settings-adjustments-spatial-surround` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_spatial_surround()
                 ```
@@ -15389,7 +15390,7 @@ paths:
     /api/v1/sound/settings/adjustments/spatial-width:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-spatial-width` endpoint with one of:
+                Use the `set-sound-settings-adjustments-spatial-width` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_spatial_width()
                 ```
@@ -15423,7 +15424,7 @@ paths:
     /api/v1/sound/settings/adjustments/speech-enhance:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-speech-enhance` endpoint with one of:
+                Use the `set-sound-settings-adjustments-speech-enhance` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_speech_enhance()
                 ```
@@ -15457,7 +15458,7 @@ paths:
     /api/v1/sound/settings/adjustments/treble:
         put:
             description: |-
-                Use the `set-sound-settings-adjustments-treble` endpoint with one of:
+                Use the `set-sound-settings-adjustments-treble` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_adjustments_treble()
                 ```
@@ -15495,7 +15496,7 @@ paths:
     /api/v1/sound/settings/roomCompensation:
         delete:
             description: |-
-                Use the `stop-sound-settings-room-compensation` endpoint with one of:
+                Use the `stop-sound-settings-room-compensation` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.stop_sound_settings_room_compensation()
                 ```
@@ -15515,7 +15516,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-sound-settings-room-compensation` endpoint with one of:
+                Use the `get-sound-settings-room-compensation` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_sound_settings_room_compensation()
                 ```
@@ -15545,7 +15546,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `start-sound-settings-room-compensation` endpoint with one of:
+                Use the `start-sound-settings-room-compensation` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.start_sound_settings_room_compensation()
                 ```
@@ -15584,7 +15585,7 @@ paths:
     /api/v1/sound/settings/roomcompensation/debug:
         put:
             description: |-
-                Use the `set-sound-settings-room-compensation-debug` endpoint with one of:
+                Use the `set-sound-settings-room-compensation-debug` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_room_compensation_debug()
                 ```
@@ -15618,7 +15619,7 @@ paths:
     /api/v1/sound/settings/roomcompensation/enable:
         put:
             description: |-
-                Use the `set-sound-settings-roomcompensation` endpoint with one of:
+                Use the `set-sound-settings-roomcompensation` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_settings_roomcompensation()
                 ```
@@ -15653,7 +15654,7 @@ paths:
     /api/v1/sound/settings/toneTouch:
         get:
             description: |-
-                Use the `get-sound-settings-tonetouch` endpoint with one of:
+                Use the `get-sound-settings-tonetouch` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_sound_settings_tonetouch()
                 ```
@@ -15683,7 +15684,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-tone-touch-values` endpoint with one of:
+                Use the `set-tone-touch-values` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_tone_touch_values()
                 ```
@@ -15717,7 +15718,7 @@ paths:
     /api/v1/sound/speaker-preset/active:
         get:
             description: |-
-                Use the `get-sound-speaker-preset-active` endpoint with one of:
+                Use the `get-sound-speaker-preset-active` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_sound_speaker_preset_active()
                 ```
@@ -15748,7 +15749,7 @@ paths:
     /api/v1/sound/speaker-preset/config:
         get:
             description: |-
-                Use the `get-sound-speaker-preset` endpoint with one of:
+                Use the `get-sound-speaker-preset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_sound_speaker_preset()
                 ```
@@ -15778,7 +15779,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-sound-speaker-preset` endpoint with one of:
+                Use the `set-sound-speaker-preset` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_sound_speaker_preset()
                 ```
@@ -15812,7 +15813,7 @@ paths:
     /api/v1/sound/speakergroup:
         post:
             description: |-
-                Use the `post-speakergroup` endpoint with one of:
+                Use the `post-speakergroup` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_speakergroup()
                 ```
@@ -15851,7 +15852,7 @@ paths:
     /api/v1/sound/speakergroup/active:
         get:
             description: |-
-                Use the `get-speakergroup-active` endpoint with one of:
+                Use the `get-speakergroup-active` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakergroup_active()
                 ```
@@ -15880,7 +15881,7 @@ paths:
                 If the active speaker group is deleted, the first speaker group in the list will
                 automatically be made active.
 
-                Use the `delete-speakergroup` endpoint with one of:
+                Use the `delete-speakergroup` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_speakergroup()
                 ```
@@ -15919,7 +15920,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-speakergroup` endpoint with one of:
+                Use the `get-speakergroup` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakergroup()
                 ```
@@ -15962,7 +15963,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `modify-speakergroup` endpoint with one of:
+                Use the `modify-speakergroup` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.modify_speakergroup()
                 ```
@@ -16004,7 +16005,7 @@ paths:
     /api/v1/sound/speakergroup/{id}/activate:
         post:
             description: |-
-                Use the `post-speakergroup-activate` endpoint with one of:
+                Use the `post-speakergroup-activate` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_speakergroup_activate()
                 ```
@@ -16044,7 +16045,7 @@ paths:
     /api/v1/sound/speakergroups:
         get:
             description: |-
-                Use the `get-speakergroups` endpoint with one of:
+                Use the `get-speakergroups` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakergroups()
                 ```
@@ -16075,7 +16076,7 @@ paths:
     /api/v1/sound/supported-speaker-roles:
         get:
             description: |-
-                Use the `get-supported-speaker-roles` endpoint with one of:
+                Use the `get-supported-speaker-roles` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_supported_speaker_roles()
                 ```
@@ -16106,7 +16107,7 @@ paths:
     /api/v1/sound/volume:
         get:
             description: |-
-                Use the `get-current-volume` endpoint with one of:
+                Use the `get-current-volume` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_current_volume()
                 ```
@@ -16137,7 +16138,7 @@ paths:
     /api/v1/sound/volume/level:
         put:
             description: |-
-                Use the `set-current-volume-level` endpoint with one of:
+                Use the `set-current-volume-level` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_current_volume_level()
                 ```
@@ -16175,7 +16176,7 @@ paths:
     /api/v1/sound/volume/mute:
         put:
             description: |-
-                Use the `set-volume-mute` endpoint with one of:
+                Use the `set-volume-mute` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_volume_mute()
                 ```
@@ -16209,7 +16210,7 @@ paths:
     /api/v1/sound/volume/settings:
         get:
             description: |-
-                Use the `get-volume-settings` endpoint with one of:
+                Use the `get-volume-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_volume_settings()
                 ```
@@ -16244,7 +16245,7 @@ paths:
             - public
         put:
             description: |-
-                Use the `set-volume-settings` endpoint with one of:
+                Use the `set-volume-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_volume_settings()
                 ```
@@ -16285,7 +16286,7 @@ paths:
             description: |-
                 Returns the current audio channel this speaker will play.
 
-                Use the `get-speakerlink-channel` endpoint with one of:
+                Use the `get-speakerlink-channel` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakerlink_channel()
                 ```
@@ -16311,7 +16312,7 @@ paths:
             description: |-
                 Changes the assigned audio channel this speaker will play.
 
-                Use the `set-speakerlink-channel` endpoint with one of:
+                Use the `set-speakerlink-channel` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_speakerlink_channel()
                 ```
@@ -16342,7 +16343,7 @@ paths:
             description: |-
                 Returns the currently used SpeakerLink streaming format.
 
-                Use the `get-speakerlink-format` endpoint with one of:
+                Use the `get-speakerlink-format` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakerlink_format()
                 ```
@@ -16371,7 +16372,7 @@ paths:
                 In situations with crowded wireless environment, use the high quality
                 compressed LC3+ format (`lc3plus`)
 
-                Use the `set-speakerlink-format` endpoint with one of:
+                Use the `set-speakerlink-format` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_speakerlink_format()
                 ```
@@ -16402,7 +16403,7 @@ paths:
             description: |-
                 Returns the currently configured network delay.
 
-                Use the `get-speakerlink-network-delay` endpoint with one of:
+                Use the `get-speakerlink-network-delay` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakerlink_network_delay()
                 ```
@@ -16428,7 +16429,7 @@ paths:
             description: |-
                 Changes the SpeakerLink network delay.
 
-                Use the `set-speakerlink-network-delay` endpoint with one of:
+                Use the `set-speakerlink-network-delay` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_speakerlink_network_delay()
                 ```
@@ -16460,7 +16461,7 @@ paths:
                 Returns a list of speakers that this speaker can be combined with to
                 form a multi-channel setup.
 
-                Use the `get-speakerlink-peers` endpoint with one of:
+                Use the `get-speakerlink-peers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakerlink_peers()
                 ```
@@ -16497,7 +16498,7 @@ paths:
             description: |-
                 Returns the SpeakerLink multi-channel AP password.
 
-                Use the `get-speakerlink-psk` endpoint with one of:
+                Use the `get-speakerlink-psk` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakerlink_psk()
                 ```
@@ -16563,7 +16564,7 @@ paths:
                 }
                 ```
 
-                Use the `get-speakerlink-role` endpoint with one of:
+                Use the `get-speakerlink-role` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakerlink_role()
                 ```
@@ -16630,7 +16631,7 @@ paths:
                 must provide the serial number of the primary speaker in the
                 multi-channel setup the speaker should join.
 
-                Use the `set-speakerlink-role` endpoint with one of:
+                Use the `set-speakerlink-role` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_speakerlink_role()
                 ```
@@ -16679,7 +16680,7 @@ paths:
                 Returns a list of secondary speakers currently associated with this
                 speaker.
 
-                Use the `get-speakerlink-secondaries` endpoint with one of:
+                Use the `get-speakerlink-secondaries` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakerlink_secondaries()
                 ```
@@ -16716,7 +16717,7 @@ paths:
             description: |-
                 Changes the role of a secondary back to "none".
 
-                Use the `remove-speakerlink-secondary` endpoint with one of:
+                Use the `remove-speakerlink-secondary` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.remove_speakerlink_secondary()
                 ```
@@ -16757,7 +16758,7 @@ paths:
     /api/v1/speakerlink/statisticsserver:
         delete:
             description: |-
-                Use the `delete-statistics-server` endpoint with one of:
+                Use the `delete-statistics-server` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_statistics_server()
                 ```
@@ -16788,7 +16789,7 @@ paths:
             - Developer
         get:
             description: |-
-                Use the `get-statistics-server` endpoint with one of:
+                Use the `get-statistics-server` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_statistics_server()
                 ```
@@ -16818,7 +16819,7 @@ paths:
             - Developer
         put:
             description: |-
-                Use the `set-statistics-server` endpoint with one of:
+                Use the `set-statistics-server` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_statistics_server()
                 ```
@@ -16866,7 +16867,7 @@ paths:
     /api/v1/speakerlink/stats:
         get:
             description: |-
-                Use the `get-speakerlink-stats` endpoint with one of:
+                Use the `get-speakerlink-stats` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_speakerlink_stats()
                 ```
@@ -16903,7 +16904,7 @@ paths:
     /api/v1/speakers/wireless/wisa/resetpairing:
         put:
             description: |-
-                Use the `post-wisa-resetpairing` endpoint with one of:
+                Use the `post-wisa-resetpairing` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_wisa_resetpairing()
                 ```
@@ -16940,7 +16941,7 @@ paths:
     /api/v1/speakers/wireless/wisa/settings:
         get:
             description: |-
-                Use the `get-wisa-settings` endpoint with one of:
+                Use the `get-wisa-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wisa_settings()
                 ```
@@ -16976,7 +16977,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-wisa-settings` endpoint with one of:
+                Use the `set-wisa-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_wisa_settings()
                 ```
@@ -17016,7 +17017,7 @@ paths:
     /api/v1/speakers/wireless/wisa/status:
         get:
             description: |-
-                Use the `get-wisa-status` endpoint with one of:
+                Use the `get-wisa-status` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wisa_status()
                 ```
@@ -17053,7 +17054,7 @@ paths:
     /api/v1/stand/autocalibration:
         post:
             description: |-
-                Use the `set-stand-autocalibration` endpoint with one of:
+                Use the `set-stand-autocalibration` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_stand_autocalibration()
                 ```
@@ -17084,7 +17085,7 @@ paths:
     /api/v1/stand/autocalibrationstate:
         get:
             description: |-
-                Use the `get-stand-autocalibration-state` endpoint with one of:
+                Use the `get-stand-autocalibration-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_stand_autocalibration_state()
                 ```
@@ -17115,7 +17116,7 @@ paths:
     /api/v1/stand/endstop/{id}:
         delete:
             description: |-
-                Use the `delete-endstop` endpoint with one of:
+                Use the `delete-endstop` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_endstop()
                 ```
@@ -17149,7 +17150,7 @@ paths:
         description: Endstop is used to limit the movement of the stand.
         get:
             description: |-
-                Use the `get-endstop` endpoint with one of:
+                Use the `get-endstop` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_endstop()
                 ```
@@ -17189,7 +17190,7 @@ paths:
                 Modify endstop with given ID, if an angle is applied the stand will turn to the position before saving the endstop.
                 Otherwise current position is saved as endstop
 
-                Use the `modify-endstop` endpoint with one of:
+                Use the `modify-endstop` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.modify_endstop()
                 ```
@@ -17230,7 +17231,7 @@ paths:
     /api/v1/stand/endstops:
         delete:
             description: |-
-                Use the `clear-endstop` endpoint with one of:
+                Use the `clear-endstop` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.clear_endstop()
                 ```
@@ -17256,7 +17257,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-stand-endstop-list` endpoint with one of:
+                Use the `get-stand-endstop-list` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_stand_endstop_list()
                 ```
@@ -17289,7 +17290,7 @@ paths:
                 Add a new endstop, if an angle is applied the stand will turn to the position before saving the endstop.
                 Otherwise current position is saved as endstop
 
-                Use the `add-endstop` endpoint with one of:
+                Use the `add-endstop` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.add_endstop()
                 ```
@@ -17327,7 +17328,7 @@ paths:
     /api/v1/stand/info:
         get:
             description: |-
-                Use the `get-stand-info` endpoint with one of:
+                Use the `get-stand-info` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_stand_info()
                 ```
@@ -17358,7 +17359,7 @@ paths:
     /api/v1/stand/move:
         post:
             description: |-
-                Use the `set-stand-movement` endpoint with one of:
+                Use the `set-stand-movement` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_stand_movement()
                 ```
@@ -17398,7 +17399,7 @@ paths:
     /api/v1/stand/position/{id}:
         delete:
             description: |-
-                Use the `delete-position` endpoint with one of:
+                Use the `delete-position` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_position()
                 ```
@@ -17431,7 +17432,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-position` endpoint with one of:
+                Use the `get-position` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_position()
                 ```
@@ -17468,7 +17469,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `modify-position` endpoint with one of:
+                Use the `modify-position` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.modify_position()
                 ```
@@ -17517,7 +17518,7 @@ paths:
     /api/v1/stand/positions:
         delete:
             description: |-
-                Use the `delete-positions` endpoint with one of:
+                Use the `delete-positions` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.delete_positions()
                 ```
@@ -17543,7 +17544,7 @@ paths:
             - mozart
         get:
             description: |-
-                Use the `get-position-list` endpoint with one of:
+                Use the `get-position-list` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_position_list()
                 ```
@@ -17573,7 +17574,7 @@ paths:
             - mozart
         post:
             description: |-
-                Use the `add-position` endpoint with one of:
+                Use the `add-position` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.add_position()
                 ```
@@ -17611,7 +17612,7 @@ paths:
     /api/v1/stand/status:
         get:
             description: |-
-                Use the `get-stand-status` endpoint with one of:
+                Use the `get-stand-status` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_stand_status()
                 ```
@@ -17642,7 +17643,7 @@ paths:
     /api/v1/stand/transportmode:
         post:
             description: |-
-                Use the `set-stand-transportmode` endpoint with one of:
+                Use the `set-stand-transportmode` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_stand_transportmode()
                 ```
@@ -17673,7 +17674,7 @@ paths:
     /api/v1/stand/type:
         put:
             description: |-
-                Use the `set-stand-type` endpoint with one of:
+                Use the `set-stand-type` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_stand_type()
                 ```
@@ -17707,7 +17708,7 @@ paths:
     /api/v1/state:
         get:
             description: |-
-                Use the `get-product-state` endpoint with one of:
+                Use the `get-product-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_product_state()
                 ```
@@ -17742,7 +17743,7 @@ paths:
     /api/v1/state/linein:
         get:
             description: |-
-                Use the `get-linein-state` endpoint with one of:
+                Use the `get-linein-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_linein_state()
                 ```
@@ -17773,7 +17774,7 @@ paths:
     /api/v1/state/microphone/input/{id}:
         get:
             description: |-
-                Use the `get-microphone-input-state` endpoint with one of:
+                Use the `get-microphone-input-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_microphone_input_state()
                 ```
@@ -17812,7 +17813,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-microphone-input-state` endpoint with one of:
+                Use the `set-microphone-input-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_microphone_input_state()
                 ```
@@ -17859,7 +17860,7 @@ paths:
     /api/v1/state/microphone/inputs:
         get:
             description: |-
-                Use the `get-microphone-input-states` endpoint with one of:
+                Use the `get-microphone-input-states` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_microphone_input_states()
                 ```
@@ -17890,7 +17891,7 @@ paths:
     /api/v1/state/microphones:
         get:
             description: |-
-                Use the `get-microphone-state` endpoint with one of:
+                Use the `get-microphone-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_microphone_state()
                 ```
@@ -17920,7 +17921,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-microphone-state` endpoint with one of:
+                Use the `set-microphone-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_microphone_state()
                 ```
@@ -17964,7 +17965,7 @@ paths:
     /api/v1/state/power:
         get:
             description: |-
-                Use the `get-power-state` endpoint with one of:
+                Use the `get-power-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_power_state()
                 ```
@@ -17988,7 +17989,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-power-state` endpoint with one of:
+                Use the `set-power-state` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_power_state()
                 ```
@@ -18022,7 +18023,7 @@ paths:
     /api/v1/state/power/standby/settings:
         get:
             description: |-
-                Use the `get-standby-settings` endpoint with one of:
+                Use the `get-standby-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_standby_settings()
                 ```
@@ -18046,7 +18047,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-standby-settings` endpoint with one of:
+                Use the `set-standby-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_standby_settings()
                 ```
@@ -18080,7 +18081,7 @@ paths:
     /api/v1/state/reboot:
         put:
             description: |-
-                Use the `post-reboot` endpoint with one of:
+                Use the `post-reboot` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_reboot()
                 ```
@@ -18107,7 +18108,7 @@ paths:
     /api/v1/state/standby:
         put:
             description: |-
-                Use the `post-standby` endpoint with one of:
+                Use the `post-standby` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_standby()
                 ```
@@ -18134,7 +18135,7 @@ paths:
     /api/v1/timer:
         post:
             description: |-
-                Use the `add-timer` endpoint with one of:
+                Use the `add-timer` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.add_timer()
                 ```
@@ -18172,7 +18173,7 @@ paths:
     /api/v1/timer/{id}:
         get:
             description: |-
-                Use the `get-timer` endpoint with one of:
+                Use the `get-timer` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_timer()
                 ```
@@ -18210,7 +18211,7 @@ paths:
     /api/v1/timer/{id}/cancel:
         post:
             description: |-
-                Use the `cancel-timer` endpoint with one of:
+                Use the `cancel-timer` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.cancel_timer()
                 ```
@@ -18240,7 +18241,7 @@ paths:
     /api/v1/timer/{id}/pause:
         post:
             description: |-
-                Use the `pause-timer` endpoint with one of:
+                Use the `pause-timer` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.pause_timer()
                 ```
@@ -18270,7 +18271,7 @@ paths:
     /api/v1/timer/{id}/resume:
         post:
             description: |-
-                Use the `resume-timer` endpoint with one of:
+                Use the `resume-timer` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.resume_timer()
                 ```
@@ -18300,7 +18301,7 @@ paths:
     /api/v1/timers:
         get:
             description: |-
-                Use the `get-all-timers` endpoint with one of:
+                Use the `get-all-timers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_all_timers()
                 ```
@@ -18325,7 +18326,7 @@ paths:
     /api/v1/timers/maximum-allowed:
         get:
             description: |-
-                Use the `get-maximum-allowed-timers` endpoint with one of:
+                Use the `get-maximum-allowed-timers` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_maximum_allowed_timers()
                 ```
@@ -18350,7 +18351,7 @@ paths:
     /api/v1/wireless-charging/settings:
         put:
             description: |-
-                Use the `set-wireless-charging-settings` endpoint with one of:
+                Use the `set-wireless-charging-settings` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_wireless_charging_settings()
                 ```
@@ -18384,7 +18385,7 @@ paths:
     /api/v1/wireless-charging/status:
         get:
             description: |-
-                Use the `get-wireless-charging-status` endpoint with one of:
+                Use the `get-wireless-charging-status` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wireless_charging_status()
                 ```
@@ -18415,7 +18416,7 @@ paths:
     /unbox/connect:
         post:
             description: |-
-                Use the `post-connect-attempt` endpoint with one of:
+                Use the `post-connect-attempt` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_connect_attempt()
                 ```
@@ -18456,7 +18457,7 @@ paths:
     /unbox/networks:
         get:
             description: |-
-                Use the `get-available-wifi-networks` endpoint with one of:
+                Use the `get-available-wifi-networks` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_available_wifi_networks()
                 ```
@@ -18488,7 +18489,7 @@ paths:
     /unbox/product:
         get:
             description: |-
-                Use the `get-product-advertisement-info` endpoint with one of:
+                Use the `get-product-advertisement-info` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_product_advertisement_info()
                 ```
@@ -18520,7 +18521,7 @@ paths:
     /unbox/publickey:
         get:
             description: |-
-                Use the `get-wifi-provisioning-public-key` endpoint with one of:
+                Use the `get-wifi-provisioning-public-key` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wifi_provisioning_public_key()
                 ```
@@ -18554,7 +18555,7 @@ paths:
     /unbox/regulatorydomain:
         get:
             description: |-
-                Use the `get-wifi-regulatory` endpoint with one of:
+                Use the `get-wifi-regulatory` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.get_wifi_regulatory()
                 ```
@@ -18584,7 +18585,7 @@ paths:
             - mozart
         put:
             description: |-
-                Use the `set-wifi-regulatory` endpoint with one of:
+                Use the `set-wifi-regulatory` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.set_wifi_regulatory()
                 ```
@@ -18622,7 +18623,7 @@ paths:
     /unbox/scan:
         put:
             description: |-
-                Use the `post-wifi-scan` endpoint with one of:
+                Use the `post-wifi-scan` method in the Python package with one of:
                 ```mozart_client
                 mozart_client.post_wifi_scan()
                 ```
