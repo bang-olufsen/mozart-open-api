@@ -95,7 +95,7 @@ Where `192.168.0.1` is a Mozart device's IP-address.
 ### Beware
 <!-- TODO: replace link with Github pages URL-->
 
-Some of the classes defined in the Mozart API are aliases to other data types, for example: [ActionList](http://127.0.0.1:3000/docs/index.html#/schemas/ActionList) is an array of Action objects. These classes are not generated and can therefore not be used in the Python API. instead, use the built in Python data types, for example when defining an ActionList, simply use a `list` instead.
+Some of the classes defined in the Mozart API are aliases to other data types, for example: [ActionList](http://127.0.0.1:3000/docs/index.html#/schemas/ActionList) is an array of [Action](http://127.0.0.1:3000/docs/index.html#/schemas/Action) objects. These classes are not generated and can therefore not be used in the Python API. instead, use the built in Python data types, for example when defining an ActionList, simply use a `list` instead.
 
 ## Example CLI program
 
