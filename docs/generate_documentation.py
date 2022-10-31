@@ -22,15 +22,15 @@ class DocumentationGeneration:
     def update_readme(self) -> None:
         """Update README with common.md and readme.md"""
 
-        with open("docs/common.md", "r", encoding="utf-8") as common_file:
+        with open("common.md", "r", encoding="utf-8") as common_file:
             self.common_content = common_file.read()
 
-        with open("docs/readme.md", "r", encoding="utf-8") as readme_file:
+        with open("readme.md", "r", encoding="utf-8") as readme_file:
             readme_content = readme_file.read()
 
         final_readme_content = self.common_content + "\n" + readme_content
 
-        with open("README.md", "w", encoding="utf-8") as readme_file:
+        with open("../README.md", "w", encoding="utf-8") as readme_file:
             readme_file.write(final_readme_content)
 
         print("Generated README.md")
@@ -38,7 +38,7 @@ class DocumentationGeneration:
     def update_description(self) -> None:
         """update YAML file with overview.md file."""
 
-        with open("docs/overview.md", "r", encoding="utf-8") as overview_file:
+        with open("overview.md", "r", encoding="utf-8") as overview_file:
             overview_content = overview_file.read()
 
         self.mozart_yaml["info"]["description"] = (
@@ -100,7 +100,7 @@ mozart_client.{method_name}()
             else dumper.represent_scalar("tag:yaml.org,2002:str", data),
         )
 
-        with open("docs/mozart-api.yaml", "w", encoding="utf-8") as mozart_yaml_file:
+        with open("mozart-api.yaml", "w", encoding="utf-8") as mozart_yaml_file:
             yaml.dump(self.mozart_yaml, mozart_yaml_file, indent=4)
 
 
