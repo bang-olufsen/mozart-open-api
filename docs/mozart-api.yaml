@@ -25,6 +25,12 @@ components:
             required: true
             schema:
                 $ref: '#/components/schemas/SpeakerId'
+    requestBodies:
+        OptionalEnable:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/RequiredEnable'
     responses:
         BadListeningMode:
             content:
@@ -54,6 +60,8 @@ components:
                 `WebsocketEventBeolinkJoinResult` web socket event.
         EmptySuccess:
             description: Success
+        MicrophoneMuted:
+            description: Action can not be completed since microphone is muted
         MissingListeningMode:
             description: No such listening mode
         NotFound:
@@ -62,6 +70,16 @@ components:
                     schema:
                         $ref: '#/components/schemas/ErrorModel'
             description: Resource not found
+        Redirect:
+            description: Redirect to another resource
+            headers:
+                Location:
+                    description: URL of the other resource
+                    schema:
+                        format: uri
+                        type: string
+        WrongRoomCompensationType:
+            description: The requested room compensation type is not supported
     schemas:
         Action:
             description: |
@@ -1131,6 +1149,13 @@ components:
                     - error
                     - unknown
                     type: string
+        RequiredEnable:
+            properties:
+                enabled:
+                    type: boolean
+            required:
+            - enabled
+            type: object
         RoomCompensation:
             properties:
                 value:
@@ -1586,9 +1611,6 @@ components:
                     - wpl
                     - tv
                     - deezer
-                    - classicsAdapter
-                    - usbIn
-                    - tidalConnect
                     - unknown
                     type: string
         SpatialEnvelopment:
@@ -2320,7 +2342,7 @@ info:
         ### Beware
         <!-- TODO: replace link with Github pages URL-->
 
-        Some of the classes defined in the Mozart API are aliases to other data types, for example: [ActionList](http://127.0.0.1:3000/docs/index.html#/schemas/ActionList) is an array of Action objects. These classes are not generated and can therefore not be used in the Python API. instead, use the built in Python data types, for example when defining an ActionList, simply use a `list` instead.
+        Some of the classes defined in the Mozart API are aliases to other data types, for example: [ActionList](http://127.0.0.1:3000/docs/index.html#/schemas/ActionList) is an array of [Action](http://127.0.0.1:3000/docs/index.html#/schemas/Action) objects. These classes are not generated and can therefore not be used in the Python API. instead, use the built in Python data types, for example when defining an ActionList, simply use a `list` instead.
 
         ## Example CLI program
 

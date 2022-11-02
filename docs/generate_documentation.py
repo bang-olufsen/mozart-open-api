@@ -1,3 +1,4 @@
+#!/bin/python
 """Generate API documentation and README."""
 
 import sys
