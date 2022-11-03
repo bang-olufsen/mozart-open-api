@@ -6,8 +6,6 @@ import sys
 import yaml
 from inflection import underscore
 
-API_NAME = "Mozart platform API"
-
 
 class DocumentationGeneration:
     """Class for modifying YAML file for documentation."""
@@ -15,6 +13,7 @@ class DocumentationGeneration:
     def __init__(self, mozart_filename: str) -> None:
         self.mozart_filename = mozart_filename
         self.mozart_yaml = self._load_yaml()
+        self.mozart_api_name = self.mozart_yaml["info"]["title"]
         self.common_content = None
 
     def _load_yaml(self) -> dict:
@@ -33,9 +32,10 @@ class DocumentationGeneration:
             readme_content = readme_file.read()
 
         # Add the API name as a heading
-        final_readme_content = (
-            f"# {API_NAME}\n\n" + self.common_content + "\n" + readme_content
-        )
+        final_readme_content = f"""# {self.mozart_api_name}
+
+{self.common_content}
+{readme_content}"""
 
         with open("../README.md", "w", encoding="utf-8") as readme_file:
             readme_file.write(final_readme_content)
