@@ -6,6 +6,8 @@ import sys
 import yaml
 from inflection import underscore
 
+API_NAME = "Mozart platform API"
+
 
 class DocumentationGeneration:
     """Class for modifying YAML file for documentation."""
@@ -23,13 +25,17 @@ class DocumentationGeneration:
     def update_readme(self) -> None:
         """Update README with common.md and readme.md"""
 
+        # Load the markdown that is used in both the Github README and mozart-api.yaml
         with open("common.md", "r", encoding="utf-8") as common_file:
             self.common_content = common_file.read()
 
         with open("readme.md", "r", encoding="utf-8") as readme_file:
             readme_content = readme_file.read()
 
-        final_readme_content = self.common_content + "\n" + readme_content
+        # Add the API name as a heading
+        final_readme_content = (
+            f"# {API_NAME}\n\n" + self.common_content + "\n" + readme_content
+        )
 
         with open("../README.md", "w", encoding="utf-8") as readme_file:
             readme_file.write(final_readme_content)

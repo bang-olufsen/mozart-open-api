@@ -14,14 +14,19 @@ pip3 install mozart-api
 
 ## API usage
 
-Create a MozartClient object, listen to all WebSocket notifications, set the volume level, activate a preset and expand the Beolink session to a peer, then finally print Beolink listeners.
+To use the Python API:
+
+- Create a MozartClient object
+- Choose which (if any) WebSocket events to listen to
+- Connect to the WebSocket notification channel (if needed)
+- Use any of the endpoints
+
+### Example
 
 <!--
 type: tab
 title: Synchronous
 -->
-
-### Synchronous
 
 <!-- title: "Synchronous API usage example"
 lineNumbers: true
@@ -56,8 +61,6 @@ print(listeners)
 type: tab
 title: Asynchronous
 -->
-
-### Asynchronous
 
 <!-- title: "Asynchronous API usage example"
 lineNumbers: true

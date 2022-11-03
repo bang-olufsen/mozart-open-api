@@ -1,4 +1,4 @@
-# Mozart Open API
+# Mozart platform API
 
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 [![Version](https://img.shields.io/pypi/v/mozart-api?color=g)](https://pypi.org/project/mozart-api)
@@ -16,4 +16,4 @@ Supported by:
 
 API documentation can be found on the [Github page](placeholder).
 
-The Github page has not been set up yet. To preview the API documentation, run the [index.html](/docs/index.html) on a local webserver.
+__*The Github page has not been set up yet. To preview the API documentation, run the [index.html](/docs/index.html) on a local webserver, for example using the [Live preview](https://marketplace.visualstudio.com/items?itemName=ms-vscode.live-server) extension in VS Code.*__
