@@ -2,11 +2,13 @@
 
 {BADGES}
 
+[![Balance stereo](/docs/media/balance_stereo.png)](<https://www.bang-olufsen.com/en/dk/speakers/beosound-balance-stereo-set?variant=beosound-balance-gva-naturaloak-bundle>)
+
 {DESCRIPTION}
 
-![Balance stereo](/docs/media/balance_stereo.png)
-
 {SUPPORTS}
+
+<!-- TODO: Add Github Pages URL-->
 
 API documentation can be found on the [Github page](placeholder).
 
