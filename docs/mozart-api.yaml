@@ -3714,3 +3714,6 @@ paths:
             - Product
             - mozart
 security: []
+servers:
+-   description: Local IP address placeholder
+    url: http://0.0.0.0

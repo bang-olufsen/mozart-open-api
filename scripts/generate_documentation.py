@@ -79,6 +79,17 @@ class DocumentationGeneration:
 
         print("Filled mozart_api_template and readme_template")
 
+    def add_dummy_server(self) -> None:
+        """Add a dummy server address for the try it feature to be shown and always fail."""
+        self.mozart_yaml["servers"] = [
+            {
+                "url": "http://0.0.0.0",
+                "description": "Local IP address placeholder",
+            }
+        ]
+
+        print("Added dummy IP address for documentation")
+
     def add_usage_descriptions(self) -> None:
         """Add Python endpoint name and partial API usage example."""
 
@@ -165,6 +176,7 @@ def main():
     documentation.update_readme()
     documentation.update_description()
 
+    documentation.add_dummy_server()
     documentation.add_usage_descriptions()
 
     documentation.write_yaml()
