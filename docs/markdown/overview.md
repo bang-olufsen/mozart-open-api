@@ -36,14 +36,18 @@ lineNumbers: true
 from mozart_api.models import VolumeLevel
 from mozart_api.mozart_client import MozartClient
 
-
-def all_notifications(notification):
+def all_notifications(notification: object, notification_type: str):
     """Notification handler."""
+    print(f"{notification_type} : {notification}")
+
+def volume_notifications(notification: object):
+    """Volume notification handler."""
     print(notification)
 
 # Setup API and WebSocket listener
 mozart_client = MozartClient(host="192.168.0.1")
 mozart_client.get_all_notifications(all_notifications)
+mozart_client.get_volume_notifications(volume_notifications)
 
 # Connect to the WebSocket notification channel
 mozart_client.connect_notifications(remote_control=True)
@@ -55,6 +59,7 @@ mozart_client.post_beolink_expand(jid="1234.1234567.12345678@products.bang-olufs
 
 listeners = mozart_client.get_beolink_listeners()
 print(listeners)
+
 ```
 
 <!--
@@ -70,14 +75,18 @@ lineNumbers: true
 from mozart_api.models import VolumeLevel
 from mozart_api.mozart_client import MozartClient
 
-
-def all_notifications(notification):
+def all_notifications(notification: object, notification_type: str):
     """Notification handler."""
+    print(f"{notification_type} : {notification}")
+
+def volume_notifications(notification: object):
+    """Volume notification handler."""
     print(notification)
 
 # Setup API and WebSocket listener
 mozart_client = MozartClient(host="192.168.0.1")
 mozart_client.get_all_notifications(all_notifications)
+mozart_client.get_volume_notifications(volume_notifications)
 
 # Connect to the WebSocket notification channel
 mozart_client.connect_notifications(remote_control=True)
