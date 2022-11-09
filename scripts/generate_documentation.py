@@ -2,9 +2,19 @@
 """Generate API documentation and README."""
 
 import sys
+from dataclasses import dataclass
 
 import yaml
 from inflection import underscore
+
+
+@dataclass
+class MarkdownFile:
+    """Class for handling markdown templates."""
+
+    path: str | None = None
+    content: str | None = None
+    tag: str | None = None
 
 
 class DocumentationGeneration:
@@ -14,47 +24,63 @@ class DocumentationGeneration:
         self.mozart_filename = mozart_filename
         self.mozart_yaml = self._load_yaml()
         self.mozart_api_name = self.mozart_yaml["info"]["title"]
-        self.common_content = None
+        self.mozart_api_version = self.mozart_filename.replace(
+            "mozart-api-", ""
+        ).removesuffix(".yaml")
+
+        self.markdown_files = [
+            MarkdownFile(path="docs/markdown/badges.md", tag="{BADGES}"),
+            MarkdownFile(path="docs/markdown/description.md", tag="{DESCRIPTION}"),
+            MarkdownFile(path="docs/markdown/overview.md", tag="{OVERVIEW}"),
+            MarkdownFile(path="docs/markdown/supports.md", tag="{SUPPORTS}"),
+            MarkdownFile(content=f"# {self.mozart_api_name}", tag="{HEADER}"),
+            MarkdownFile(content=self.mozart_api_version, tag="{VERSION}"),
+        ]
+
+        self.readme_template = MarkdownFile(path="docs/markdown/readme_template.md")
+        self.mozart_api_template = MarkdownFile(
+            path="docs/markdown/mozart_api_template.md"
+        )
+
+        self._load_markdown()
 
     def _load_yaml(self) -> dict:
         """Load the yaml file as a dict."""
         with open(self.mozart_filename, "r", encoding="utf-8") as mozart_yaml_file:
             return yaml.safe_load(mozart_yaml_file)
 
-    def update_readme(self) -> None:
-        """Update README with common.md and readme.md"""
+    def _load_markdown(self) -> None:
+        """Read the markdown files."""
 
-        # Load the markdown that is used in both the Github README and mozart-api.yaml
-        with open("common.md", "r", encoding="utf-8") as common_file:
-            self.common_content = common_file.read()
+        # Get content from the markdown files
+        for markdown_file in self.markdown_files:
+            if markdown_file.path is not None:
+                with open(markdown_file.path, "r", encoding="utf-8") as file:
+                    markdown_file.content = file.read()
 
-        with open("readme.md", "r", encoding="utf-8") as readme_file:
-            readme_content = readme_file.read()
+        # Get the templates
+        with open(self.mozart_api_template.path, "r", encoding="utf-8") as file:
+            self.mozart_api_template.content = file.read()
 
-        # Add the API name as a heading
-        final_readme_content = f"""# {self.mozart_api_name}
+        with open(self.readme_template.path, "r", encoding="utf-8") as file:
+            self.readme_template.content = file.read()
 
-{self.common_content}
-{readme_content}"""
+    def fill_templates(self) -> None:
+        """Update templates with self.markdown_files MarkdownFile objects."""
 
-        with open("../README.md", "w", encoding="utf-8") as readme_file:
-            readme_file.write(final_readme_content)
+        for markdown_file in self.markdown_files:
+            self.mozart_api_template.content = self.mozart_api_template.content.replace(
+                markdown_file.tag, markdown_file.content
+            )
 
-        print("Generated README.md")
+            self.readme_template.content = self.readme_template.content.replace(
+                markdown_file.tag, markdown_file.content
+            )
 
-    def update_description(self) -> None:
-        """update YAML file with overview.md file."""
-
-        with open("overview.md", "r", encoding="utf-8") as overview_file:
-            overview_content = overview_file.read()
-
-        self.mozart_yaml["info"]["description"] = (
-            self.common_content + "\n" + overview_content
-        )
-        print(f"{self.mozart_filename} updated with common.md and overview.md")
+        print("Filled mozart_api_template and readme_template")
 
     def add_usage_descriptions(self) -> None:
-        """Add python endpoint name and partial API usage example."""
+        """Add Python endpoint name and partial API usage example."""
 
         # Get the endpoint
         for path in self.mozart_yaml["paths"].copy():
@@ -95,6 +121,20 @@ mozart_client.{method_name}()
 
         print("Descriptions updated with usage descriptions.")
 
+    def update_description(self) -> None:
+        """update YAML file with filled template."""
+
+        self.mozart_yaml["info"]["description"] = self.mozart_api_template.content
+        print(f"{self.mozart_filename} updated with filled mozart_api_template")
+
+    def update_readme(self) -> None:
+        """update README.md file with filled template."""
+
+        with open("README.md", "w", encoding="utf-8") as file:
+            file.write(self.readme_template.content)
+
+        print("README.md updated with filled readme_template")
+
     def write_yaml(self) -> None:
         """Save the yaml dict as a file."""
         # Ensure that multiline strings use the | character
@@ -107,7 +147,7 @@ mozart_client.{method_name}()
             else dumper.represent_scalar("tag:yaml.org,2002:str", data),
         )
 
-        with open("mozart-api.yaml", "w", encoding="utf-8") as mozart_yaml_file:
+        with open("docs/mozart-api.yaml", "w", encoding="utf-8") as mozart_yaml_file:
             yaml.dump(self.mozart_yaml, mozart_yaml_file, indent=4)
 
 
@@ -120,8 +160,11 @@ def main():
 
     documentation = DocumentationGeneration(mozart_filename)
 
+    documentation.fill_templates()
+
     documentation.update_readme()
     documentation.update_description()
+
     documentation.add_usage_descriptions()
 
     documentation.write_yaml()

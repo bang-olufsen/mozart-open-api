@@ -6,6 +6,8 @@
 
 The Mozart API is a REST API with async capabilities and WebSocket notification channel for immediate state information. Currently the API is distributed as a Python package and as an OpenAPI document that can be found in the [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).
 
+![Balance stereo](/docs/media/balance_stereo.png)
+
 Supported by:
 
 - [BeoLab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)
@@ -16,4 +18,4 @@ Supported by:
 
 API documentation can be found on the [Github page](placeholder).
 
-__*The Github page has not been set up yet. To preview the API documentation, run the [index.html](/docs/index.html) on a local webserver, for example using the [Live preview](https://marketplace.visualstudio.com/items?itemName=ms-vscode.live-server) extension in VS Code.*__
+__*The Github page has not been set up yet. To preview the API documentation, run the [index.html](/docs/index.html) on a local webserver. For example using the [Live preview](https://marketplace.visualstudio.com/items?itemName=ms-vscode.live-server) extension in VS Code.*__

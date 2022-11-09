@@ -2228,7 +2228,7 @@ info:
     contact:
         email: support@bang-olufsen.dk
         name: Bang & Olufsen
-    description: |
+    description: |-
         [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
         [![Version](https://img.shields.io/pypi/v/mozart-api?color=g)](https://pypi.org/project/mozart-api)
         [![Downloads](https://img.shields.io/pypi/dm/mozart-api)](https://pypi.org/project/mozart-api)
@@ -2242,6 +2242,8 @@ info:
         - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
+
+        This API documentation has been generated for version 2.3.2.15109 of the Mozart API.
 
         The Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/). On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
 
@@ -2355,7 +2357,7 @@ info:
 
         This example shows device discovery and afterwards joining a Beolink session with WebSocket events being printed.
 
-        ![example gif](/docs/discovery_join.gif)
+        ![example gif](/docs/media/discovery_join.gif)
 
         ### Device discovery
 

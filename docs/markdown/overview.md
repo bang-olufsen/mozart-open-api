@@ -110,7 +110,7 @@ Additionally since the CLI uses MDNS for device discovery, port number 5353 need
 
 This example shows device discovery and afterwards joining a Beolink session with WebSocket events being printed.
 
-![example gif](/docs/discovery_join.gif)
+![example gif](/docs/media/discovery_join.gif)
 
 ### Device discovery
 
