@@ -30,17 +30,19 @@ class DocumentationGeneration:
         ).removesuffix(".yaml")
 
         self.markdown_files = [
-            MarkdownFile(path="docs/markdown/badges.md", tag="{BADGES}"),
-            MarkdownFile(path="docs/markdown/description.md", tag="{DESCRIPTION}"),
-            MarkdownFile(path="docs/markdown/overview.md", tag="{OVERVIEW}"),
-            MarkdownFile(path="docs/markdown/supports.md", tag="{SUPPORTS}"),
+            MarkdownFile(path="resources/markdown/badges.md", tag="{BADGES}"),
+            MarkdownFile(path="resources/markdown/description.md", tag="{DESCRIPTION}"),
+            MarkdownFile(path="resources/markdown/overview.md", tag="{OVERVIEW}"),
+            MarkdownFile(path="resources/markdown/supports.md", tag="{SUPPORTS}"),
             MarkdownFile(content=f"# {self.mozart_api_name}", tag="{HEADER}"),
             MarkdownFile(content=self.mozart_api_version, tag="{VERSION}"),
         ]
 
-        self.readme_template = MarkdownFile(path="docs/markdown/readme_template.md")
+        self.readme_template = MarkdownFile(
+            path="resources/markdown/readme_template.md"
+        )
         self.mozart_api_template = MarkdownFile(
-            path="docs/markdown/mozart_api_template.md"
+            path="resources/markdown/mozart_api_template.md"
         )
 
         self._load_markdown()
