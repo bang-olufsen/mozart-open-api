@@ -1955,6 +1955,19 @@ components:
                     $ref: '#/components/schemas/VolumeMute'
             type: object
         WebSocketEventActiveHdmiInputSignal:
+            description: |-
+                Use the `get_active_hdmi_input_signal_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def active_hdmi_input_signal_notifications(notification: object):
+                    """ActiveHdmiInputSignal notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_active_hdmi_input_signal_notifications(active_hdmi_input_signal_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/HdmiInput'
@@ -1962,6 +1975,19 @@ components:
                     type: string
             type: object
         WebSocketEventActiveListeningMode:
+            description: |-
+                Use the `get_active_listening_mode_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def active_listening_mode_notifications(notification: object):
+                    """ActiveListeningMode notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_active_listening_mode_notifications(active_listening_mode_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/ListeningModeProps'
@@ -1969,6 +1995,19 @@ components:
                     type: string
             type: object
         WebSocketEventActiveSpeakerGroup:
+            description: |-
+                Use the `get_active_speaker_group_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def active_speaker_group_notifications(notification: object):
+                    """ActiveSpeakerGroup notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_active_speaker_group_notifications(active_speaker_group_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/SpeakerGroupOverview'
@@ -1976,6 +2015,19 @@ components:
                     type: string
             type: object
         WebSocketEventAlarmTimer:
+            description: |-
+                Use the `get_alarm_timer_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def alarm_timer_notifications(notification: object):
+                    """AlarmTimer notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_alarm_timer_notifications(alarm_timer_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/AlarmTimerEventData'
@@ -1983,6 +2035,19 @@ components:
                     type: string
             type: object
         WebSocketEventAlarmTriggered:
+            description: |-
+                Use the `get_alarm_triggered_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def alarm_triggered_notifications(notification: object):
+                    """AlarmTriggered notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_alarm_triggered_notifications(alarm_triggered_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/AlarmTriggeredInfo'
@@ -1990,6 +2055,19 @@ components:
                     type: string
             type: object
         WebSocketEventBattery:
+            description: |-
+                Use the `get_battery_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def battery_notifications(notification: object):
+                    """Battery notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_battery_notifications(battery_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/BatteryState'
@@ -1997,6 +2075,19 @@ components:
                     type: string
             type: object
         WebSocketEventBeoRemoteButton:
+            description: |-
+                Use the `get_beo_remote_button_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def beo_remote_button_notifications(notification: object):
+                    """BeoRemoteButton notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_beo_remote_button_notifications(beo_remote_button_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/BeoRemoteButton'
@@ -2004,6 +2095,19 @@ components:
                     type: string
             type: object
         WebSocketEventBeolinkExperiencesResult:
+            description: |-
+                Use the `get_beolink_experiences_result_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def beolink_experiences_result_notifications(notification: object):
+                    """BeolinkExperiencesResult notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_beolink_experiences_result_notifications(beolink_experiences_result_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/BeolinkExperiencesResult'
@@ -2014,6 +2118,19 @@ components:
             - eventData
             type: object
         WebSocketEventBeolinkJoinResult:
+            description: |-
+                Use the `get_beolink_join_result_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def beolink_join_result_notifications(notification: object):
+                    """BeolinkJoinResult notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_beolink_join_result_notifications(beolink_join_result_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/BeolinkJoinResult'
@@ -2024,6 +2141,19 @@ components:
             - eventData
             type: object
         WebSocketEventButton:
+            description: |-
+                Use the `get_button_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def button_notifications(notification: object):
+                    """Button notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_button_notifications(button_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/ButtonEvent'
@@ -2031,6 +2161,19 @@ components:
                     type: string
             type: object
         WebSocketEventCurtains:
+            description: |-
+                Use the `get_curtains_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def curtains_notifications(notification: object):
+                    """Curtains notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_curtains_notifications(curtains_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/ProductCurtainStatus'
@@ -2038,6 +2181,19 @@ components:
                     type: string
             type: object
         WebSocketEventHdmiVideoFormatSignal:
+            description: |-
+                Use the `get_hdmi_video_format_signal_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def hdmi_video_format_signal_notifications(notification: object):
+                    """HdmiVideoFormatSignal notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_hdmi_video_format_signal_notifications(hdmi_video_format_signal_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/HdmiVideoFormat'
@@ -2045,7 +2201,20 @@ components:
                     type: string
             type: object
         WebSocketEventNotification:
-            description: This telegram is used to send a tagged notification.
+            description: |-
+                This telegram is used to send a tagged notification.
+                Use the `get_notification_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def notification_notifications(notification: object):
+                    """Notification notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_notification_notifications(notification_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/WebsocketNotificationTag'
@@ -2053,6 +2222,19 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackError:
+            description: |-
+                Use the `get_playback_error_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def playback_error_notifications(notification: object):
+                    """PlaybackError notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_playback_error_notifications(playback_error_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/PlaybackError'
@@ -2060,6 +2242,19 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackMetadata:
+            description: |-
+                Use the `get_playback_metadata_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def playback_metadata_notifications(notification: object):
+                    """PlaybackMetadata notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_playback_metadata_notifications(playback_metadata_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/PlaybackContentMetadata'
@@ -2067,6 +2262,19 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackProgress:
+            description: |-
+                Use the `get_playback_progress_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def playback_progress_notifications(notification: object):
+                    """PlaybackProgress notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_playback_progress_notifications(playback_progress_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/PlaybackProgress'
@@ -2074,6 +2282,19 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackSource:
+            description: |-
+                Use the `get_playback_source_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def playback_source_notifications(notification: object):
+                    """PlaybackSource notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_playback_source_notifications(playback_source_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/Source'
@@ -2081,6 +2302,19 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackState:
+            description: |-
+                Use the `get_playback_state_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def playback_state_notifications(notification: object):
+                    """PlaybackState notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_playback_state_notifications(playback_state_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/RenderingState'
@@ -2088,6 +2322,19 @@ components:
                     type: string
             type: object
         WebSocketEventPowerState:
+            description: |-
+                Use the `get_power_state_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def power_state_notifications(notification: object):
+                    """PowerState notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_power_state_notifications(power_state_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/PowerStateEnum'
@@ -2095,6 +2342,19 @@ components:
                     type: string
             type: object
         WebSocketEventPucInstallRemoteIdStatus:
+            description: |-
+                Use the `get_puc_install_remote_id_status_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def puc_install_remote_id_status_notifications(notification: object):
+                    """PucInstallRemoteIdStatus notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_puc_install_remote_id_status_notifications(puc_install_remote_id_status_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/InstallRecordIdState'
@@ -2102,6 +2362,19 @@ components:
                     type: string
             type: object
         WebSocketEventRole:
+            description: |-
+                Use the `get_role_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def role_notifications(notification: object):
+                    """Role notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_role_notifications(role_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/SpeakerRoleEnum'
@@ -2109,9 +2382,22 @@ components:
                     type: string
             type: object
         WebSocketEventRoomCompensationCurrentMeasurementEvent:
-            description: |
+            description: |-
                 Sent when a room compensation measurement is started/done.
                 Is only sent when room compensation type is advanced.
+
+                Use the `get_room_compensation_current_measurement_event_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def room_compensation_current_measurement_event_notifications(notification: object):
+                    """RoomCompensationCurrentMeasurementEvent notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_room_compensation_current_measurement_event_notifications(room_compensation_current_measurement_event_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/RoomCompensationCurrentMeasurement'
@@ -2119,6 +2405,19 @@ components:
                     type: string
             type: object
         WebSocketEventRoomCompensationState:
+            description: |-
+                Use the `get_room_compensation_state_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def room_compensation_state_notifications(notification: object):
+                    """RoomCompensationState notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_room_compensation_state_notifications(room_compensation_state_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/RoomCompensationStateValue'
@@ -2126,6 +2425,19 @@ components:
                     type: string
             type: object
         WebSocketEventSoftwareUpdateState:
+            description: |-
+                Use the `get_software_update_state_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def software_update_state_notifications(notification: object):
+                    """SoftwareUpdateState notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_software_update_state_notifications(software_update_state_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/SoftwareUpdateState'
@@ -2133,6 +2445,19 @@ components:
                     type: string
             type: object
         WebSocketEventSoundSettings:
+            description: |-
+                Use the `get_sound_settings_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def sound_settings_notifications(notification: object):
+                    """SoundSettings notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_sound_settings_notifications(sound_settings_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/SoundSettings'
@@ -2140,6 +2465,19 @@ components:
                     type: string
             type: object
         WebSocketEventSourceChange:
+            description: |-
+                Use the `get_source_change_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def source_change_notifications(notification: object):
+                    """SourceChange notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_source_change_notifications(source_change_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/Source'
@@ -2147,6 +2485,19 @@ components:
                     type: string
             type: object
         WebSocketEventSpeakerGroupChanged:
+            description: |-
+                Use the `get_speaker_group_changed_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def speaker_group_changed_notifications(notification: object):
+                    """SpeakerGroupChanged notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_speaker_group_changed_notifications(speaker_group_changed_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/SpeakerGroupId'
@@ -2154,6 +2505,19 @@ components:
                     type: string
             type: object
         WebSocketEventStandConnected:
+            description: |-
+                Use the `get_stand_connected_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def stand_connected_notifications(notification: object):
+                    """StandConnected notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_stand_connected_notifications(stand_connected_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/StandConnected'
@@ -2161,6 +2525,19 @@ components:
                     type: string
             type: object
         WebSocketEventStandPosition:
+            description: |-
+                Use the `get_stand_position_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def stand_position_notifications(notification: object):
+                    """StandPosition notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_stand_position_notifications(stand_position_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/StandPosition'
@@ -2168,6 +2545,19 @@ components:
                     type: string
             type: object
         WebSocketEventTvInfo:
+            description: |-
+                Use the `get_tv_info_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def tv_info_notifications(notification: object):
+                    """TvInfo notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_tv_info_notifications(tv_info_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/TvInfoEventData'
@@ -2175,6 +2565,19 @@ components:
                     type: string
             type: object
         WebSocketEventVolume:
+            description: |-
+                Use the `get_volume_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def volume_notifications(notification: object):
+                    """Volume notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_volume_notifications(volume_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/VolumeState'
@@ -2182,7 +2585,20 @@ components:
                     type: string
             type: object
         WebSocketEventWisaOutState:
-            description: Speaker Discovery State changed
+            description: |-
+                Speaker Discovery State changed
+                Use the `get_wisa_out_state_notifications()` method in the Python package to get notifications of this type:
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def wisa_out_state_notifications(notification: object):
+                    """WisaOutState notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_wisa_out_state_notifications(wisa_out_state_notifications)
+                mozart_client.connect_notifications()
+                ```
             properties:
                 eventData:
                     $ref: '#/components/schemas/WisaOutState'

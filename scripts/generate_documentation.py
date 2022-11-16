@@ -1,4 +1,5 @@
 #!/bin/python
+
 """Generate API documentation and README."""
 
 import sys
@@ -91,7 +92,7 @@ class DocumentationGeneration:
         print("Added dummy IP address for documentation")
 
     def add_usage_descriptions(self) -> None:
-        """Add Python endpoint name and partial API usage example."""
+        """Add Python method name and partial API usage example."""
 
         # Get the endpoint
         for path in self.mozart_yaml["paths"].copy():
@@ -131,6 +132,44 @@ mozart_client.{method_name}()
                     ] = description
 
         print("Descriptions updated with usage descriptions.")
+
+    def add_websocket_usage_descriptions(self) -> None:
+        """Add Python method name and partial API usage example."""
+
+        # Get the WebSocketEvent
+        for schema in self.mozart_yaml["components"]["schemas"].copy():
+            if "WebSocketEvent" in schema:
+
+                # Create Python usage descriptions
+                event_name = schema.removeprefix("WebSocketEvent")
+                method_name = f"get_{underscore(event_name)}_notifications"
+
+                # Create the usage example
+                description = f"""Use the `{method_name}()` method in the Python package to get notifications of this type:
+```python
+from mozart_api.mozart_client import MozartClient
+
+def {underscore(event_name)}_notifications(notification: object):
+    \"""{event_name} notification handler.\"""
+    print(notification)
+
+mozart_client = MozartClient(host="192.168.0.1")
+mozart_client.{method_name}({underscore(event_name)}_notifications)
+mozart_client.connect_notifications()
+```"""
+
+                # Keep the original description if it exists.
+                if "description" in self.mozart_yaml["components"]["schemas"][schema]:
+                    self.mozart_yaml["components"]["schemas"][schema][
+                        "description"
+                    ] += f"""
+{description}"""
+                else:
+                    self.mozart_yaml["components"]["schemas"][schema][
+                        "description"
+                    ] = description
+
+        print("WebSocketEvent descriptions updated with usage descriptions.")
 
     def update_description(self) -> None:
         """update YAML file with filled template."""
@@ -178,6 +217,7 @@ def main():
 
     documentation.add_dummy_server()
     documentation.add_usage_descriptions()
+    documentation.add_websocket_usage_descriptions()
 
     documentation.write_yaml()
 
