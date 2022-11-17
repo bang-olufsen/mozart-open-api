@@ -147,7 +147,10 @@ mozart_client.{method_name}()
                 method_name = f"get_{underscore(event_name)}_notifications"
 
                 # Create the usage example
-                description = f"""Use the `{method_name}()` method in the Python package to get notifications of this type:
+                description = f"""Use the `{method_name}()` method in the Python package to get notifications of this type.
+
+For example:
+
 ```python
 from mozart_api.mozart_client import MozartClient
 

@@ -860,6 +860,65 @@ components:
                 microphoneSwitchState:
                     $ref: '#/components/schemas/MicrophoneState'
             type: object
+        OverlayPlayRequest:
+            allOf:
+            -   $ref: '#/components/schemas/OverlayPlayRequestCommon'
+            -   $ref: '#/components/schemas/OverlayPlayRequestUri'
+            -   $ref: '#/components/schemas/OverlayPlayRequestTextToSpeech'
+            -   $ref: '#/components/schemas/OverlayPlayRequestFromUsb'
+        OverlayPlayRequestCommon:
+            properties:
+                volumeAbsolute:
+                    description: |
+                        An optional absolute volume level at which to play the URI. If not provided, the URI will play at the currently configured volume level on the product. The level should be provided in volume steps [0, 100]
+                    format: int32
+                    maximum: 100
+                    minimum: 0
+                    nullable: true
+                    type: integer
+            type: object
+        OverlayPlayRequestFromUsb:
+            nullable: true
+            properties:
+                fromUsb:
+                    properties:
+                        fileLocation:
+                            description: |
+                                Required field containing the relative path (i.e. from the USB drive root) and file name with extension (if one exists) that will be played. A maximum length of 1024 characters is allowed.
+                            maxLength: 1024
+                            type: string
+                    required:
+                    - fileLocation
+                    type: object
+            type: object
+        OverlayPlayRequestTextToSpeech:
+            nullable: true
+            properties:
+                textToSpeech:
+                    description: |
+                        Object used for performing a text-to-speech operation on the product. This object should be updated alongside the BeoCloud API as it is intended to replicate the BeoCloud endpoint[1] [1] BeoCloud: /api/v1/Voice/text-to-speech
+                    properties:
+                        lang:
+                            description: |
+                                An optional specification of the language to use. The default value is ultimately decided by the Cloud API, but currently it defaults to `en-us`.
+                            example: en-us
+                            nullable: true
+                            type: string
+                        text:
+                            description: |
+                                Required field containing the actual text that will be converted to speech (audio). A maximum length of 2048 characters is allowed.
+                            maxLength: 2048
+                            type: string
+                    required:
+                    - text
+                    type: object
+            type: object
+        OverlayPlayRequestUri:
+            nullable: true
+            properties:
+                uri:
+                    $ref: '#/components/schemas/Uri'
+            type: object
         PairedRemote:
             properties:
                 address:
@@ -1874,6 +1933,11 @@ components:
                 tvInfo:
                     $ref: '#/components/schemas/TvProperties'
             type: object
+        Uri:
+            properties:
+                location:
+                    type: string
+            type: object
         UserFlow:
             properties:
                 userId:
@@ -1956,7 +2020,10 @@ components:
             type: object
         WebSocketEventActiveHdmiInputSignal:
             description: |-
-                Use the `get_active_hdmi_input_signal_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_active_hdmi_input_signal_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -1976,7 +2043,10 @@ components:
             type: object
         WebSocketEventActiveListeningMode:
             description: |-
-                Use the `get_active_listening_mode_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_active_listening_mode_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -1996,7 +2066,10 @@ components:
             type: object
         WebSocketEventActiveSpeakerGroup:
             description: |-
-                Use the `get_active_speaker_group_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_active_speaker_group_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2016,7 +2089,10 @@ components:
             type: object
         WebSocketEventAlarmTimer:
             description: |-
-                Use the `get_alarm_timer_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_alarm_timer_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2036,7 +2112,10 @@ components:
             type: object
         WebSocketEventAlarmTriggered:
             description: |-
-                Use the `get_alarm_triggered_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_alarm_triggered_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2056,7 +2135,10 @@ components:
             type: object
         WebSocketEventBattery:
             description: |-
-                Use the `get_battery_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_battery_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2076,7 +2158,10 @@ components:
             type: object
         WebSocketEventBeoRemoteButton:
             description: |-
-                Use the `get_beo_remote_button_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_beo_remote_button_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2096,7 +2181,10 @@ components:
             type: object
         WebSocketEventBeolinkExperiencesResult:
             description: |-
-                Use the `get_beolink_experiences_result_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_beolink_experiences_result_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2119,7 +2207,10 @@ components:
             type: object
         WebSocketEventBeolinkJoinResult:
             description: |-
-                Use the `get_beolink_join_result_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_beolink_join_result_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2142,7 +2233,10 @@ components:
             type: object
         WebSocketEventButton:
             description: |-
-                Use the `get_button_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_button_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2162,7 +2256,10 @@ components:
             type: object
         WebSocketEventCurtains:
             description: |-
-                Use the `get_curtains_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_curtains_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2182,7 +2279,10 @@ components:
             type: object
         WebSocketEventHdmiVideoFormatSignal:
             description: |-
-                Use the `get_hdmi_video_format_signal_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_hdmi_video_format_signal_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2203,7 +2303,10 @@ components:
         WebSocketEventNotification:
             description: |-
                 This telegram is used to send a tagged notification.
-                Use the `get_notification_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_notification_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2223,7 +2326,10 @@ components:
             type: object
         WebSocketEventPlaybackError:
             description: |-
-                Use the `get_playback_error_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_playback_error_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2243,7 +2349,10 @@ components:
             type: object
         WebSocketEventPlaybackMetadata:
             description: |-
-                Use the `get_playback_metadata_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_playback_metadata_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2263,7 +2372,10 @@ components:
             type: object
         WebSocketEventPlaybackProgress:
             description: |-
-                Use the `get_playback_progress_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_playback_progress_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2283,7 +2395,10 @@ components:
             type: object
         WebSocketEventPlaybackSource:
             description: |-
-                Use the `get_playback_source_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_playback_source_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2303,7 +2418,10 @@ components:
             type: object
         WebSocketEventPlaybackState:
             description: |-
-                Use the `get_playback_state_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_playback_state_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2323,7 +2441,10 @@ components:
             type: object
         WebSocketEventPowerState:
             description: |-
-                Use the `get_power_state_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_power_state_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2343,7 +2464,10 @@ components:
             type: object
         WebSocketEventPucInstallRemoteIdStatus:
             description: |-
-                Use the `get_puc_install_remote_id_status_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_puc_install_remote_id_status_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2363,7 +2487,10 @@ components:
             type: object
         WebSocketEventRole:
             description: |-
-                Use the `get_role_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_role_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2386,7 +2513,10 @@ components:
                 Sent when a room compensation measurement is started/done.
                 Is only sent when room compensation type is advanced.
 
-                Use the `get_room_compensation_current_measurement_event_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_room_compensation_current_measurement_event_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2406,7 +2536,10 @@ components:
             type: object
         WebSocketEventRoomCompensationState:
             description: |-
-                Use the `get_room_compensation_state_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_room_compensation_state_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2426,7 +2559,10 @@ components:
             type: object
         WebSocketEventSoftwareUpdateState:
             description: |-
-                Use the `get_software_update_state_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_software_update_state_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2446,7 +2582,10 @@ components:
             type: object
         WebSocketEventSoundSettings:
             description: |-
-                Use the `get_sound_settings_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_sound_settings_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2466,7 +2605,10 @@ components:
             type: object
         WebSocketEventSourceChange:
             description: |-
-                Use the `get_source_change_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_source_change_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2486,7 +2628,10 @@ components:
             type: object
         WebSocketEventSpeakerGroupChanged:
             description: |-
-                Use the `get_speaker_group_changed_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_speaker_group_changed_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2506,7 +2651,10 @@ components:
             type: object
         WebSocketEventStandConnected:
             description: |-
-                Use the `get_stand_connected_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_stand_connected_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2526,7 +2674,10 @@ components:
             type: object
         WebSocketEventStandPosition:
             description: |-
-                Use the `get_stand_position_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_stand_position_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2546,7 +2697,10 @@ components:
             type: object
         WebSocketEventTvInfo:
             description: |-
-                Use the `get_tv_info_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_tv_info_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2566,7 +2720,10 @@ components:
             type: object
         WebSocketEventVolume:
             description: |-
-                Use the `get_volume_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_volume_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2587,7 +2744,10 @@ components:
         WebSocketEventWisaOutState:
             description: |-
                 Speaker Discovery State changed
-                Use the `get_wisa_out_state_notifications()` method in the Python package to get notifications of this type:
+                Use the `get_wisa_out_state_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
                 ```python
                 from mozart_api.mozart_client import MozartClient
 
@@ -2659,7 +2819,7 @@ info:
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
 
-        This API documentation has been generated for version 2.3.2.15109 of the Mozart API.
+        This API documentation has been generated for version 2.3.4.15123 of the Mozart API.
 
         The Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/). On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
 
@@ -3406,6 +3566,42 @@ paths:
             tags:
             - Beolink
             - mozart
+    /api/v1/overlay/play:
+        post:
+            description: |-
+                Play some audio as an overlay. This will duck currently playing music while the audio is playing.
+
+                Use the `post-overlay-play` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_overlay_play()
+                ```
+                ```mozart_api
+                mozart_api.post_overlay_play()
+                ```
+                ```overlay_api
+                overlay_api.post_overlay_play()
+                ```
+            operationId: post-overlay-play
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/OverlayPlayRequest'
+                description: settings to use for the overlay
+                required: true
+            responses:
+                '202':
+                    description: successful request; will attempt to play overlay
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Bad request
+            summary: Play overlay
+            tags:
+            - Overlay
+            - mozart
     /api/v1/playback/command/{command}:
         post:
             description: |-
@@ -3754,6 +3950,40 @@ paths:
                                 $ref: '#/components/schemas/ErrorModel'
                     description: invalid request
             summary: Set the active source
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/uri:
+        post:
+            description: |-
+                Use the `post-uri-source` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_uri_source()
+                ```
+                ```mozart_api
+                mozart_api.post_uri_source()
+                ```
+                ```playback_api
+                playback_api.post_uri_source()
+                ```
+            operationId: post-uri-source
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Uri'
+                description: the desired uri from which to stream data
+                required: true
+            responses:
+                '201':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the URI from which sound is streamed
             tags:
             - Playback
             - mozart
