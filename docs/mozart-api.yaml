@@ -2819,7 +2819,7 @@ info:
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
 
-        This API documentation has been generated for version 2.3.4.15123 of the Mozart API.
+        This API documentation has been generated for version 2.3.4.15123 of the Mozart platform.
 
         The Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/). On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
 
@@ -2827,7 +2827,7 @@ info:
 
         ## Installation
 
-        The Mozart Open API can be installed with pip. For more information about required Python version, check the [PyPI page](https://pypi.org/project/mozart-api/).
+        The Mozart Open API can be installed with pip and requires [Python](https://www.python.org/downloads/) version 3.8+.
 
         Install using pip:
 
