@@ -2805,21 +2805,23 @@ info:
         email: support@bang-olufsen.dk
         name: Bang & Olufsen
     description: |
-        [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+        [![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/bang-olufsen/mozart-open-api/blob/main/LICENSE)
         [![Version](https://img.shields.io/pypi/v/mozart-api?color=g)](https://pypi.org/project/mozart-api)
         [![Downloads](https://img.shields.io/pypi/dm/mozart-api)](https://pypi.org/project/mozart-api)
+        ![Python version](https://img.shields.io/pypi/pyversions/mozart-api)
 
         The Mozart API is a REST API with async capabilities and WebSocket notification channel for immediate state information. Currently the API is distributed as a Python package and as an OpenAPI document that can be found in the [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).
 
         Supported by:
 
-        - [BeoLab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)
+        - [Beolab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)
         - [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)
         - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
 
-        This API documentation has been generated for version 2.3.4.15123 of the Mozart platform and API generation version 2.3.4.15123.1.
+
+        This API documentation has been generated for version 2.3.4.15123 of the Mozart platform and API generation version 2.3.4.15123.2.
 
         The Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/). On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
 
@@ -2827,7 +2829,7 @@ info:
 
         ## Installation
 
-        The Mozart Open API can be installed with pip and requires [Python](https://www.python.org/downloads/) version 3.8+.
+        The Mozart Open API can be installed with pip and requires [Python](https://www.python.org/downloads/).
 
         Install using pip:
 
