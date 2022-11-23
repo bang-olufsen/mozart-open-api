@@ -1,0 +1,4373 @@
+components:
+    parameters:
+        ListeningModeID:
+            in: path
+            name: id
+            required: true
+            schema:
+                $ref: '#/components/schemas/ListeningModeID'
+        RecordId:
+            in: path
+            name: recordId
+            required: true
+            schema:
+                type: string
+        SourceId:
+            in: path
+            name: id
+            required: true
+            schema:
+                type: string
+        SpeakerId:
+            description: Speaker ID
+            in: path
+            name: id
+            required: true
+            schema:
+                $ref: '#/components/schemas/SpeakerId'
+    requestBodies:
+        OptionalEnable:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/RequiredEnable'
+    responses:
+        BadListeningMode:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorModel'
+            description: Invalid listening mode
+        BeolinkExperiencesResponse:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/BeolinkExperiencesRequest'
+            description: |
+                Scanning current experiences. This operation is asynchronous. You can
+                check the results by matching the `requestID` in the response with that
+                of the `` web socket event.
+        BeolinkJoinResponse:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/BeolinkJoinRequest'
+            description: |
+                Join started
+
+                Joining always happens asynchronously, use the `requestID` field in
+                the response to match your request with a
+                `WebsocketEventBeolinkJoinResult` web socket event.
+        EmptySuccess:
+            description: Success
+        MicrophoneMuted:
+            description: Action can not be completed since microphone is muted
+        MissingListeningMode:
+            description: No such listening mode
+        NotFound:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/ErrorModel'
+            description: Resource not found
+        Redirect:
+            description: Redirect to another resource
+            headers:
+                Location:
+                    description: URL of the other resource
+                    schema:
+                        format: uri
+                        type: string
+        WrongRoomCompensationType:
+            description: The requested room compensation type is not supported
+    schemas:
+        Action:
+            description: |
+                An action object. Examples:
+
+                RadioAction:
+                ```json
+                {
+                  "type": "radio",
+                  "radioStationId": "8779112938791514"
+                }
+                ```
+
+                ToneAction:
+                ```json
+                {
+                  "type": "tone",
+                  "toneName": "alarm_2"
+                }
+                ```
+
+                SourcePresetAction:
+                ```json
+                {
+                  "type": "sourcePreset",
+                  "source": {
+                    "value": "spotify"
+                  },
+                  "presetKey": "Preset3"
+                }
+                ```
+
+                DeezerFlowAction:
+                ```json
+                {
+                  "type": "deezerFlow",
+                  "deezerUserId": "1234"
+                }
+                ```
+
+                ActivateSourceAction:
+                ```json
+                {
+                  "type": "activateSource",
+                  "source": {
+                    "value": "spotify"
+                  }
+                }
+                ```
+
+                PlayQueueAction:
+                ```
+                  {
+                    "type": "playQueue",
+                    "queueItem": {
+                      "provider": {
+                        "value": "deezer"
+                      },
+                      "startNowFromPosition": 0,
+                      "type": "playlist",
+                      "uri": "playlist:8074581462"
+                    },
+                    "queueSettings": {
+                      "consume": false,
+                      "repeat": "none",
+                      "shuffle": false
+                    }
+                  }
+                ```
+
+                StandbyAction:
+                ```json
+                {
+                  "type": "standby"
+                }
+                ```
+
+                AllStandbyAction:
+                ```json
+                {
+                  "type": "allStandby"
+                }
+                ```
+
+                TouchToJoinAction:
+                ```json
+                {
+                  "type": "touchToJoin"
+                }
+                ```
+
+                ButtonShortPressAction:
+                ```json
+                {
+                  "type": "buttonShortPress",
+                  "buttonName": "preset1"
+                }
+                ```
+
+                FallbackAction:
+                ```json
+                {
+                  "type": "fallback"
+                }
+                ```
+
+                VolumeAction:
+                ```json
+                {
+                  "type": "volume",
+                  "volumeLevel": 25
+                }
+                ```
+
+                StopAction:
+                ```json
+                {
+                  "type": "stop",
+                  "stopDuration": 1300
+                }
+                ```
+
+                TriggerContentAction:
+                ```json
+                {
+                  "contentId": "tv://netflix",
+                  "type": "triggerContent"
+                }
+                ```
+
+                SpeakerGroupAction:
+                ```json
+                {
+                  "type": "speakerGroup",
+                  "speakerGroupId": "00112233-4455-6677-8899-aabbccddeeff"
+                }
+                ```
+
+                ListeningModeAction:
+                ```json
+                {
+                  "type": "listeningMode",
+                  "listeningModeId": 1234
+                }
+                ```
+
+                StandAction:
+                ```json
+                {
+                  "type": "stand",
+                  "standPosition": {
+                    "angle": 7.5
+                  }
+                }
+                ```
+            properties:
+                buttonName:
+                    description: Name of the Button used for button-press types ('buttonShortPress')
+                    enum:
+                    - microphone
+                    - bluetooth
+                    - next
+                    - previous
+                    - playPause
+                    - previousNext
+                    - preset1
+                    - preset2
+                    - preset3
+                    - preset4
+                    nullable: true
+                    type: string
+                contentId:
+                    description: Id of content only used for 'type=triggerContent'
+                    nullable: true
+                    type: string
+                deezerUserId:
+                    description: Id of user only used for 'type=deezerFlow' and is
+                        optional
+                    format: '[0-9]+'
+                    nullable: true
+                    type: string
+                listeningModeId:
+                    $ref: '#/components/schemas/ListeningModeID'
+                    description: Only used for 'type=listeningMode'
+                    nullable: true
+                presetKey:
+                    description: Only used for 'type=sourcePreset'
+                    format: ^Preset[0-9]+$
+                    nullable: true
+                    type: string
+                queueItem:
+                    $ref: '#/components/schemas/PlayQueueItem'
+                    description: PlayQueue item only used for 'type=playQueue'
+                    nullable: true
+                queueSettings:
+                    $ref: '#/components/schemas/PlayQueueSettings'
+                    description: PlayQueue settings only used for 'type=playQueue'
+                        and is optional
+                    nullable: true
+                radioStationId:
+                    description: Id of RadioStation only used for 'type=radio'
+                    format: '[0-9]+'
+                    nullable: true
+                    type: string
+                source:
+                    $ref: '#/components/schemas/SourceTypeEnum'
+                    nullable: true
+                speakerGroupId:
+                    $ref: '#/components/schemas/SpeakerGroupId'
+                    description: Only used for 'type=speakerGroup'
+                    nullable: true
+                standPosition:
+                    $ref: '#/components/schemas/StandPosition'
+                    description: Only used for 'type=stand'
+                stopDuration:
+                    description: The duration to wait (seconds) until stopping only
+                        used for 'type=stop'
+                    format: int32
+                    minimum: 0
+                    nullable: true
+                    type: integer
+                toneName:
+                    description: Name of the tone only used for 'type=tone'
+                    enum:
+                    - alarm_1
+                    - alarm_2
+                    nullable: true
+                    type: string
+                type:
+                    description: The type of Action
+                    enum:
+                    - standby
+                    - tone
+                    - radio
+                    - sourcePreset
+                    - deezerFlow
+                    - activateSource
+                    - playQueue
+                    - buttonShortPress
+                    - allStandby
+                    - touchToJoin
+                    - fallback
+                    - volume
+                    - stop
+                    - triggerContent
+                    - speakerGroup
+                    - listeningMode
+                    - stand
+                    type: string
+                volumeLevel:
+                    description: The volume level to configure only used for 'type=volume'
+                    format: int32
+                    maximum: 100
+                    minimum: 0
+                    nullable: true
+                    type: integer
+            required:
+            - type
+            type: object
+        ActionList:
+            description: An ordered list of Actions to run on the product
+            example:
+            -   type: volume
+                volumeLevel: 35
+            -   radioStationId: '8779112938791514'
+                type: radio
+            -   stopDuration: 1300
+                type: stop
+            items:
+                $ref: '#/components/schemas/Action'
+            type: array
+        AlarmId:
+            format: uuid
+            type: string
+        AlarmLabel:
+            description: Label for an alarm
+            maxLength: 128
+            type: string
+        AlarmTimerEventData:
+            properties:
+                event:
+                    enum:
+                    - add
+                    - update
+                    - delete
+                    type: string
+                id:
+                    $ref: '#/components/schemas/AlarmId'
+                type:
+                    enum:
+                    - alarm
+                    - timer
+                    type: string
+            type: object
+        AlarmTriggeredInfo:
+            properties:
+                id:
+                    $ref: '#/components/schemas/AlarmId'
+                label:
+                    $ref: '#/components/schemas/AlarmLabel'
+            type: object
+        Ambience:
+            properties:
+                value:
+                    description: Selected ambience value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        Art:
+            properties:
+                hasLocalImage:
+                    type: boolean
+                key:
+                    type: string
+                size:
+                    type: string
+                type:
+                    type: string
+                url:
+                    type: string
+            type: object
+        Balance:
+            properties:
+                value:
+                    description: Selected balance value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        Bass:
+            properties:
+                value:
+                    description: Selected bass value
+                    format: int32
+                    type: integer
+            required:
+            - value
+            type: object
+        BassManagement:
+            properties:
+                value:
+                    description: Selected bass-management value
+                    enum:
+                    - 'on'
+                    - 'off'
+                    type: string
+            required:
+            - value
+            type: object
+        BatteryState:
+            properties:
+                batteryLevel:
+                    description: |
+                        Batterylevel in percent
+                    type: integer
+                isCharging:
+                    type: boolean
+                remainingChargingTimeMinutes:
+                    description: Remaining charging time in minutes
+                    type: integer
+                remainingPlayingTimeMinutes:
+                    description: Remaining playing time in minutes
+                    type: integer
+            type: object
+        BeoRemoteButton:
+            properties:
+                Key:
+                    type: string
+                Type:
+                    enum:
+                    - KeyPress
+                    - KeyRelease
+            type: object
+        BeolinkAvailableListener:
+            properties:
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            type: object
+        BeolinkExperience:
+            properties:
+                category:
+                    description: Source category
+                    enum:
+                    - TV
+                    - RADIO
+                    - MUSIC
+                    - MEDIA
+                    - UNKNOWN
+                    type: string
+                id:
+                    description: experience id, e.g. "RADIO" or "toslink"
+                    type: string
+                linkable:
+                    description: Linkable means "Does pressing play on this source
+                        make sense"
+                    type: boolean
+                name:
+                    description: Experience name, e.g. "Bluetooth" or "B&O Radio"
+                    type: string
+                productFriendlyName:
+                    description: Optional product friendly name
+                    type: string
+                sourceFriendlyName:
+                    description: Optional friendly name for source
+                    type: string
+                type:
+                    description: Source type. This corresponds to the exhaustive list
+                        or sources provided by the control layer
+                    type: string
+                uniqueSourceId:
+                    description: The actual device jabber id that the experience comes
+                        from
+                    type: string
+            required:
+            - id
+            - name
+            - type
+            - category
+            - uniqueSourceId
+            - linkable
+            type: object
+        BeolinkExperiencesRequest:
+            properties:
+                requestID:
+                    $ref: '#/components/schemas/BeolinkRequestID'
+            required:
+            - requestID
+            type: object
+        BeolinkExperiencesResult:
+            properties:
+                experiences:
+                    items:
+                        $ref: '#/components/schemas/BeolinkExperience'
+                    type: array
+                requestID:
+                    $ref: '#/components/schemas/BeolinkRequestID'
+                status:
+                    description: |
+                        Current scan status.
+                        * busy: there is another scan in progress
+                        * timeout: the scan timed out. The results will be partial
+                    enum:
+                    - ok
+                    - busy
+                    - timeout
+                    type: string
+            required:
+            - requestID
+            - status
+            - experiences
+            type: object
+        BeolinkJoinRequest:
+            properties:
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+                requestID:
+                    $ref: '#/components/schemas/BeolinkRequestID'
+                result:
+                    description: Relative URL of the join result
+                    format: uri
+                    type: string
+            required:
+            - requestID
+            - result
+            type: object
+        BeolinkJoinResult:
+            properties:
+                error:
+                    description: Join error
+                    enum:
+                    - ok
+                    - busy
+                    - leaderless
+                    - alone
+                    - silent
+                    - missing
+                    - rejected
+                    - timeout
+                    type: string
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+                requestID:
+                    $ref: '#/components/schemas/BeolinkRequestID'
+                status:
+                    description: Overall join status
+                    enum:
+                    - idle
+                    - joined
+                    - failed
+                    type: string
+                type:
+                    description: The type of join request this is a result of
+                    enum:
+                    - join
+                    - joinRequested
+                    - expand
+                    - expandRequested
+                    type: string
+            required:
+            - requestID
+            - status
+            - jid
+            - type
+            type: object
+        BeolinkLeader:
+            properties:
+                friendlyName:
+                    type: string
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            - friendlyName
+            type: object
+        BeolinkListener:
+            properties:
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            type: object
+        BeolinkPeer:
+            properties:
+                friendlyName:
+                    type: string
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            - friendlyName
+            type: object
+        BeolinkPeerID:
+            description: Beolink peer ID
+            example: 2714.1200304.26451293@products.bang-olufsen.com
+            type: string
+        BeolinkRequestID:
+            description: Beolink request ID
+            example: 48985a4f-a4de-4b44-9757-c9a7407b8882
+            format: uuid
+            type: string
+        BluetoothDevice:
+            properties:
+                address:
+                    type: string
+                connected:
+                    type: boolean
+                name:
+                    type: string
+            type: object
+        BluetoothDeviceList:
+            properties:
+                items:
+                    items:
+                        $ref: '#/components/schemas/BluetoothDevice'
+                    type: array
+            type: object
+        ButtonEvent:
+            properties:
+                button:
+                    description: identifies the button
+                    type: string
+                state:
+                    description: identifies the state change
+                    type: string
+            type: object
+        Compression:
+            properties:
+                value:
+                    description: Selected compression value
+                    enum:
+                    - 'off'
+                    - medium
+                    - maximum
+                    type: string
+            required:
+            - value
+            type: object
+        ContentCategoryList:
+            items:
+                enum:
+                - music
+                - movie
+                - tv
+                - hdmi
+                - app
+                type: string
+            type: array
+        ContentItem:
+            example:
+                contentUri: tv://netflix
+                label: Netflix
+            properties:
+                categories:
+                    $ref: '#/components/schemas/ContentCategoryList'
+                    nullable: true
+                contentUri:
+                    type: string
+                label:
+                    nullable: true
+                    type: string
+                source:
+                    $ref: '#/components/schemas/SourceTypeEnum'
+            required:
+            - contentUri
+            - source
+            type: object
+        Directivity:
+            properties:
+                value:
+                    enum:
+                    - front
+                    - left
+                    - right
+                    - omni
+                    - narrow
+                    - wide
+                    - standalone
+                    type: string
+            required:
+            - value
+            type: object
+        ErrorModel:
+            description: the general error model
+            properties:
+                errorCode:
+                    description: |
+                        A wellknown code that signal the error, can be used by callers
+                    type: string
+                errorId:
+                    description: |
+                        A unique identifier used to e.g. quick find in logs
+                    type: string
+                errorMessage:
+                    description: |
+                        A textual representation, human readable and suitable for logs
+                    type: string
+            type: object
+        Fader:
+            properties:
+                value:
+                    description: Selected fader value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        HdmiIdType:
+            type: string
+        HdmiInput:
+            properties:
+                contentUri:
+                    description: This points to the editable content trigger for this
+                        specific hdmi input
+                    type: string
+                input:
+                    $ref: '#/components/schemas/HdmiIdType'
+            type: object
+        HdmiVideoFormat:
+            properties:
+                pixelFormat:
+                    $ref: '#/components/schemas/VideoPixelFormat'
+                vIC:
+                    format: int32
+                    minimum: 0
+                    type: integer
+                videoTimings:
+                    $ref: '#/components/schemas/VideoTimings'
+            type: object
+        InstallRecordIdState:
+            properties:
+                value:
+                    enum:
+                    - idle
+                    - gettingUrl
+                    - urlInvalid
+                    - downloading
+                    - downloadFinished
+                    - downloadFailed
+                    type: string
+        ListeningModeFeatures:
+            description: Sound features to apply
+            properties:
+                ambience:
+                    $ref: '#/components/schemas/Ambience'
+                balance:
+                    $ref: '#/components/schemas/Balance'
+                bassManagement:
+                    $ref: '#/components/schemas/BassManagement'
+                compression:
+                    $ref: '#/components/schemas/Compression'
+                directivity:
+                    $ref: '#/components/schemas/Directivity'
+                fader:
+                    $ref: '#/components/schemas/Fader'
+                roomCompensation:
+                    $ref: '#/components/schemas/RoomCompensation'
+                spatialEnvelopment:
+                    $ref: '#/components/schemas/SpatialEnvelopment'
+                spatialHeight:
+                    $ref: '#/components/schemas/SpatialHeight'
+                spatialProcessing:
+                    $ref: '#/components/schemas/SpatialProcessing'
+                spatialSurround:
+                    $ref: '#/components/schemas/SpatialSurround'
+                spatialWidth:
+                    $ref: '#/components/schemas/SpatialWidth'
+                speechEnhance:
+                    $ref: '#/components/schemas/SpeechEnhance'
+                toneTouch:
+                    $ref: '#/components/schemas/ToneTouch'
+            type: object
+        ListeningModeID:
+            format: int32
+            minimum: 0
+            type: integer
+        ListeningModeProps:
+            properties:
+                clientCtx:
+                    description: |
+                        An optional generic string property supplied from the client. If
+                        provided, it will be stored without changes.
+                        If not supplied, any current clientCtx will remain unchanged.
+                    maxLength: 4096
+                    nullable: true
+                    type: string
+                features:
+                    $ref: '#/components/schemas/ListeningModeFeatures'
+                id:
+                    $ref: '#/components/schemas/ListeningModeID'
+                name:
+                    description: Friendly name
+                    type: string
+                origin:
+                    description: User created, default or an edited default listening
+                        mode
+                    enum:
+                    - user
+                    - default
+                    - edited
+                    type: string
+                role:
+                    description: Role a listening mode applies to
+                    enum:
+                    - standalone
+                    - multichannel
+                    type: string
+                triggers:
+                    items:
+                        $ref: '#/components/schemas/ListeningModeTrigger'
+                    type: array
+            type: object
+        ListeningModeTrigger:
+            oneOf:
+            -   $ref: '#/components/schemas/PowerLinkTrigger'
+        Loudness:
+            properties:
+                value:
+                    type: boolean
+        MicrophoneState:
+            properties:
+                value:
+                    enum:
+                    - 'on'
+                    - 'off'
+                    type: string
+            type: object
+        MicrophonesState:
+            description: state of microphones, both physical switches and software
+                state
+            properties:
+                microphoneState:
+                    $ref: '#/components/schemas/MicrophoneState'
+                microphoneSwitchState:
+                    $ref: '#/components/schemas/MicrophoneState'
+            type: object
+        OverlayPlayRequest:
+            allOf:
+            -   $ref: '#/components/schemas/OverlayPlayRequestCommon'
+            -   $ref: '#/components/schemas/OverlayPlayRequestUri'
+            -   $ref: '#/components/schemas/OverlayPlayRequestTextToSpeech'
+            -   $ref: '#/components/schemas/OverlayPlayRequestFromUsb'
+        OverlayPlayRequestCommon:
+            properties:
+                volumeAbsolute:
+                    description: |
+                        An optional absolute volume level at which to play the URI. If not provided, the URI will play at the currently configured volume level on the product. The level should be provided in volume steps [0, 100]
+                    format: int32
+                    maximum: 100
+                    minimum: 0
+                    nullable: true
+                    type: integer
+            type: object
+        OverlayPlayRequestFromUsb:
+            nullable: true
+            properties:
+                fromUsb:
+                    properties:
+                        fileLocation:
+                            description: |
+                                Required field containing the relative path (i.e. from the USB drive root) and file name with extension (if one exists) that will be played. A maximum length of 1024 characters is allowed.
+                            maxLength: 1024
+                            type: string
+                    required:
+                    - fileLocation
+                    type: object
+            type: object
+        OverlayPlayRequestTextToSpeech:
+            nullable: true
+            properties:
+                textToSpeech:
+                    description: |
+                        Object used for performing a text-to-speech operation on the product. This object should be updated alongside the BeoCloud API as it is intended to replicate the BeoCloud endpoint[1] [1] BeoCloud: /api/v1/Voice/text-to-speech
+                    properties:
+                        lang:
+                            description: |
+                                An optional specification of the language to use. The default value is ultimately decided by the Cloud API, but currently it defaults to `en-us`.
+                            example: en-us
+                            nullable: true
+                            type: string
+                        text:
+                            description: |
+                                Required field containing the actual text that will be converted to speech (audio). A maximum length of 2048 characters is allowed.
+                            maxLength: 2048
+                            type: string
+                    required:
+                    - text
+                    type: object
+            type: object
+        OverlayPlayRequestUri:
+            nullable: true
+            properties:
+                uri:
+                    $ref: '#/components/schemas/Uri'
+            type: object
+        PairedRemote:
+            properties:
+                address:
+                    type: string
+                name:
+                    type: string
+            required:
+            - address
+            - name
+            type: object
+        PairedRemoteList:
+            items:
+                $ref: '#/components/schemas/PairedRemote'
+            type: array
+        PairedRemoteResponse:
+            properties:
+                items:
+                    $ref: '#/components/schemas/PairedRemoteList'
+        PlayQueueIdType:
+            format: uuid
+            type: string
+        PlayQueueItem:
+            properties:
+                index:
+                    format: int32
+                    type: integer
+                metadata:
+                    $ref: '#/components/schemas/PlaybackContentMetadata'
+                    nullable: true
+                provider:
+                    $ref: '#/components/schemas/PlayQueueItemType'
+                startNowFromPosition:
+                    description: Start playing specified track as soon as possible.
+                        This works for any type, for `track` set to 0 and for `playlist`
+                        specify the wanted track from position 0
+                    format: int32
+                    nullable: true
+                    type: integer
+                type:
+                    enum:
+                    - track
+                    - playlist
+                    type: string
+                uri:
+                    description: This can be url, track id, playlist id, radio id
+                        and suchlike
+                    type: string
+            required:
+            - provider
+            - type
+            - uri
+            type: object
+        PlayQueueItemType:
+            properties:
+                value:
+                    enum:
+                    - uri
+                    - dlna
+                    - radio
+                    - deezer
+                    - beoCloud
+                    type: string
+            required:
+            - value
+        PlayQueueSettings:
+            properties:
+                consume:
+                    type: boolean
+                gapless:
+                    type: boolean
+                repeat:
+                    enum:
+                    - all
+                    - track
+                    - none
+                    type: string
+                shuffle:
+                    type: boolean
+        PlaybackContentMetadata:
+            properties:
+                albumName:
+                    type: string
+                art:
+                    items:
+                        $ref: '#/components/schemas/Art'
+                    type: array
+                artistName:
+                    type: string
+                bitdepth:
+                    format: int32
+                    type: integer
+                bitrate:
+                    format: int32
+                    type: integer
+                containerName:
+                    type: string
+                encoding:
+                    enum:
+                    - pcm
+                    - wav
+                    - mp3
+                    - oggvorbis
+                    - aac
+                    - flac
+                    - sbc
+                    - alac
+                    - opus
+                    - DolbyDigital
+                    - DolbyDigitalPlus
+                    - DolbyTrueHD
+                    - unknown
+                    type: string
+                genre:
+                    type: string
+                id:
+                    type: integer
+                inputChannelProcessing:
+                    description: |
+                        Input processing/decoding on top of the base codec indicated in encoding. E.g. Dolby Atmos on top of Dolby TrueHD or Dolby Surround on top of PCM. For Dolby, this value has priority over encoding, meaning that if inputChannelProcessing has a value, it must be indicated in the app, and optionally the encoding value can be indicated as well. If inputChannelProcessing does not have value the encoding value must be indicated.
+                    enum:
+                    - dolbySurround
+                    - dolbyAtmos
+                    nullable: true
+                    type: string
+                inputChannels:
+                    description: e.g. 5.1
+                    nullable: true
+                    type: string
+                organization:
+                    description: |
+                        This can be filled by gstreamers GST_TAG_ORGANIZATION. Mozart can also fill this with netradio station name like "P3" and TV content like "Netflix". This is needed so it's possible to show who the provider is for the playing audio track/content.
+                    type: string
+                outputChannelProcessing:
+                    description: e.g. downmix
+                    enum:
+                    - Direct
+                    - Downmix
+                    - TrueImage
+                    nullable: true
+                    type: string
+                outputChannels:
+                    description: e.g. 7.1
+                    nullable: true
+                    type: string
+                queueId:
+                    $ref: '#/components/schemas/PlayQueueIdType'
+                remoteLeader:
+                    $ref: '#/components/schemas/BeolinkLeader'
+                remoteSource:
+                    nullable: true
+                    type: string
+                samplerate:
+                    format: int32
+                    type: integer
+                source:
+                    type: string
+                sourceInternalId:
+                    type: string
+                title:
+                    type: string
+                totalDuration:
+                    description: to be removed once all devices and apps are updated
+                    format: int32
+                    nullable: true
+                    type: integer
+                totalDurationSeconds:
+                    format: int32
+                    nullable: true
+                    type: integer
+                track:
+                    format: int32
+                    type: integer
+                trackCount:
+                    format: int32
+                    type: integer
+                uri:
+                    type: string
+            type: object
+        PlaybackError:
+            properties:
+                error:
+                    type: string
+                item:
+                    $ref: '#/components/schemas/PlaybackContentMetadata'
+            type: object
+        PlaybackProgress:
+            properties:
+                id:
+                    type: string
+                progress:
+                    format: int32
+                    type: integer
+                totalDuration:
+                    format: int32
+                    nullable: true
+                    type: integer
+            type: object
+        PlaybackState:
+            properties:
+                metadata:
+                    $ref: '#/components/schemas/PlaybackContentMetadata'
+                progress:
+                    $ref: '#/components/schemas/PlaybackProgress'
+                source:
+                    $ref: '#/components/schemas/Source'
+                state:
+                    $ref: '#/components/schemas/RenderingState'
+            type: object
+        PowerLinkTrigger:
+            properties:
+                powerLinkPreset:
+                    description: PowerLink preset
+                    type: integer
+            type: object
+        PowerStateEnum:
+            properties:
+                value:
+                    enum:
+                    - networkStandby
+                    - 'on'
+                    - standby
+                    - shutdown
+                    - storage
+                    type: string
+        Preset:
+            allOf:
+            -   $ref: '#/components/schemas/SceneTriggerBaseProperties'
+            -   properties:
+                    content:
+                        $ref: '#/components/schemas/ContentItem'
+                        nullable: true
+                    id:
+                        type: string
+                    name:
+                        nullable: true
+                        type: string
+                    source:
+                        $ref: '#/components/schemas/SourceTypeEnum'
+                        nullable: true
+                    title:
+                        type: string
+                type: object
+        PresetMap:
+            additionalProperties:
+                $ref: '#/components/schemas/Preset'
+            type: object
+        ProductCurtainStatus:
+            properties:
+                moving:
+                    type: boolean
+                position:
+                    enum:
+                    - unknown
+                    - closed
+                    - narrow
+                    - wide
+                    type: string
+        ProductState:
+            properties:
+                microphones:
+                    $ref: '#/components/schemas/MicrophonesState'
+                playback:
+                    $ref: '#/components/schemas/PlaybackState'
+                powerState:
+                    $ref: '#/components/schemas/PowerStateEnum'
+                softwareUpdateState:
+                    $ref: '#/components/schemas/SoftwareUpdateState'
+                soundSettings:
+                    $ref: '#/components/schemas/SoundSettings'
+                source:
+                    $ref: '#/components/schemas/Source'
+                tv:
+                    $ref: '#/components/schemas/TvState'
+                volume:
+                    $ref: '#/components/schemas/VolumeState'
+            type: object
+        RenderingState:
+            properties:
+                value:
+                    enum:
+                    - idle
+                    - buffering
+                    - started
+                    - paused
+                    - stopped
+                    - ended
+                    - error
+                    - unknown
+                    type: string
+        RequiredEnable:
+            properties:
+                enabled:
+                    type: boolean
+            required:
+            - enabled
+            type: object
+        RoomCompensation:
+            properties:
+                value:
+                    $ref: '#/components/schemas/RoomCompensationValue'
+            required:
+            - value
+            type: object
+        RoomCompensationCurrentMeasurement:
+            description: |
+                State and speaker ID of the currently running measurement.
+                Is only relevant for advanced room compensation.
+            properties:
+                speakerId:
+                    $ref: '#/components/schemas/SpeakerId'
+                    description: Speaker ID of the speaker being measured.
+                state:
+                    description: |
+                        State of the measurement for the speaker.
+                        started:
+                          The measurement has started.
+                        done:
+                          The measurement has ended sucessfully.
+                        lastDone:
+                          The last measurement in the run has ended sucessfully.
+                        error:
+                          An error occurred during measurement.
+                    enum:
+                    - started
+                    - done
+                    - lastDone
+                    - error
+                    type: string
+            type: object
+        RoomCompensationDebug:
+            properties:
+                value:
+                    type: boolean
+        RoomCompensationEnabled:
+            properties:
+                value:
+                    type: boolean
+        RoomCompensationErrorDetails:
+            properties:
+                errorList:
+                    description: List of the speakers where measurement failed, including
+                        error type.
+                    items:
+                        $ref: '#/components/schemas/RoomCompensationMeasurementError'
+                    type: array
+            type: object
+        RoomCompensationInfo:
+            properties:
+                debug:
+                    $ref: '#/components/schemas/RoomCompensationDebug'
+                enabled:
+                    $ref: '#/components/schemas/RoomCompensationEnabled'
+                lastResult:
+                    $ref: '#/components/schemas/RoomCompensationResult'
+                lastRun:
+                    $ref: '#/components/schemas/RoomCompensationState'
+                type:
+                    $ref: '#/components/schemas/RoomCompensationType'
+                version:
+                    $ref: '#/components/schemas/RoomCompensationVersion'
+            type: object
+        RoomCompensationMeasurementError:
+            properties:
+                error:
+                    description: |
+                        noError:
+                          The measurement went OK.
+                        lowSignal:
+                          When there is too low signal in the recording, e.g. due to a loudspeaker being placed at
+                          too great a distance from the microphone.
+                        speakerSilent:
+                          No signal could be measured.
+                          Could be because:
+                            - The speaker is powered off or not connected.
+                            - The left/right switch on a wired powerlink speaker is set in the wrong position.
+                            - The speaker is placed in another room behind closed doors.
+                        noisy<Left/Right/External>Microphone:
+                          When the recording of the given microphone is too noisy.
+                          Could be because:
+                            - Something is blocking the microphone
+                        externalMicrophoneLocation:
+                          When the location of the external microphone is invalid.
+                        externalMicrophoneMissing:
+                          If the external microphone was missing/disconnected during a measurement.
+                        microphonesDisabled:
+                          If the microphones are either muted or disabled.
+                        noisyMeasurement:
+                          When too much background noise has been detected during the measurement
+                        internalError:
+                          Something went wrong internally - can not be fixed by the user. Try again.
+                    enum:
+                    - noError
+                    - lowSignal
+                    - speakerSilent
+                    - noisyLeftMicrophone
+                    - noisyRightMicrophone
+                    - noisyExternalMicrophone
+                    - externalMicrophoneLocation
+                    - externalMicrophoneMissing
+                    - microphonesDisabled
+                    - noisyMeasurement
+                    - internalError
+                    type: string
+                speakerId:
+                    $ref: '#/components/schemas/SpeakerId'
+                    description: |
+                        Speaker ID of the speaker with measurement error.
+                        Is only relevant for advanced room compensation.
+            type: object
+        RoomCompensationProperties:
+            allOf:
+            -   $ref: '#/components/schemas/RoomCompensationType'
+            -   properties:
+                    action:
+                        description: |
+                            Must be set if room compensation type is advanced.
+                            runAll:
+                              Do measurements on all connected speakers.
+                            continue:
+                              Continue from and including the speaker where last interrupted (stopped or failed).
+                            useSpeakerList:
+                              Do measurements on the speakers in the list property.
+                        enum:
+                        - runAll
+                        - continue
+                        - useSpeakerList
+                        nullable: true
+                        type: string
+                    continueOnError:
+                        description: |
+                            On failing measurement on a speaker, default behavior is to stop measurement and skip the remaining speakers.
+                            Setting continueOnError to true will make the measuremnt process continue and finish measurement on all speakers,
+                            even though an error ocurred on one of the speakers.
+                        nullable: true
+                        type: boolean
+                    skipAutomaticRoleAssignment:
+                        description: Skip calculation of automatic role assignment.
+                        nullable: true
+                        type: boolean
+                    speakerList:
+                        description: |
+                            List of speaker IDs to include in room compensation / automatic role assignment measurement.
+                            Relevant e.g. if you want to create a speaker group without the external speakers included.
+                            This can not be used for doing measurements on a partial speaker group, only on all
+                            speakers in an existing group or for all speakers in a new group.
+                        items:
+                            $ref: '#/components/schemas/SpeakerId'
+                        nullable: true
+                        type: array
+                    speakerPreset:
+                        description: The Powerlink preset to use for the external
+                            PL/WPL speakers.
+                        format: int32
+                        maximum: 255
+                        minimum: 0
+                        nullable: true
+                        type: integer
+                type: object
+        RoomCompensationResponse:
+            properties:
+                frequency:
+                    format: int32
+                    type: integer
+                gain:
+                    format: double
+                    type: number
+        RoomCompensationResult:
+            properties:
+                compensation:
+                    items:
+                        $ref: '#/components/schemas/RoomCompensationResponse'
+                    type: array
+                measuredResponse:
+                    items:
+                        $ref: '#/components/schemas/RoomCompensationResponse'
+                    type: array
+                placement:
+                    enum:
+                    - free
+                    - nearWall
+                    - unknown
+                    type: string
+                referenceResponse:
+                    items:
+                        $ref: '#/components/schemas/RoomCompensationResponse'
+                    type: array
+                speakerGroupSuggestion:
+                    $ref: '#/components/schemas/SpeakerGroup'
+                    description: |
+                        Result from automatic speaker role assignment and room compensation measurements.
+                        Is only relevant for advanced room compensation.
+                        Includes id, type, role, gain, distance and location for requested speakers,
+                        together with the ID of the room compensation result.
+                        This is not persisted on Mozart side, but can be used by the client,
+                        e.g. as basis for a new speaker group.
+                timeStamp:
+                    format: date-time
+                    type: string
+            type: object
+        RoomCompensationState:
+            allOf:
+            -   $ref: '#/components/schemas/RoomCompensationStateValue'
+            -   properties:
+                    error:
+                        description: |
+                            microphoneMuted:
+                              The microphone is muted (soft-off, using touch button).
+                            microphoneSwitchOff:
+                              The microphone switch is set in its off position.
+                            externalMicrophoneMissing:
+                              The external microphone is not connected.
+                              Is only relevant for advanced room compensation.
+                            externalMicrophoneInvalidPosition:
+                              The external microphone is placed in an invalid position,
+                              e.g. placed too close or in an extreme angle to the internal speakers.
+                              Is only relevant for advanced room compensation.
+                            noisyEnvironment:
+                              Too much environment noise to get a valid measurement.
+                            speakerMeasurementFailed:
+                              A measurement failed, related to one of the individual speakers.
+                              See the errorDetails property for details about the error and which speaker measurement failed.
+                              Is only relevant for advanced room compensation.
+                            invalidSpeakerList:
+                              The speaker list contains invalid speakers.
+                              Valid speakers are: all external speakers and non-virtual internal speakers.
+                              Is only relevant for advanced room compensation.
+                            invalidAction
+                              Could not start with given action.
+                              Eg. can't run from last failed speaker if there isn't any failed run.
+                              Is only relevant for advanced room compensation.
+                            internalError:
+                              Internal product error.
+                        enum:
+                        - noError
+                        - microphoneMuted
+                        - microphoneSwitchOff
+                        - externalMicrophoneMissing
+                        - externalMicrophoneInvalidPosition
+                        - noisyEnvironment
+                        - speakerMeasurementFailed
+                        - invalidSpeakerList
+                        - invalidAction
+                        - internalError
+                        type: string
+                    errorDetails:
+                        $ref: '#/components/schemas/RoomCompensationErrorDetails'
+                    lastRunAvailable:
+                        description: |
+                            When true, measurements have been cached due to manual interrupt or failure,
+                            making it possible to use the action "continue" where the system will continue from the speaker where interrupted.
+                            The cached measurements are only temporary and will be cleared after some time (default 15min),
+                            in which case lastRunAvailable becomes false.
+                        type: boolean
+                    properties:
+                        $ref: '#/components/schemas/RoomCompensationProperties'
+                    timeStamp:
+                        format: date-time
+                        type: string
+                type: object
+        RoomCompensationStateValue:
+            properties:
+                state:
+                    enum:
+                    - notStarted
+                    - running
+                    - done
+                    - error
+                    - stopped
+                    type: string
+            type: object
+        RoomCompensationType:
+            properties:
+                value:
+                    description: |
+                        The type of roomcompensation used / to use.
+                        simple:
+                          For speakers without external speakers.
+                        advanced:
+                          For products with external speakers or other advanced multichannel capabilities.
+                          This requries that at least action in the other properties of RoomCompensationProperties is set.
+                    enum:
+                    - simple
+                    - advanced
+                    type: string
+        RoomCompensationValue:
+            description: |
+                List of room compensation sweeps to combine. No room compensation is done
+                if this list is empty. The maximum length of this list is product
+                specific.
+            items:
+                type: string
+            type: array
+        RoomCompensationVersion:
+            properties:
+                algorithm:
+                    format: int32
+                    minimum: 0
+                    type: integer
+                coefficients:
+                    format: int32
+                    minimum: 0
+                    type: integer
+        SceneList:
+            description: A list of scenes
+            items:
+                format: uuid
+                type: string
+            type: array
+        SceneTriggerBaseProperties:
+            description: Base properties for a scene trigger
+            properties:
+                actionList:
+                    $ref: '#/components/schemas/ActionList'
+                    nullable: true
+                sceneList:
+                    $ref: '#/components/schemas/SceneList'
+                    description: |
+                        Actions will be extracted from all scenes in this list and will be merged together with (`actionList`).
+                        On colliding actions the priority will be: (N represent last index in `sceneList`)
+                        1. `actionList`
+                        2. scene N in `sceneList`
+                        ...
+                        3. scene 0 in `sceneList`
+                    nullable: true
+            type: object
+        SoftwareUpdateState:
+            properties:
+                secondsRemaining:
+                    format: int32
+                    type: integer
+                value:
+                    enum:
+                    - idle
+                    - checking
+                    - updateCheckFailed
+                    - noUpdatesAvailable
+                    - updateAvailable
+                    - downloadingUpdate
+                    - updateDownloaded
+                    - downloadFailed
+                    - installingUpdate
+                    - installationFailed
+                    - schedulerFailed
+                    - rebooting
+                    type: string
+        SoftwareUpdateStatus:
+            properties:
+                availableUpdate:
+                    $ref: '#/components/schemas/SoftwareVersion'
+                lastCheck:
+                    format: date-time
+                    type: string
+                lastUpdate:
+                    format: date-time
+                    type: string
+                softwareVersion:
+                    $ref: '#/components/schemas/SoftwareVersion'
+                state:
+                    $ref: '#/components/schemas/SoftwareUpdateState'
+                updateProgress:
+                    format: int32
+                    type: integer
+            required:
+            - softwareVersion
+            - state
+            type: object
+        SoftwareVersion:
+            type: string
+        SoundAdjustments:
+            properties:
+                ambience:
+                    format: double
+                    type: number
+                bass:
+                    format: int32
+                    type: integer
+                directivity:
+                    type: string
+                ecoMode:
+                    type: boolean
+                fadein:
+                    type: boolean
+                loudness:
+                    type: boolean
+                treble:
+                    format: int32
+                    type: integer
+            type: object
+        SoundSettings:
+            properties:
+                adjustments:
+                    $ref: '#/components/schemas/SoundAdjustments'
+                roomCompensation:
+                    $ref: '#/components/schemas/RoomCompensationInfo'
+                toneTouch:
+                    $ref: '#/components/schemas/SoundToneTouch'
+            type: object
+        SoundToneTouch:
+            properties:
+                x:
+                    format: double
+                    type: number
+                y:
+                    format: double
+                    type: number
+                z:
+                    format: double
+                    type: number
+            type: object
+        Source:
+            properties:
+                id:
+                    type: string
+                isEnabled:
+                    description: some sources require an explicit activation or accept
+                        of terms before being enabled
+                    type: boolean
+                isPlayable:
+                    type: boolean
+                name:
+                    type: string
+                type:
+                    $ref: '#/components/schemas/SourceTypeEnum'
+            type: object
+        SourceArray:
+            properties:
+                items:
+                    items:
+                        $ref: '#/components/schemas/Source'
+                    type: array
+        SourceTypeEnum:
+            properties:
+                value:
+                    enum:
+                    - beolink
+                    - bluetooth
+                    - dlna
+                    - qplay
+                    - airPlay
+                    - lineIn
+                    - chromeCast
+                    - uriStreamer
+                    - netRadio
+                    - local
+                    - generator
+                    - spotify
+                    - spdif
+                    - pl
+                    - wpl
+                    - tv
+                    - deezer
+                    - unknown
+                    type: string
+        SpatialEnvelopment:
+            properties:
+                value:
+                    description: Selected spatial-envelopment value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        SpatialHeight:
+            properties:
+                value:
+                    description: Selected spatial-height value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        SpatialProcessing:
+            properties:
+                value:
+                    description: Selected spatial-processing value
+                    enum:
+                    - direct
+                    - trueimage
+                    - downmix
+                    type: string
+            required:
+            - value
+            type: object
+        SpatialSurround:
+            properties:
+                value:
+                    description: Selected spatial-surround value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        SpatialWidth:
+            properties:
+                value:
+                    description: Selected spatial-width value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        SpeakerGroup:
+            properties:
+                crossoverFrequency:
+                    description: Crossover frequency for bass management in Hz
+                    format: int32
+                    maximum: 300
+                    minimum: 20
+                    nullable: true
+                    type: integer
+                enablePhaseCompensation:
+                    description: Enable phase compensation in bass management.
+                    nullable: true
+                    type: boolean
+                friendlyName:
+                    description: |
+                        Friendly name of the SpeakerGroup.
+                        Required when creating a new group
+                    nullable: true
+                    type: string
+                id:
+                    $ref: '#/components/schemas/SpeakerGroupId'
+                    nullable: true
+                isDeleteable:
+                    nullable: true
+                    type: boolean
+                items:
+                    items:
+                        $ref: '#/components/schemas/SpeakerGroupMember'
+                    nullable: true
+                    type: array
+                roomCompensationId:
+                    description: |
+                        ID of the calculated coefficents for this group, made during advanced room compensation.
+                        When updating an existing group, an empty string will clear roomCompensationId.
+                    format: uuid
+                    nullable: true
+                    type: string
+                speakerPreset:
+                    description: Speaker preset / listening mode eg. BL28 curtain
+                        position etc.
+                    format: int32
+                    maximum: 99
+                    minimum: 0
+                    nullable: true
+                    type: integer
+            type: object
+        SpeakerGroupId:
+            format: uuid
+            type: string
+        SpeakerGroupMember:
+            properties:
+                distance:
+                    description: Distance from listening position in cm
+                    format: int32
+                    maximum: 1000
+                    minimum: 0
+                    nullable: true
+                    type: integer
+                friendlyName:
+                    nullable: true
+                    type: string
+                gain:
+                    description: Level in dB
+                    format: float
+                    maximum: 6
+                    minimum: -24
+                    nullable: true
+                    type: number
+                id:
+                    type: string
+                location:
+                    description: |
+                        Coordinates of the speaker position in cm.
+                        Location is only relevant when the group is based on the automatic role assignment of advanced room compensation.
+                        The location is relative to the external microphone used during advanced room compensation measurements:
+                          x=0, y=0, z=0: The location of the external microphone used during measurement.
+                          x<0: To the left of the external microphone.
+                          x>0: To the right of the external microphone.
+                          y<0: Behind the external microphone.
+                          y>0: In front of the external microphone.
+                          z<0: Above the external microphone (may not be reliable).
+                          z>0: Below the external microphone (may not be reliable).
+                    nullable: true
+                    properties:
+                        x:
+                            format: int32
+                            type: integer
+                        y:
+                            format: int32
+                            type: integer
+                        z:
+                            format: int32
+                            type: integer
+                    required:
+                    - x
+                    - y
+                    - z
+                    type: object
+                redirectionLevel:
+                    description: Redirection level for bass management in dB
+                    format: int32
+                    maximum: 6
+                    minimum: -100
+                    nullable: true
+                    type: integer
+                role:
+                    $ref: '#/components/schemas/SpeakerRole'
+                type:
+                    nullable: true
+                    type: string
+            required:
+            - id
+            type: object
+        SpeakerGroupOverview:
+            properties:
+                friendlyName:
+                    type: string
+                id:
+                    $ref: '#/components/schemas/SpeakerGroupId'
+                isDeleteable:
+                    type: boolean
+            required:
+            - friendlyName
+            - id
+            - isDeleteable
+            type: object
+        SpeakerId:
+            example: FrontLeft
+            type: string
+        SpeakerRole:
+            nullable: true
+            type: string
+        SpeakerRoleEnum:
+            properties:
+                value:
+                    enum:
+                    - standalone
+                    - multichannel
+                    type: string
+        SpeechEnhance:
+            properties:
+                value:
+                    description: Selected speech-enhance value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        StandConnected:
+            properties:
+                connected:
+                    type: boolean
+            type: object
+        StandPosition:
+            properties:
+                angle:
+                    format: float
+                    type: number
+            type: object
+        ToneTouch:
+            properties:
+                x:
+                    $ref: '#/components/schemas/ToneTouchType'
+                y:
+                    $ref: '#/components/schemas/ToneTouchType'
+            type: object
+        ToneTouchType:
+            properties:
+                value:
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        Treble:
+            properties:
+                value:
+                    description: Selected treble value
+                    format: int32
+                    type: integer
+            required:
+            - value
+            type: object
+        TvInfoEventData:
+            properties:
+                integration:
+                    $ref: '#/components/schemas/TvIntegrationTypes'
+            type: object
+        TvIntegrationTypes:
+            properties:
+                value:
+                    enum:
+                    - ThirdParty
+                    - Lge
+                    type: string
+        TvProperties:
+            properties:
+                integrationSupported:
+                    $ref: '#/components/schemas/TvIntegrationTypes'
+                name:
+                    nullable: true
+                    type: string
+                year:
+                    nullable: true
+                    type: integer
+            type: object
+        TvState:
+            properties:
+                integration:
+                    $ref: '#/components/schemas/TvIntegrationTypes'
+                tvInfo:
+                    $ref: '#/components/schemas/TvProperties'
+            type: object
+        Uri:
+            properties:
+                location:
+                    type: string
+            type: object
+        UserFlow:
+            properties:
+                userId:
+                    format: int64
+                    type: string
+            type: object
+        VideoPixelFormat:
+            properties:
+                bitdepth:
+                    enum:
+                    - bit8
+                    - bit10
+                    - bit12
+                    type: string
+                chromaSubsample:
+                    enum:
+                    - yCbCr444RGB
+                    - yCbCr422
+                    - yCbCr420
+                    type: string
+                colorimetry:
+                    enum:
+                    - rGB
+                    - opRGB
+                    - rGBP3D65
+                    - rGBP3DCI
+                    - rGB2020
+                    - yCC601
+                    - yCC709
+                    - xvYCC601
+                    - xvYCC709
+                    - sYCC601
+                    - opYCC601
+                    - yCC2020NCL
+                    - yCC2020NL
+                    type: string
+                fullRange:
+                    type: boolean
+            type: object
+        VideoTimings:
+            properties:
+                horizontalResolution:
+                    type: integer
+                interlaced:
+                    type: boolean
+                refreshRate:
+                    format: double
+                    type: number
+                verticalResolution:
+                    type: integer
+            type: object
+        VolumeLevel:
+            properties:
+                level:
+                    format: int32
+                    type: integer
+            type: object
+        VolumeMute:
+            properties:
+                muted:
+                    type: boolean
+            type: object
+        VolumeSettings:
+            properties:
+                default:
+                    $ref: '#/components/schemas/VolumeLevel'
+                maximum:
+                    $ref: '#/components/schemas/VolumeLevel'
+            type: object
+        VolumeState:
+            properties:
+                default:
+                    $ref: '#/components/schemas/VolumeLevel'
+                level:
+                    $ref: '#/components/schemas/VolumeLevel'
+                maximum:
+                    $ref: '#/components/schemas/VolumeLevel'
+                muted:
+                    $ref: '#/components/schemas/VolumeMute'
+            type: object
+        WebSocketEventActiveHdmiInputSignal:
+            description: |-
+                Use the `get_active_hdmi_input_signal_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def active_hdmi_input_signal_notifications(notification: object):
+                    """ActiveHdmiInputSignal notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_active_hdmi_input_signal_notifications(active_hdmi_input_signal_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/HdmiInput'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventActiveListeningMode:
+            description: |-
+                Use the `get_active_listening_mode_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def active_listening_mode_notifications(notification: object):
+                    """ActiveListeningMode notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_active_listening_mode_notifications(active_listening_mode_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/ListeningModeProps'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventActiveSpeakerGroup:
+            description: |-
+                Use the `get_active_speaker_group_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def active_speaker_group_notifications(notification: object):
+                    """ActiveSpeakerGroup notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_active_speaker_group_notifications(active_speaker_group_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SpeakerGroupOverview'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventAlarmTimer:
+            description: |-
+                Use the `get_alarm_timer_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def alarm_timer_notifications(notification: object):
+                    """AlarmTimer notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_alarm_timer_notifications(alarm_timer_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/AlarmTimerEventData'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventAlarmTriggered:
+            description: |-
+                Use the `get_alarm_triggered_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def alarm_triggered_notifications(notification: object):
+                    """AlarmTriggered notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_alarm_triggered_notifications(alarm_triggered_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/AlarmTriggeredInfo'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventBattery:
+            description: |-
+                Use the `get_battery_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def battery_notifications(notification: object):
+                    """Battery notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_battery_notifications(battery_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/BatteryState'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventBeoRemoteButton:
+            description: |-
+                Use the `get_beo_remote_button_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def beo_remote_button_notifications(notification: object):
+                    """BeoRemoteButton notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_beo_remote_button_notifications(beo_remote_button_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/BeoRemoteButton'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventBeolinkExperiencesResult:
+            description: |-
+                Use the `get_beolink_experiences_result_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def beolink_experiences_result_notifications(notification: object):
+                    """BeolinkExperiencesResult notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_beolink_experiences_result_notifications(beolink_experiences_result_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/BeolinkExperiencesResult'
+                eventType:
+                    type: string
+            required:
+            - eventType
+            - eventData
+            type: object
+        WebSocketEventBeolinkJoinResult:
+            description: |-
+                Use the `get_beolink_join_result_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def beolink_join_result_notifications(notification: object):
+                    """BeolinkJoinResult notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_beolink_join_result_notifications(beolink_join_result_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/BeolinkJoinResult'
+                eventType:
+                    type: string
+            required:
+            - eventType
+            - eventData
+            type: object
+        WebSocketEventButton:
+            description: |-
+                Use the `get_button_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def button_notifications(notification: object):
+                    """Button notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_button_notifications(button_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/ButtonEvent'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventCurtains:
+            description: |-
+                Use the `get_curtains_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def curtains_notifications(notification: object):
+                    """Curtains notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_curtains_notifications(curtains_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/ProductCurtainStatus'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventHdmiVideoFormatSignal:
+            description: |-
+                Use the `get_hdmi_video_format_signal_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def hdmi_video_format_signal_notifications(notification: object):
+                    """HdmiVideoFormatSignal notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_hdmi_video_format_signal_notifications(hdmi_video_format_signal_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/HdmiVideoFormat'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventNotification:
+            description: |-
+                This telegram is used to send a tagged notification.
+                Use the `get_notification_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def notification_notifications(notification: object):
+                    """Notification notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_notification_notifications(notification_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/WebsocketNotificationTag'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPlaybackError:
+            description: |-
+                Use the `get_playback_error_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def playback_error_notifications(notification: object):
+                    """PlaybackError notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_playback_error_notifications(playback_error_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/PlaybackError'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPlaybackMetadata:
+            description: |-
+                Use the `get_playback_metadata_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def playback_metadata_notifications(notification: object):
+                    """PlaybackMetadata notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_playback_metadata_notifications(playback_metadata_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/PlaybackContentMetadata'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPlaybackProgress:
+            description: |-
+                Use the `get_playback_progress_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def playback_progress_notifications(notification: object):
+                    """PlaybackProgress notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_playback_progress_notifications(playback_progress_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/PlaybackProgress'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPlaybackSource:
+            description: |-
+                Use the `get_playback_source_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def playback_source_notifications(notification: object):
+                    """PlaybackSource notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_playback_source_notifications(playback_source_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/Source'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPlaybackState:
+            description: |-
+                Use the `get_playback_state_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def playback_state_notifications(notification: object):
+                    """PlaybackState notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_playback_state_notifications(playback_state_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/RenderingState'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPowerState:
+            description: |-
+                Use the `get_power_state_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def power_state_notifications(notification: object):
+                    """PowerState notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_power_state_notifications(power_state_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/PowerStateEnum'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPucInstallRemoteIdStatus:
+            description: |-
+                Use the `get_puc_install_remote_id_status_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def puc_install_remote_id_status_notifications(notification: object):
+                    """PucInstallRemoteIdStatus notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_puc_install_remote_id_status_notifications(puc_install_remote_id_status_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/InstallRecordIdState'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventRole:
+            description: |-
+                Use the `get_role_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def role_notifications(notification: object):
+                    """Role notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_role_notifications(role_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SpeakerRoleEnum'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventRoomCompensationCurrentMeasurementEvent:
+            description: |-
+                Sent when a room compensation measurement is started/done.
+                Is only sent when room compensation type is advanced.
+
+                Use the `get_room_compensation_current_measurement_event_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def room_compensation_current_measurement_event_notifications(notification: object):
+                    """RoomCompensationCurrentMeasurementEvent notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_room_compensation_current_measurement_event_notifications(room_compensation_current_measurement_event_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/RoomCompensationCurrentMeasurement'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventRoomCompensationState:
+            description: |-
+                Use the `get_room_compensation_state_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def room_compensation_state_notifications(notification: object):
+                    """RoomCompensationState notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_room_compensation_state_notifications(room_compensation_state_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/RoomCompensationStateValue'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventSoftwareUpdateState:
+            description: |-
+                Use the `get_software_update_state_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def software_update_state_notifications(notification: object):
+                    """SoftwareUpdateState notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_software_update_state_notifications(software_update_state_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SoftwareUpdateState'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventSoundSettings:
+            description: |-
+                Use the `get_sound_settings_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def sound_settings_notifications(notification: object):
+                    """SoundSettings notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_sound_settings_notifications(sound_settings_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SoundSettings'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventSourceChange:
+            description: |-
+                Use the `get_source_change_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def source_change_notifications(notification: object):
+                    """SourceChange notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_source_change_notifications(source_change_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/Source'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventSpeakerGroupChanged:
+            description: |-
+                Use the `get_speaker_group_changed_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def speaker_group_changed_notifications(notification: object):
+                    """SpeakerGroupChanged notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_speaker_group_changed_notifications(speaker_group_changed_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SpeakerGroupId'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventStandConnected:
+            description: |-
+                Use the `get_stand_connected_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def stand_connected_notifications(notification: object):
+                    """StandConnected notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_stand_connected_notifications(stand_connected_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/StandConnected'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventStandPosition:
+            description: |-
+                Use the `get_stand_position_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def stand_position_notifications(notification: object):
+                    """StandPosition notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_stand_position_notifications(stand_position_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/StandPosition'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventTvInfo:
+            description: |-
+                Use the `get_tv_info_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def tv_info_notifications(notification: object):
+                    """TvInfo notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_tv_info_notifications(tv_info_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/TvInfoEventData'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventVolume:
+            description: |-
+                Use the `get_volume_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def volume_notifications(notification: object):
+                    """Volume notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_volume_notifications(volume_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/VolumeState'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventWisaOutState:
+            description: |-
+                Speaker Discovery State changed
+                Use the `get_wisa_out_state_notifications()` method in the Python package to get notifications of this type.
+
+                For example:
+
+                ```python
+                from mozart_api.mozart_client import MozartClient
+
+                def wisa_out_state_notifications(notification: object):
+                    """WisaOutState notification handler."""
+                    print(notification)
+
+                mozart_client = MozartClient(host="192.168.0.1")
+                mozart_client.get_wisa_out_state_notifications(wisa_out_state_notifications)
+                mozart_client.connect_notifications()
+                ```
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/WisaOutState'
+                eventType:
+                    type: string
+            required:
+            - eventType
+            - eventData
+            type: object
+        WebsocketNotificationTag:
+            properties:
+                value:
+                    enum:
+                    - configuration
+                    - uri
+                    - generatorSettings
+                    - lineInSettings
+                    - bluetoothDevices
+                    - remoteControlDevices
+                    - secondariesList
+                    - queueHasBeenChanged
+                    - endOfQueueHasBeenReached
+                    - beolinkPeers
+                    - beolinkListeners
+                    - beolinkAvailableListeners
+                    - bluetoothPairingStateChanged
+                    - outputsChanged
+                    - speakerGroupOverviewChanged
+                    - remoteMenuChanged
+                    - proximityPresenceDetected
+                    - proximityPresenceNotDetected
+                    type: string
+        WisaOutState:
+            properties:
+                state:
+                    enum:
+                    - idle
+                    - discovering
+                    - deleting
+                    type: string
+            type: object
+info:
+    contact:
+        email: support@bang-olufsen.dk
+        name: Bang & Olufsen
+    description: |
+        [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+        [![Version](https://img.shields.io/pypi/v/mozart-api?color=g)](https://pypi.org/project/mozart-api)
+        [![Downloads](https://img.shields.io/pypi/dm/mozart-api)](https://pypi.org/project/mozart-api)
+
+        The Mozart API is a REST API with async capabilities and WebSocket notification channel for immediate state information. Currently the API is distributed as a Python package and as an OpenAPI document that can be found in the [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).
+
+        Supported by:
+
+        - [BeoLab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)
+        - [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)
+        - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)
+        - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)
+        - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
+
+        This API documentation has been generated for version 2.3.4.15123 of the Mozart platform and API generation version 2.3.4.15123.1.
+
+        The Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/). On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
+
+        Another file, mozart_cli.py, has been made for using the Mozart API in a simple CLI program. This has been set as the "entry point" for the Python package.
+
+        ## Installation
+
+        The Mozart Open API can be installed with pip and requires [Python](https://www.python.org/downloads/) version 3.8+.
+
+        Install using pip:
+
+        ```terminal
+        pip3 install mozart-api
+        ```
+
+        ## API usage
+
+        To use the Python API:
+
+        - Create a MozartClient object
+        - Choose which (if any) WebSocket events to listen to
+        - Connect to the WebSocket notification channel (if needed)
+        - Use any of the endpoints
+
+        ### Example
+
+        <!--
+        type: tab
+        title: Synchronous
+        -->
+
+        <!-- title: "Synchronous API usage example"
+        lineNumbers: true
+        -->
+
+        ```python
+        from mozart_api.models import VolumeLevel
+        from mozart_api.mozart_client import MozartClient
+
+        def all_notifications(notification: object, notification_type: str):
+            """Notification handler."""
+            print(f"{notification_type} : {notification}")
+
+        def volume_notifications(notification: object):
+            """Volume notification handler."""
+            print(notification)
+
+        # Setup API and WebSocket listener
+        mozart_client = MozartClient(host="192.168.0.1")
+        mozart_client.get_all_notifications(all_notifications)
+        mozart_client.get_volume_notifications(volume_notifications)
+
+        # Connect to the WebSocket notification channel
+        mozart_client.connect_notifications(remote_control=True)
+
+        # Run commands
+        mozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50))
+        mozart_client.activate_preset(id=2)
+        mozart_client.post_beolink_expand(jid="1234.1234567.12345678@products.bang-olufsen.com")
+
+        listeners = mozart_client.get_beolink_listeners()
+        print(listeners)
+
+        ```
+
+        <!--
+        type: tab
+        title: Asynchronous
+        -->
+
+        <!-- title: "Asynchronous API usage example"
+        lineNumbers: true
+        -->
+
+        ```python
+        from mozart_api.models import VolumeLevel
+        from mozart_api.mozart_client import MozartClient
+
+        def all_notifications(notification: object, notification_type: str):
+            """Notification handler."""
+            print(f"{notification_type} : {notification}")
+
+        def volume_notifications(notification: object):
+            """Volume notification handler."""
+            print(notification)
+
+        # Setup API and WebSocket listener
+        mozart_client = MozartClient(host="192.168.0.1")
+        mozart_client.get_all_notifications(all_notifications)
+        mozart_client.get_volume_notifications(volume_notifications)
+
+        # Connect to the WebSocket notification channel
+        mozart_client.connect_notifications(remote_control=True)
+
+        # Run commands
+        mozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50), async_req=True)
+        mozart_client.activate_preset(id=2, async_req=True)
+        mozart_client.post_beolink_expand(jid="1234.1234567.12345678@products.bang-olufsen.com", async_req=True)
+
+        listeners = mozart_client.get_beolink_listeners(async_req=True).get()
+        print(listeners)
+        ```
+
+        <!-- type: tab-end -->
+
+        Where `192.168.0.1` is a Mozart device's IP-address.
+
+        ### Beware
+
+        Some of the classes defined in the Mozart API are aliases to other data types, for example: `ActionList` is an array of `Action` objects. These classes are not generated and can therefore not be used in the Python API. instead, use the built in Python data types, for example when defining an ActionList, simply use a `list` instead.
+
+        ## Example CLI program
+
+        The CLI program carries out one command and then exits afterwards. The program needs to do a device-discovery on each command, which in noisy environments could take some time. If speed is important, an IP-address can be used instead.
+
+        Additionally since the CLI uses MDNS for device discovery, port number 5353 needs to be open.
+
+        ### Usage example
+
+        This example shows device discovery and afterwards joining a Beolink session with WebSocket events being printed.
+
+        ![example gif](https://github.com/bang-olufsen/mozart-open-api/blob/main/docs/media/discovery_join.gif)
+
+        ### Device discovery
+
+        <!--
+        type: tab
+        title: Discover
+        -->
+
+        #### discover
+
+        Discover Mozart devices on the network.
+
+        ```terminal
+        mozart_api discover
+        ```
+
+        <!--
+        type: tab
+        title: Serial number
+        -->
+
+        #### serial number
+
+        Ensure that the serial number is reachable on the network.
+
+        ```terminal
+        mozart_api 12345678
+        ```
+
+        <!-- type: tab-end -->
+
+        ### Options
+
+        <!--
+        type: tab
+        title: Verbose
+        -->
+
+        #### verbose
+
+        Add as option to add verbose output.
+
+        ```terminal
+        mozart_api serial_number command command_args -v
+
+        mozart_api serial_number command command_args --verbose
+        ```
+
+        <!--
+        type: tab
+        title: Timeout
+        -->
+
+        #### timeout
+
+        Add as option with parameter to modify MDNS discovery timeout.
+
+        Optionally use '-1' to have a user-interrupted device discovery:
+
+        ```terminal
+        mozart_api serial_number command command_args -t 20
+
+        mozart_api serial_number command command_args --timeout 20
+
+        mozart_api serial_number command command_args --timeout -1
+        ```
+
+        <!--
+        type: tab
+        title: WebSocket
+        -->
+
+        #### websocket
+
+        Add as option to show WebSocket notifications before and after command execution.
+
+        Upon connection the overall state of the device will be immediately transferred.
+
+        ```terminal
+        mozart_api serial_number command command_args -w
+
+        mozart_api serial_number command command_args --websocket
+        ```
+
+        <!-- type: tab-end -->
+
+        ### Commands
+
+        <!--
+        type: tab
+        title: Playback
+        -->
+
+        #### preset
+
+        Will activate the _preset_ command.
+
+        ```terminal
+        mozart_api 12345678 preset 1
+        ```
+
+        #### play
+
+        Will activate the _play_ playback command.
+
+        ```terminal
+        mozart_api 12345678 play
+        ```
+
+        #### pause
+
+        Will activate the _pause_ playback command.
+
+        ```terminal
+        mozart_api 12345678 pause
+        ```
+
+        #### next
+
+        Will activate the _next_ playback command.
+
+        ```terminal
+        mozart_api 12345678 next
+        ```
+
+        #### previous
+
+        Will activate the _previous_ playback command.
+
+        ```terminal
+        mozart_api 12345678 previous
+        ```
+
+        <!--
+        type: tab
+        title: Volume
+        -->
+
+        #### mute
+
+        Will activate the mute command.
+
+        ```terminal
+        mozart_api 12345678 mute
+        ```
+
+        #### unmute
+
+        Will activate the unmute command.
+
+        ```terminal
+        mozart_api 12345678 unmute
+        ```
+
+        #### volume
+
+        Will activate the modify volume level command on the device (0-100).
+
+        ```terminal
+        mozart_api 12345678 volume 50
+        ```
+
+        <!--
+        type: tab
+        title: Beolink
+        -->
+
+        #### join
+
+        Will join a Beolink experience if available or will join a specific Beolink experience if available.
+
+        ```terminal
+        mozart_api 12345678 join
+
+        mozart_api 12345678 join 23456789
+        ```
+
+        #### allstandby
+
+        Will set all connected Beolink devices to networkStandby.
+
+        ```terminal
+        mozart_api 12345678 allstandby
+        ```
+
+        <!--
+        type: tab
+        title: Miscellaneous
+        -->
+
+        #### info
+
+        Will print device information.
+
+        ```terminal
+        mozart_api 12345678 info
+        ```
+
+        <!-- type: tab-end -->
+    license:
+        name: MIT
+        url: https://opensource.org/licenses/MIT
+    title: Mozart platform API
+    version: 0.2.0
+openapi: 3.0.0
+paths:
+    /api/v1/battery:
+        get:
+            description: |-
+                Use the `get-battery-state` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_battery_state()
+                ```
+                ```mozart_api
+                mozart_api.get_battery_state()
+                ```
+                ```power_api
+                power_api.get_battery_state()
+                ```
+            operationId: get-battery-state
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BatteryState'
+                    description: The battery state of the product
+            summary: Get battery state of the product
+            tags:
+            - Power
+            - mozart
+    /api/v1/beolink/allstandby:
+        post:
+            description: |-
+                Use the `post-beolink-allstandby` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_beolink_allstandby()
+                ```
+                ```mozart_api
+                mozart_api.post_beolink_allstandby()
+                ```
+                ```beolink_api
+                beolink_api.post_beolink_allstandby()
+                ```
+            operationId: post-beolink-allstandby
+            responses:
+                '202':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+            summary: Broadcast an all standby event to turn all Beolink devices off
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/available-listeners:
+        get:
+            description: |-
+                Get a list of devices that can be listening to this device active experience.
+
+                Use the `get-beolink-available-listeners` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_beolink_available_listeners()
+                ```
+                ```mozart_api
+                mozart_api.get_beolink_available_listeners()
+                ```
+                ```beolink_api
+                beolink_api.get_beolink_available_listeners()
+                ```
+            operationId: get-beolink-available-listeners
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: '#/components/schemas/BeolinkAvailableListener'
+                                type: array
+                    description: Success
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+            summary: Get available listeners
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/expand/{jid}:
+        parameters:
+        -   description: Jabber id of peer to expand the active experience to
+            in: path
+            name: jid
+            required: true
+            schema:
+                $ref: '#/components/schemas/BeolinkPeerID'
+        post:
+            description: |-
+                Expand the current active experience to another device with jabber id `{jid}`.
+
+                Use the `post-beolink-expand` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_beolink_expand()
+                ```
+                ```mozart_api
+                mozart_api.post_beolink_expand()
+                ```
+                ```beolink_api
+                beolink_api.post_beolink_expand()
+                ```
+            operationId: post-beolink-expand
+            responses:
+                '202':
+                    description: Success
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+                '403':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Not allowed to initiate join
+                '404':
+                    description: Remote device not found
+            summary: Expand the current active experience
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/join:
+        post:
+            description: |-
+                Use the `join-latest-beolink-experience` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.join_latest_beolink_experience()
+                ```
+                ```mozart_api
+                mozart_api.join_latest_beolink_experience()
+                ```
+                ```beolink_api
+                beolink_api.join_latest_beolink_experience()
+                ```
+            operationId: join-latest-beolink-experience
+            responses:
+                '202':
+                    $ref: '#/components/responses/BeolinkJoinResponse'
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+                '403':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Not allowed to initiate join
+            summary: Trigger touch to join
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/join-result/{id}:
+        get:
+            description: |-
+                Returns the result of a join request.
+
+                **WARNING:** This end-point is only for testing purposes. Only a limited
+                number of results are kept, so if there are multiple API clients using
+                the device at the same time, and you are polling this end-point, you may
+                miss the result of your join request.
+
+                Use the `get-beolink-join-result` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_beolink_join_result()
+                ```
+                ```mozart_api
+                mozart_api.get_beolink_join_result()
+                ```
+                ```beolink_api
+                beolink_api.get_beolink_join_result()
+                ```
+            operationId: get-beolink-join-result
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BeolinkJoinResult'
+                    description: Join result available
+                '404':
+                    description: Join result unavailable
+            summary: Get Beolink join result, test-endpoint
+            tags:
+            - Beolink
+            - mozart
+        parameters:
+        -   description: Join request ID
+            in: path
+            name: id
+            required: true
+            schema:
+                $ref: '#/components/schemas/BeolinkRequestID'
+    /api/v1/beolink/join/{jid}:
+        parameters:
+        -   description: Jabber ID of peer to join
+            in: path
+            name: jid
+            required: true
+            schema:
+                $ref: '#/components/schemas/BeolinkPeerID'
+        -   description: Ask to join a specific source on peer
+            in: query
+            name: source
+            required: false
+            schema:
+                type: string
+        post:
+            description: |-
+                Join the experience currently active on peer with Jabber ID `{jid}`.
+
+                Use the `join-beolink-peer` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.join_beolink_peer()
+                ```
+                ```mozart_api
+                mozart_api.join_beolink_peer()
+                ```
+                ```beolink_api
+                beolink_api.join_beolink_peer()
+                ```
+            operationId: join-beolink-peer
+            responses:
+                '202':
+                    $ref: '#/components/responses/BeolinkJoinResponse'
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+                '403':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Not allowed to initiate join
+            summary: Join multi-room experience
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/leave:
+        post:
+            description: |-
+                Use the `post-beolink-leave` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_beolink_leave()
+                ```
+                ```mozart_api
+                mozart_api.post_beolink_leave()
+                ```
+                ```beolink_api
+                beolink_api.post_beolink_leave()
+                ```
+            operationId: post-beolink-leave
+            responses:
+                '202':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+                '404':
+                    description: No active experience found
+            summary: Leave the ongoing experience (disconnect this device from remote)
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/listeners:
+        get:
+            description: |-
+                Get a list of devices that are listening to this device active experience (that have joined).
+
+                Use the `get-beolink-listeners` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_beolink_listeners()
+                ```
+                ```mozart_api
+                mozart_api.get_beolink_listeners()
+                ```
+                ```beolink_api
+                beolink_api.get_beolink_listeners()
+                ```
+            operationId: get-beolink-listeners
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: '#/components/schemas/BeolinkListener'
+                                type: array
+                    description: Success
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+            summary: Get joined peers
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/peers:
+        get:
+            description: |-
+                Get information about the Beolink peers discovered by this device.
+
+                Use the `get-beolink-peers` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_beolink_peers()
+                ```
+                ```mozart_api
+                mozart_api.get_beolink_peers()
+                ```
+                ```beolink_api
+                beolink_api.get_beolink_peers()
+                ```
+            operationId: get-beolink-peers
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: '#/components/schemas/BeolinkPeer'
+                                type: array
+                    description: Success
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+            summary: Get discovered peers
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/self:
+        get:
+            description: |-
+                Returns Beolink information like about this device. This can be useful if you want to expand _to_ this device.
+
+                Use the `get-beolink-self` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_beolink_self()
+                ```
+                ```mozart_api
+                mozart_api.get_beolink_self()
+                ```
+                ```beolink_api
+                beolink_api.get_beolink_self()
+                ```
+            operationId: get-beolink-self
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BeolinkPeer'
+                    description: successful operation
+            summary: Get information about this device
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/unexpand/{jid}:
+        parameters:
+        -   description: Jabber id of peer to unexpand
+            in: path
+            name: jid
+            required: true
+            schema:
+                $ref: '#/components/schemas/BeolinkPeerID'
+        post:
+            description: |-
+                Disconnect the device with jabber id `{jid}` from the current active experience.
+
+                Use the `post-beolink-unexpand` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_beolink_unexpand()
+                ```
+                ```mozart_api
+                mozart_api.post_beolink_unexpand()
+                ```
+                ```beolink_api
+                beolink_api.post_beolink_unexpand()
+                ```
+            operationId: post-beolink-unexpand
+            responses:
+                '202':
+                    description: Success
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+                '404':
+                    description: Remote device not found
+            summary: Unexpand (disconnect) a device from the multiroom session
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/overlay/play:
+        post:
+            description: |-
+                Play some audio as an overlay. This will duck currently playing music while the audio is playing.
+
+                Use the `post-overlay-play` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_overlay_play()
+                ```
+                ```mozart_api
+                mozart_api.post_overlay_play()
+                ```
+                ```overlay_api
+                overlay_api.post_overlay_play()
+                ```
+            operationId: post-overlay-play
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/OverlayPlayRequest'
+                description: settings to use for the overlay
+                required: true
+            responses:
+                '202':
+                    description: successful request; will attempt to play overlay
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Bad request
+            summary: Play overlay
+            tags:
+            - Overlay
+            - mozart
+    /api/v1/playback/command/{command}:
+        post:
+            description: |-
+                Use the `post-playback-command` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_playback_command()
+                ```
+                ```mozart_api
+                mozart_api.post_playback_command()
+                ```
+                ```playback_api
+                playback_api.post_playback_command()
+                ```
+            operationId: post-playback-command
+            parameters:
+            -   description: the named command to execute
+                in: path
+                name: command
+                required: true
+                schema:
+                    enum:
+                    - play
+                    - pause
+                    - stop
+                    - skip
+                    - prev
+                    type: string
+            responses:
+                '201':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Send a specific playback command to the product
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/deezer/flow:
+        post:
+            description: |-
+                Use the `start-deezer-flow` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.start_deezer_flow()
+                ```
+                ```mozart_api
+                mozart_api.start_deezer_flow()
+                ```
+                ```playback_api
+                playback_api.start_deezer_flow()
+                ```
+                ```deezer_api
+                deezer_api.start_deezer_flow()
+                ```
+            operationId: start-deezer-flow
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserFlow'
+                description: Select user
+            responses:
+                '201':
+                    description: successful request
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Play users flow. If no provided user id it will play the flow
+                connected to the active account
+            tags:
+            - Deezer
+            - Playback
+            - mozart
+    /api/v1/playback/preset/{id}/trigger:
+        post:
+            description: |-
+                Use the `activate-preset` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.activate_preset()
+                ```
+                ```mozart_api
+                mozart_api.activate_preset()
+                ```
+                ```playback_api
+                playback_api.activate_preset()
+                ```
+            operationId: activate-preset
+            parameters:
+            -   description: the id of the preset you want to trigger
+                in: path
+                name: id
+                required: true
+                schema:
+                    type: integer
+            responses:
+                '204':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+                '412':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Pre-condition not met
+            summary: Trigger a preset
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/queue:
+        post:
+            description: |-
+                Use the `add-to-queue` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.add_to_queue()
+                ```
+                ```mozart_api
+                mozart_api.add_to_queue()
+                ```
+                ```playback_api
+                playback_api.add_to_queue()
+                ```
+            operationId: add-to-queue
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PlayQueueItem'
+                description: the queue element you want to add
+                required: true
+            responses:
+                '204':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Add an element to the queue
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/queue/clear:
+        post:
+            description: |-
+                Use the `post-clear-queue` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_clear_queue()
+                ```
+                ```mozart_api
+                mozart_api.post_clear_queue()
+                ```
+                ```playback_api
+                playback_api.post_clear_queue()
+                ```
+            operationId: post-clear-queue
+            responses:
+                '201':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Clear the queue
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/queue/settings:
+        get:
+            description: |-
+                Use the `get-settings-queue` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_settings_queue()
+                ```
+                ```mozart_api
+                mozart_api.get_settings_queue()
+                ```
+                ```playback_api
+                playback_api.get_settings_queue()
+                ```
+            operationId: get-settings-queue
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PlayQueueSettings'
+                                type: object
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the current queue settings
+            tags:
+            - Playback
+            - mozart
+        put:
+            description: |-
+                Use the `set-settings-queue` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_settings_queue()
+                ```
+                ```mozart_api
+                mozart_api.set_settings_queue()
+                ```
+                ```playback_api
+                playback_api.set_settings_queue()
+                ```
+            operationId: set-settings-queue
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PlayQueueSettings'
+                description: the desired settings
+                required: true
+            responses:
+                '204':
+                    description: the new settings were accepted
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set queue settings
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/seek:
+        put:
+            description: |-
+                Use the `seek-to-position` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.seek_to_position()
+                ```
+                ```mozart_api
+                mozart_api.seek_to_position()
+                ```
+                ```playback_api
+                playback_api.seek_to_position()
+                ```
+            operationId: seek-to-position
+            parameters:
+            -   description: position in milliseconds
+                in: query
+                name: position_ms
+                required: true
+                schema:
+                    format: int32
+                    type: integer
+            responses:
+                '204':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Seek to position in stream
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/sources:
+        get:
+            description: |-
+                Use the `get-available-sources` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_available_sources()
+                ```
+                ```mozart_api
+                mozart_api.get_available_sources()
+                ```
+                ```playback_api
+                playback_api.get_available_sources()
+                ```
+            operationId: get-available-sources
+            parameters:
+            -   description: filter sources for remote control
+                in: query
+                name: target-remote
+                required: false
+                schema:
+                    type: boolean
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SourceArray'
+                    description: Returns a list of available sources
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get all the available sources
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/sources/active/{sourceId}:
+        post:
+            description: |-
+                Use the `set-active-source` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_active_source()
+                ```
+                ```mozart_api
+                mozart_api.set_active_source()
+                ```
+                ```playback_api
+                playback_api.set_active_source()
+                ```
+            operationId: set-active-source
+            parameters:
+            -   description: the id of the source to activate
+                in: path
+                name: sourceId
+                required: true
+                schema:
+                    type: string
+            responses:
+                '201':
+                    description: Successfully changed the active source
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the active source
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/uri:
+        post:
+            description: |-
+                Use the `post-uri-source` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_uri_source()
+                ```
+                ```mozart_api
+                mozart_api.post_uri_source()
+                ```
+                ```playback_api
+                playback_api.post_uri_source()
+                ```
+            operationId: post-uri-source
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Uri'
+                description: the desired uri from which to stream data
+                required: true
+            responses:
+                '201':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the URI from which sound is streamed
+            tags:
+            - Playback
+            - mozart
+    /api/v1/setup/bluetooth/devices:
+        get:
+            description: |-
+                Use the `get-bluetooth-devices-status` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_bluetooth_devices_status()
+                ```
+                ```mozart_api
+                mozart_api.get_bluetooth_devices_status()
+                ```
+                ```bluetooth_api
+                bluetooth_api.get_bluetooth_devices_status()
+                ```
+            operationId: get-bluetooth-devices-status
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BluetoothDeviceList'
+                    description: returns the current bluetooth devices
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the bluetooth devices status
+            tags:
+            - Bluetooth
+            - mozart
+    /api/v1/setup/presets:
+        get:
+            description: |-
+                Use the `get-presets` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_presets()
+                ```
+                ```mozart_api
+                mozart_api.get_presets()
+                ```
+                ```settings_api
+                settings_api.get_presets()
+                ```
+            operationId: get-presets
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PresetMap'
+                    description: The preset audio source mapping
+            summary: Get the preset configuration
+            tags:
+            - Settings
+            - mozart
+    /api/v1/setup/remotes:
+        get:
+            description: |-
+                Use the `get-bluetooth-remotes` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_bluetooth_remotes()
+                ```
+                ```mozart_api
+                mozart_api.get_bluetooth_remotes()
+                ```
+                ```settings_api
+                settings_api.get_bluetooth_remotes()
+                ```
+            operationId: get-bluetooth-remotes
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PairedRemoteResponse'
+                    description: List of paired remotes was obtained
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get a list of paired bluetooth remotes
+            tags:
+            - Settings
+            - mozart
+    /api/v1/softwareupdate:
+        get:
+            description: |-
+                Use the `get-softwareupdate-status` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_softwareupdate_status()
+                ```
+                ```mozart_api
+                mozart_api.get_softwareupdate_status()
+                ```
+                ```software update_api
+                software update_api.get_softwareupdate_status()
+                ```
+            operationId: get-softwareupdate-status
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SoftwareUpdateStatus'
+                    description: the software update status
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the current software update status
+            tags:
+            - Software update
+            - mozart
+    /api/v1/sound/settings/adjustments/bass:
+        put:
+            description: |-
+                Use the `set-sound-settings-adjustments-bass` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_sound_settings_adjustments_bass()
+                ```
+                ```mozart_api
+                mozart_api.set_sound_settings_adjustments_bass()
+                ```
+                ```sound_api
+                sound_api.set_sound_settings_adjustments_bass()
+                ```
+            operationId: set-sound-settings-adjustments-bass
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Bass'
+                description: the bass level
+                required: true
+            responses:
+                '201':
+                    description: accepted the bass sound settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Update the sound settings adjustments for bass
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/settings/adjustments/loudness:
+        put:
+            description: |-
+                Use the `set-sound-settings-adjustments-loudness` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_sound_settings_adjustments_loudness()
+                ```
+                ```mozart_api
+                mozart_api.set_sound_settings_adjustments_loudness()
+                ```
+                ```sound_api
+                sound_api.set_sound_settings_adjustments_loudness()
+                ```
+            operationId: set-sound-settings-adjustments-loudness
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Loudness'
+                description: the loudness mode
+                required: true
+            responses:
+                '201':
+                    description: accepted the loudness sound settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Update the sound settings adjustments for loudness
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/settings/adjustments/treble:
+        put:
+            description: |-
+                Use the `set-sound-settings-adjustments-treble` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_sound_settings_adjustments_treble()
+                ```
+                ```mozart_api
+                mozart_api.set_sound_settings_adjustments_treble()
+                ```
+                ```sound_api
+                sound_api.set_sound_settings_adjustments_treble()
+                ```
+            operationId: set-sound-settings-adjustments-treble
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Treble'
+                description: the treble level
+                required: true
+            responses:
+                '201':
+                    description: accepted the treble sound settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Update the sound settings adjustments for treble
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/volume/level:
+        put:
+            description: |-
+                Use the `set-current-volume-level` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_current_volume_level()
+                ```
+                ```mozart_api
+                mozart_api.set_current_volume_level()
+                ```
+                ```sound_api
+                sound_api.set_current_volume_level()
+                ```
+            operationId: set-current-volume-level
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VolumeLevel'
+                description: The volume level to apply
+                required: true
+            responses:
+                '201':
+                    description: volume level change accepted
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request (e.g. volume cannot be set)
+            summary: Set the current volume level
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/volume/mute:
+        put:
+            description: |-
+                Use the `set-volume-mute` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_volume_mute()
+                ```
+                ```mozart_api
+                mozart_api.set_volume_mute()
+                ```
+                ```sound_api
+                sound_api.set_volume_mute()
+                ```
+            operationId: set-volume-mute
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VolumeMute'
+                description: The mute state to apply
+                required: true
+            responses:
+                '201':
+                    description: volume mute state accepted
+                '400':
+                    description: volume mute not accepted
+            summary: Set the volume mute state
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/volume/settings:
+        get:
+            description: |-
+                Use the `get-volume-settings` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_volume_settings()
+                ```
+                ```mozart_api
+                mozart_api.get_volume_settings()
+                ```
+                ```sound_api
+                sound_api.get_volume_settings()
+                ```
+            operationId: get-volume-settings
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/VolumeSettings'
+                    description: returns the volume settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the current volume settings for default and maximum volume
+                level
+            tags:
+            - Sound
+            - mozart
+        put:
+            description: |-
+                Use the `set-volume-settings` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_volume_settings()
+                ```
+                ```mozart_api
+                mozart_api.set_volume_settings()
+                ```
+                ```sound_api
+                sound_api.set_volume_settings()
+                ```
+            operationId: set-volume-settings
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VolumeSettings'
+                description: The settings to apply
+                required: true
+            responses:
+                '201':
+                    description: volume settings accepted
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the current volume settings for default and maximum volume
+                level
+            tags:
+            - Sound
+            - mozart
+    /api/v1/state:
+        get:
+            description: |-
+                Use the `get-product-state` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_product_state()
+                ```
+                ```mozart_api
+                mozart_api.get_product_state()
+                ```
+                ```product_api
+                product_api.get_product_state()
+                ```
+            operationId: get-product-state
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ProductState'
+                    description: A snapshot of the overall state of the product
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the overall state from the product
+            tags:
+            - Product
+            - mozart
+security: []
+servers:
+-   description: Local IP address placeholder
+    url: http://0.0.0.0
