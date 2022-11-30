@@ -2943,7 +2943,7 @@ info:
 
         This example shows device discovery and afterwards joining a Beolink session with WebSocket events being printed.
 
-        ![example gif](https://github.com/bang-olufsen/mozart-open-api/blob/main/docs/media/discovery_join.gif)
+        ![example gif](https://raw.githubusercontent.com/bang-olufsen/mozart-open-api/main/docs/media/discovery_join.gif)
 
         ### Device discovery
 
