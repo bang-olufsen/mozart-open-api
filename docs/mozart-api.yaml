@@ -2821,7 +2821,7 @@ info:
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
 
 
-        This API documentation has been generated for version 2.3.4.15123 of the Mozart platform and API generation version 2.3.4.15123.4.
+        This API documentation has been generated for version 2.3.4.15123 of the Mozart platform and API generation version 2.3.4.15123.5.
 
         The Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/). On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
 
