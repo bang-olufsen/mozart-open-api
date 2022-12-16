@@ -390,6 +390,25 @@ components:
             required:
             - value
             type: object
+        AmbienceFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Ambience'
+            -   $ref: '#/components/schemas/AmbienceRange'
+        AmbienceRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Ambience'
+                    description: Product and role specific default ambience value
+                range:
+                    description: Product and role specific ambience range
+                    items:
+                        $ref: '#/components/schemas/Ambience'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
         Art:
             properties:
                 hasLocalImage:
@@ -412,6 +431,25 @@ components:
             required:
             - value
             type: object
+        BalanceFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Balance'
+            -   $ref: '#/components/schemas/BalanceRange'
+        BalanceRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Balance'
+                    description: Default balance value
+                range:
+                    description: balance range
+                    items:
+                        $ref: '#/components/schemas/Balance'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
         Bass:
             properties:
                 value:
@@ -421,6 +459,10 @@ components:
             required:
             - value
             type: object
+        BassFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Bass'
+            -   $ref: '#/components/schemas/BassRange'
         BassManagement:
             properties:
                 value:
@@ -431,6 +473,40 @@ components:
                     type: string
             required:
             - value
+            type: object
+        BassManagementFeature:
+            allOf:
+            -   $ref: '#/components/schemas/BassManagement'
+            -   $ref: '#/components/schemas/BassManagementRange'
+        BassManagementRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/BassManagement'
+                    description: Default bass-management value
+                range:
+                    description: bass-management range
+                    items:
+                        $ref: '#/components/schemas/BassManagement'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        BassRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Bass'
+                    description: Product and role specific default bass value
+                range:
+                    description: Product and role specific bass range
+                    items:
+                        $ref: '#/components/schemas/Bass'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
             type: object
         BatteryState:
             properties:
@@ -662,6 +738,25 @@ components:
             required:
             - value
             type: object
+        CompressionFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Compression'
+            -   $ref: '#/components/schemas/CompressionRange'
+        CompressionRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Compression'
+                    description: Default compression value
+                range:
+                    description: compression range
+                    items:
+                        $ref: '#/components/schemas/Compression'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
         ContentCategoryList:
             items:
                 enum:
@@ -691,6 +786,14 @@ components:
             - contentUri
             - source
             type: object
+        ContentItemMap:
+            additionalProperties:
+                $ref: '#/components/schemas/ContentItem'
+            example:
+                475169e4-32bb-59ad-b88d-a6d53c289838:
+                    contentUri: tv://netflix
+                    label: Netflix
+            type: object
         Directivity:
             properties:
                 value:
@@ -705,6 +808,25 @@ components:
                     type: string
             required:
             - value
+            type: object
+        DirectivityFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Directivity'
+            -   $ref: '#/components/schemas/DirectivityRange'
+        DirectivityRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Directivity'
+                    description: Product and role specific default directivity value
+                range:
+                    description: Product and role specific list of directivities
+                    items:
+                        $ref: '#/components/schemas/Directivity'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
             type: object
         ErrorModel:
             description: the general error model
@@ -730,6 +852,25 @@ components:
                     type: number
             required:
             - value
+            type: object
+        FaderFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Fader'
+            -   $ref: '#/components/schemas/FaderRange'
+        FaderRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Fader'
+                    description: Default fader value
+                range:
+                    description: fader range
+                    items:
+                        $ref: '#/components/schemas/Fader'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
             type: object
         HdmiIdType:
             type: string
@@ -764,6 +905,15 @@ components:
                     - downloadFinished
                     - downloadFailed
                     type: string
+        ListeningMode:
+            allOf:
+            -   $ref: '#/components/schemas/ListeningModeProps'
+            required:
+            - features
+            - id
+            - name
+            - role
+            - triggers
         ListeningModeFeatures:
             description: Sound features to apply
             properties:
@@ -836,6 +986,33 @@ components:
                         $ref: '#/components/schemas/ListeningModeTrigger'
                     type: array
             type: object
+        ListeningModeRef:
+            description: Reference to a listening mode
+            properties:
+                href:
+                    description: |
+                        Host relative URI of the listening mode or `null` if there is no
+                        active listening mode.
+                    format: uri
+                    nullable: true
+                    type: string
+                id:
+                    description: |
+                        ID of the active listening mode or `null` if there is no active
+                        listening mode.
+                    format: int32
+                    minimum: 0
+                    nullable: true
+                    type: integer
+            required:
+            - id
+            - href
+            type: object
+        ListeningModeSet:
+            items:
+                allOf:
+                -   $ref: '#/components/schemas/ListeningMode'
+            type: array
         ListeningModeTrigger:
             oneOf:
             -   $ref: '#/components/schemas/PowerLinkTrigger'
@@ -896,11 +1073,11 @@ components:
             properties:
                 textToSpeech:
                     description: |
-                        Object used for performing a text-to-speech operation on the product. This object should be updated alongside the BeoCloud API as it is intended to replicate the BeoCloud endpoint[1] [1] BeoCloud: /api/v1/Voice/text-to-speech
+                        Object used for performing a text-to-speech operation on the product.
                     properties:
                         lang:
                             description: |
-                                An optional specification of the language to use. The default value is ultimately decided by the Cloud API, but currently it defaults to `en-us`.
+                                An optional specification of the language to use. The default value is ultimately decided by the BeoCloud API, but currently it defaults to `en-us`.
                             example: en-us
                             nullable: true
                             type: string
@@ -1195,6 +1372,19 @@ components:
                 volume:
                     $ref: '#/components/schemas/VolumeState'
             type: object
+        RemoteUIKeyState:
+            properties:
+                state:
+                    description: |
+                        The state of the pressed key. ShortPress and LongPress's duration are determined by the remote. Whereas Down, Continue, and Release reflect the state of the key and press duration is the time between a Down and a Release state. Continue indicates that a button is pressed and the key event should be handled multiple times until a release is received.
+                    enum:
+                    - ShortPress
+                    - LongPress
+                    - Down
+                    - Continue
+                    - Release
+                    type: string
+            type: object
         RenderingState:
             properties:
                 value:
@@ -1265,6 +1455,10 @@ components:
                         $ref: '#/components/schemas/RoomCompensationMeasurementError'
                     type: array
             type: object
+        RoomCompensationFeature:
+            allOf:
+            -   $ref: '#/components/schemas/RoomCompensation'
+            -   $ref: '#/components/schemas/RoomCompensationRange'
         RoomCompensationInfo:
             properties:
                 debug:
@@ -1377,6 +1571,29 @@ components:
                         nullable: true
                         type: integer
                 type: object
+        RoomCompensationRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/RoomCompensationValue'
+                    description: Product and role specific default room compensation
+                        value
+                maxItems:
+                    description: Maximum number of items in the `value` field
+                    maximum: 20
+                    minimum: 1
+                    type: integer
+                range:
+                    description: Possible values for the `value` field
+                    example:
+                    - internal
+                    - external
+                    items:
+                        type: string
+                    type: array
+            required:
+            - default
+            - range
+            type: object
         RoomCompensationResponse:
             properties:
                 frequency:
@@ -1521,10 +1738,66 @@ components:
                     format: int32
                     minimum: 0
                     type: integer
+        Scene:
+            allOf:
+            -   $ref: '#/components/schemas/SceneProperties'
+            -   $ref: '#/components/schemas/SceneClassification'
+        SceneClassification:
+            properties:
+                classification:
+                    description: The classification of Scene
+                    enum:
+                    - system
+                    - userDefined
+                    nullable: true
+                    type: string
+            type: object
         SceneList:
             description: A list of scenes
             items:
                 format: uuid
+                type: string
+            type: array
+        SceneMap:
+            additionalProperties:
+                $ref: '#/components/schemas/Scene'
+            example:
+                fdecf968-3ab9-46dc-a71d-e4204ef47fdb:
+                    actionList:
+                    -   type: volume
+                        volumeLevel: 35
+                    -   radioStationId: '8779112938791514'
+                        type: radio
+                    -   stopDuration: 20
+                        type: stop
+                    label: New label
+            type: object
+        SceneMatch:
+            properties:
+                label:
+                    nullable: true
+                    type: string
+                tags:
+                    $ref: '#/components/schemas/SceneTags'
+                    nullable: true
+            type: object
+        SceneProperties:
+            properties:
+                actionList:
+                    $ref: '#/components/schemas/ActionList'
+                label:
+                    nullable: true
+                    type: string
+                tags:
+                    $ref: '#/components/schemas/SceneTags'
+                    nullable: true
+            required:
+            - actionList
+            type: object
+        SceneTags:
+            description: A list of user defined tags. This allows a client to create
+                virtual lists
+            items:
                 type: string
             type: array
         SceneTriggerBaseProperties:
@@ -1607,6 +1880,43 @@ components:
                     format: int32
                     type: integer
             type: object
+        SoundFeatureSet:
+            properties:
+                ambience:
+                    $ref: '#/components/schemas/AmbienceFeature'
+                balance:
+                    $ref: '#/components/schemas/BalanceFeature'
+                bass:
+                    $ref: '#/components/schemas/BassFeature'
+                bass-management:
+                    $ref: '#/components/schemas/BassManagementFeature'
+                compression:
+                    $ref: '#/components/schemas/CompressionFeature'
+                directivity:
+                    $ref: '#/components/schemas/DirectivityFeature'
+                fader:
+                    $ref: '#/components/schemas/FaderFeature'
+                roomCompensation:
+                    $ref: '#/components/schemas/RoomCompensationFeature'
+                spatial-envelopment:
+                    $ref: '#/components/schemas/SpatialEnvelopmentFeature'
+                spatial-height:
+                    $ref: '#/components/schemas/SpatialHeightFeature'
+                spatial-processing:
+                    $ref: '#/components/schemas/SpatialProcessingFeature'
+                spatial-surround:
+                    $ref: '#/components/schemas/SpatialSurroundFeature'
+                spatial-width:
+                    $ref: '#/components/schemas/SpatialWidthFeature'
+                speech-enhance:
+                    $ref: '#/components/schemas/SpeechEnhanceFeature'
+                toneTouchX:
+                    $ref: '#/components/schemas/ToneTouchXFeature'
+                toneTouchY:
+                    $ref: '#/components/schemas/ToneTouchYFeature'
+                treble:
+                    $ref: '#/components/schemas/TrebleFeature'
+            type: object
         SoundSettings:
             properties:
                 adjustments:
@@ -1681,6 +1991,25 @@ components:
             required:
             - value
             type: object
+        SpatialEnvelopmentFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpatialEnvelopment'
+            -   $ref: '#/components/schemas/SpatialEnvelopmentRange'
+        SpatialEnvelopmentRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpatialEnvelopment'
+                    description: Default spatial-envelopment value
+                range:
+                    description: spatial-envelopment range
+                    items:
+                        $ref: '#/components/schemas/SpatialEnvelopment'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
         SpatialHeight:
             properties:
                 value:
@@ -1689,6 +2018,25 @@ components:
                     type: number
             required:
             - value
+            type: object
+        SpatialHeightFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpatialHeight'
+            -   $ref: '#/components/schemas/SpatialHeightRange'
+        SpatialHeightRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpatialHeight'
+                    description: Default spatial-height value
+                range:
+                    description: spatial-height range
+                    items:
+                        $ref: '#/components/schemas/SpatialHeight'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
             type: object
         SpatialProcessing:
             properties:
@@ -1702,6 +2050,25 @@ components:
             required:
             - value
             type: object
+        SpatialProcessingFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpatialProcessing'
+            -   $ref: '#/components/schemas/SpatialProcessingRange'
+        SpatialProcessingRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpatialProcessing'
+                    description: Default spatial-processing value
+                range:
+                    description: spatial-processing range
+                    items:
+                        $ref: '#/components/schemas/SpatialProcessing'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
         SpatialSurround:
             properties:
                 value:
@@ -1711,6 +2078,25 @@ components:
             required:
             - value
             type: object
+        SpatialSurroundFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpatialSurround'
+            -   $ref: '#/components/schemas/SpatialSurroundRange'
+        SpatialSurroundRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpatialSurround'
+                    description: Default spatial-surround value
+                range:
+                    description: spatial-surround range
+                    items:
+                        $ref: '#/components/schemas/SpatialSurround'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
         SpatialWidth:
             properties:
                 value:
@@ -1719,6 +2105,25 @@ components:
                     type: number
             required:
             - value
+            type: object
+        SpatialWidthFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpatialWidth'
+            -   $ref: '#/components/schemas/SpatialWidthRange'
+        SpatialWidthRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpatialWidth'
+                    description: Default spatial-width value
+                range:
+                    description: spatial-width range
+                    items:
+                        $ref: '#/components/schemas/SpatialWidth'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
             type: object
         SpeakerGroup:
             properties:
@@ -1868,6 +2273,25 @@ components:
             required:
             - value
             type: object
+        SpeechEnhanceFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpeechEnhance'
+            -   $ref: '#/components/schemas/SpeechEnhanceRange'
+        SpeechEnhanceRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpeechEnhance'
+                    description: Default speech-enhance value
+                range:
+                    description: speech-enhance range
+                    items:
+                        $ref: '#/components/schemas/SpeechEnhance'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
         StandConnected:
             properties:
                 connected:
@@ -1878,6 +2302,11 @@ components:
                 angle:
                     format: float
                     type: number
+            type: object
+        SupportedSoundFeatures:
+            additionalProperties:
+                $ref: '#/components/schemas/SoundFeatureSet'
+            description: Supported sound features
             type: object
         ToneTouch:
             properties:
@@ -1894,6 +2323,30 @@ components:
             required:
             - value
             type: object
+        ToneTouchTypeRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/ToneTouchType'
+                    description: Product and role specific default ToneTouch X or
+                        Y
+                range:
+                    description: Product and role specific tone touch X or Y range
+                    items:
+                        $ref: '#/components/schemas/ToneTouchType'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        ToneTouchXFeature:
+            allOf:
+            -   $ref: '#/components/schemas/ToneTouchType'
+            -   $ref: '#/components/schemas/ToneTouchTypeRange'
+        ToneTouchYFeature:
+            allOf:
+            -   $ref: '#/components/schemas/ToneTouchType'
+            -   $ref: '#/components/schemas/ToneTouchTypeRange'
         Treble:
             properties:
                 value:
@@ -1902,6 +2355,25 @@ components:
                     type: integer
             required:
             - value
+            type: object
+        TrebleFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Treble'
+            -   $ref: '#/components/schemas/TrebleRange'
+        TrebleRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Treble'
+                    description: Product and role specific default treble value
+                range:
+                    description: Product and role specific treble range
+                    items:
+                        $ref: '#/components/schemas/Treble'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
             type: object
         TvInfoEventData:
             properties:
@@ -2019,10 +2491,19 @@ components:
                     $ref: '#/components/schemas/VolumeMute'
             type: object
         WebSocketEventActiveHdmiInputSignal:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_active_hdmi_input_signal_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2035,6 +2516,39 @@ components:
                 mozart_client.get_active_hdmi_input_signal_notifications(active_hdmi_input_signal_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_active_hdmi_input_signal_notifications():
+                    """React on WebSocketEventActiveHdmiInputSignal events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventActiveHdmiInputSignal":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_active_hdmi_input_signal_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/HdmiInput'
@@ -2042,10 +2556,19 @@ components:
                     type: string
             type: object
         WebSocketEventActiveListeningMode:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_active_listening_mode_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2058,6 +2581,39 @@ components:
                 mozart_client.get_active_listening_mode_notifications(active_listening_mode_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_active_listening_mode_notifications():
+                    """React on WebSocketEventActiveListeningMode events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventActiveListeningMode":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_active_listening_mode_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/ListeningModeProps'
@@ -2065,10 +2621,19 @@ components:
                     type: string
             type: object
         WebSocketEventActiveSpeakerGroup:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_active_speaker_group_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2081,6 +2646,39 @@ components:
                 mozart_client.get_active_speaker_group_notifications(active_speaker_group_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_active_speaker_group_notifications():
+                    """React on WebSocketEventActiveSpeakerGroup events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventActiveSpeakerGroup":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_active_speaker_group_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SpeakerGroupOverview'
@@ -2088,10 +2686,19 @@ components:
                     type: string
             type: object
         WebSocketEventAlarmTimer:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_alarm_timer_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2104,6 +2711,39 @@ components:
                 mozart_client.get_alarm_timer_notifications(alarm_timer_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_alarm_timer_notifications():
+                    """React on WebSocketEventAlarmTimer events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventAlarmTimer":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_alarm_timer_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/AlarmTimerEventData'
@@ -2111,10 +2751,19 @@ components:
                     type: string
             type: object
         WebSocketEventAlarmTriggered:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_alarm_triggered_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2127,6 +2776,39 @@ components:
                 mozart_client.get_alarm_triggered_notifications(alarm_triggered_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_alarm_triggered_notifications():
+                    """React on WebSocketEventAlarmTriggered events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventAlarmTriggered":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_alarm_triggered_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/AlarmTriggeredInfo'
@@ -2134,10 +2816,19 @@ components:
                     type: string
             type: object
         WebSocketEventBattery:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_battery_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2150,6 +2841,39 @@ components:
                 mozart_client.get_battery_notifications(battery_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_battery_notifications():
+                    """React on WebSocketEventBattery events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventBattery":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_battery_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/BatteryState'
@@ -2157,10 +2881,19 @@ components:
                     type: string
             type: object
         WebSocketEventBeoRemoteButton:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_beo_remote_button_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2173,6 +2906,39 @@ components:
                 mozart_client.get_beo_remote_button_notifications(beo_remote_button_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_beo_remote_button_notifications():
+                    """React on WebSocketEventBeoRemoteButton events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/remoteControl") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventBeoRemoteButton":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_beo_remote_button_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/BeoRemoteButton'
@@ -2180,10 +2946,19 @@ components:
                     type: string
             type: object
         WebSocketEventBeolinkExperiencesResult:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_beolink_experiences_result_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2196,6 +2971,39 @@ components:
                 mozart_client.get_beolink_experiences_result_notifications(beolink_experiences_result_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_beolink_experiences_result_notifications():
+                    """React on WebSocketEventBeolinkExperiencesResult events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventBeolinkExperiencesResult":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_beolink_experiences_result_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/BeolinkExperiencesResult'
@@ -2206,10 +3014,19 @@ components:
             - eventData
             type: object
         WebSocketEventBeolinkJoinResult:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_beolink_join_result_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2222,6 +3039,39 @@ components:
                 mozart_client.get_beolink_join_result_notifications(beolink_join_result_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_beolink_join_result_notifications():
+                    """React on WebSocketEventBeolinkJoinResult events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventBeolinkJoinResult":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_beolink_join_result_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/BeolinkJoinResult'
@@ -2232,10 +3082,19 @@ components:
             - eventData
             type: object
         WebSocketEventButton:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_button_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2248,6 +3107,39 @@ components:
                 mozart_client.get_button_notifications(button_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_button_notifications():
+                    """React on WebSocketEventButton events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventButton":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_button_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/ButtonEvent'
@@ -2255,10 +3147,19 @@ components:
                     type: string
             type: object
         WebSocketEventCurtains:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_curtains_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2271,6 +3172,39 @@ components:
                 mozart_client.get_curtains_notifications(curtains_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_curtains_notifications():
+                    """React on WebSocketEventCurtains events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventCurtains":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_curtains_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/ProductCurtainStatus'
@@ -2278,10 +3212,19 @@ components:
                     type: string
             type: object
         WebSocketEventHdmiVideoFormatSignal:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_hdmi_video_format_signal_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2294,6 +3237,39 @@ components:
                 mozart_client.get_hdmi_video_format_signal_notifications(hdmi_video_format_signal_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_hdmi_video_format_signal_notifications():
+                    """React on WebSocketEventHdmiVideoFormatSignal events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventHdmiVideoFormatSignal":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_hdmi_video_format_signal_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/HdmiVideoFormat'
@@ -2301,11 +3277,20 @@ components:
                     type: string
             type: object
         WebSocketEventNotification:
-            description: |-
+            description: |
                 This telegram is used to send a tagged notification.
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_notification_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2318,6 +3303,39 @@ components:
                 mozart_client.get_notification_notifications(notification_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_notification_notifications():
+                    """React on WebSocketEventNotification events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventNotification":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_notification_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/WebsocketNotificationTag'
@@ -2325,10 +3343,19 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackError:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_playback_error_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2341,6 +3368,39 @@ components:
                 mozart_client.get_playback_error_notifications(playback_error_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_playback_error_notifications():
+                    """React on WebSocketEventPlaybackError events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventPlaybackError":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_playback_error_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/PlaybackError'
@@ -2348,10 +3408,19 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackMetadata:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_playback_metadata_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2364,6 +3433,39 @@ components:
                 mozart_client.get_playback_metadata_notifications(playback_metadata_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_playback_metadata_notifications():
+                    """React on WebSocketEventPlaybackMetadata events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventPlaybackMetadata":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_playback_metadata_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/PlaybackContentMetadata'
@@ -2371,10 +3473,19 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackProgress:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_playback_progress_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2387,6 +3498,39 @@ components:
                 mozart_client.get_playback_progress_notifications(playback_progress_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_playback_progress_notifications():
+                    """React on WebSocketEventPlaybackProgress events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventPlaybackProgress":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_playback_progress_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/PlaybackProgress'
@@ -2394,10 +3538,19 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackSource:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_playback_source_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2410,6 +3563,39 @@ components:
                 mozart_client.get_playback_source_notifications(playback_source_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_playback_source_notifications():
+                    """React on WebSocketEventPlaybackSource events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventPlaybackSource":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_playback_source_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/Source'
@@ -2417,10 +3603,19 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackState:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_playback_state_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2433,6 +3628,39 @@ components:
                 mozart_client.get_playback_state_notifications(playback_state_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_playback_state_notifications():
+                    """React on WebSocketEventPlaybackState events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventPlaybackState":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_playback_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/RenderingState'
@@ -2440,10 +3668,19 @@ components:
                     type: string
             type: object
         WebSocketEventPowerState:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_power_state_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2456,6 +3693,39 @@ components:
                 mozart_client.get_power_state_notifications(power_state_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_power_state_notifications():
+                    """React on WebSocketEventPowerState events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventPowerState":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_power_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/PowerStateEnum'
@@ -2463,10 +3733,19 @@ components:
                     type: string
             type: object
         WebSocketEventPucInstallRemoteIdStatus:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_puc_install_remote_id_status_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2479,6 +3758,39 @@ components:
                 mozart_client.get_puc_install_remote_id_status_notifications(puc_install_remote_id_status_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_puc_install_remote_id_status_notifications():
+                    """React on WebSocketEventPucInstallRemoteIdStatus events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventPucInstallRemoteIdStatus":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_puc_install_remote_id_status_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/InstallRecordIdState'
@@ -2486,10 +3798,19 @@ components:
                     type: string
             type: object
         WebSocketEventRole:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_role_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2502,6 +3823,39 @@ components:
                 mozart_client.get_role_notifications(role_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_role_notifications():
+                    """React on WebSocketEventRole events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventRole":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_role_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SpeakerRoleEnum'
@@ -2509,13 +3863,22 @@ components:
                     type: string
             type: object
         WebSocketEventRoomCompensationCurrentMeasurementEvent:
-            description: |-
+            description: |
                 Sent when a room compensation measurement is started/done.
                 Is only sent when room compensation type is advanced.
 
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_room_compensation_current_measurement_event_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2528,6 +3891,39 @@ components:
                 mozart_client.get_room_compensation_current_measurement_event_notifications(room_compensation_current_measurement_event_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_room_compensation_current_measurement_event_notifications():
+                    """React on WebSocketEventRoomCompensationCurrentMeasurementEvent events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventRoomCompensationCurrentMeasurementEvent":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_room_compensation_current_measurement_event_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/RoomCompensationCurrentMeasurement'
@@ -2535,10 +3931,19 @@ components:
                     type: string
             type: object
         WebSocketEventRoomCompensationState:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_room_compensation_state_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2551,6 +3956,39 @@ components:
                 mozart_client.get_room_compensation_state_notifications(room_compensation_state_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_room_compensation_state_notifications():
+                    """React on WebSocketEventRoomCompensationState events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventRoomCompensationState":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_room_compensation_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/RoomCompensationStateValue'
@@ -2558,10 +3996,19 @@ components:
                     type: string
             type: object
         WebSocketEventSoftwareUpdateState:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_software_update_state_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2574,6 +4021,39 @@ components:
                 mozart_client.get_software_update_state_notifications(software_update_state_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_software_update_state_notifications():
+                    """React on WebSocketEventSoftwareUpdateState events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventSoftwareUpdateState":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_software_update_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SoftwareUpdateState'
@@ -2581,10 +4061,19 @@ components:
                     type: string
             type: object
         WebSocketEventSoundSettings:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_sound_settings_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2597,6 +4086,39 @@ components:
                 mozart_client.get_sound_settings_notifications(sound_settings_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_sound_settings_notifications():
+                    """React on WebSocketEventSoundSettings events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventSoundSettings":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_sound_settings_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SoundSettings'
@@ -2604,10 +4126,19 @@ components:
                     type: string
             type: object
         WebSocketEventSourceChange:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_source_change_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2620,6 +4151,39 @@ components:
                 mozart_client.get_source_change_notifications(source_change_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_source_change_notifications():
+                    """React on WebSocketEventSourceChange events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventSourceChange":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_source_change_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/Source'
@@ -2627,10 +4191,19 @@ components:
                     type: string
             type: object
         WebSocketEventSpeakerGroupChanged:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_speaker_group_changed_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2643,6 +4216,39 @@ components:
                 mozart_client.get_speaker_group_changed_notifications(speaker_group_changed_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_speaker_group_changed_notifications():
+                    """React on WebSocketEventSpeakerGroupChanged events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventSpeakerGroupChanged":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_speaker_group_changed_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SpeakerGroupId'
@@ -2650,10 +4256,19 @@ components:
                     type: string
             type: object
         WebSocketEventStandConnected:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_stand_connected_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2666,6 +4281,39 @@ components:
                 mozart_client.get_stand_connected_notifications(stand_connected_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_stand_connected_notifications():
+                    """React on WebSocketEventStandConnected events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventStandConnected":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_stand_connected_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/StandConnected'
@@ -2673,10 +4321,19 @@ components:
                     type: string
             type: object
         WebSocketEventStandPosition:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_stand_position_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2689,6 +4346,39 @@ components:
                 mozart_client.get_stand_position_notifications(stand_position_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_stand_position_notifications():
+                    """React on WebSocketEventStandPosition events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventStandPosition":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_stand_position_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/StandPosition'
@@ -2696,10 +4386,19 @@ components:
                     type: string
             type: object
         WebSocketEventTvInfo:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_tv_info_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2712,6 +4411,39 @@ components:
                 mozart_client.get_tv_info_notifications(tv_info_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_tv_info_notifications():
+                    """React on WebSocketEventTvInfo events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventTvInfo":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_tv_info_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/TvInfoEventData'
@@ -2719,10 +4451,19 @@ components:
                     type: string
             type: object
         WebSocketEventVolume:
-            description: |-
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_volume_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2735,6 +4476,39 @@ components:
                 mozart_client.get_volume_notifications(volume_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_volume_notifications():
+                    """React on WebSocketEventVolume events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventVolume":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_volume_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/VolumeState'
@@ -2742,11 +4516,20 @@ components:
                     type: string
             type: object
         WebSocketEventWisaOutState:
-            description: |-
+            description: |
                 Speaker Discovery State changed
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
                 Use the `get_wisa_out_state_notifications()` method in the Python package to get notifications of this type.
 
-                For example:
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
 
                 ```python
                 from mozart_api.mozart_client import MozartClient
@@ -2759,6 +4542,39 @@ components:
                 mozart_client.get_wisa_out_state_notifications(wisa_out_state_notifications)
                 mozart_client.connect_notifications()
                 ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_wisa_out_state_notifications():
+                    """React on WebSocketEventWisaOutState events."""
+                    async with ClientSession() as session:
+                        async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
+
+                            while True:
+                                notification = await websocket.receive_json()
+
+                                if notification["eventType"] == "WebSocketEventWisaOutState":
+                                    print(notification["eventData"])
+
+
+                asyncio.run(receive_wisa_out_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/WisaOutState'
@@ -2804,345 +4620,150 @@ info:
     contact:
         email: support@bang-olufsen.dk
         name: Bang & Olufsen
-    description: |
-        [![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/bang-olufsen/mozart-open-api/blob/main/LICENSE)
-        [![Version](https://img.shields.io/pypi/v/mozart-api?color=g)](https://pypi.org/project/mozart-api)
-        [![Downloads](https://img.shields.io/pypi/dm/mozart-api)](https://pypi.org/project/mozart-api)
-        ![Python version](https://img.shields.io/pypi/pyversions/mozart-api)
-
-        The Mozart API is a REST API with async capabilities and WebSocket notification channel for immediate state information. Currently the API is distributed as a Python package and as an OpenAPI document that can be found in the [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).
-
-        Supported by:
-
-        - [Beolab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)
-        - [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)
-        - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)
-        - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)
-        - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
-
-
-        This API documentation has been generated for version 2.3.4.15123 of the Mozart platform and API generation version 2.3.4.15123.5.
-
-        The Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/). On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
-
-        Another file, mozart_cli.py, has been made for using the Mozart API in a simple CLI program. This has been set as the "entry point" for the Python package.
-
-        ## Installation
-
-        The Mozart Open API can be installed with pip and requires [Python](https://www.python.org/downloads/).
-
-        Install using pip:
-
-        ```terminal
-        pip3 install mozart-api
-        ```
-
-        ## API usage
-
-        To use the Python API:
-
-        - Create a MozartClient object
-        - Choose which (if any) WebSocket events to listen to
-        - Connect to the WebSocket notification channel (if needed)
-        - Use any of the endpoints
-
-        ### Example
-
-        <!--
-        type: tab
-        title: Synchronous
-        -->
-
-        <!-- title: "Synchronous API usage example"
-        lineNumbers: true
-        -->
-
-        ```python
-        from mozart_api.models import VolumeLevel
-        from mozart_api.mozart_client import MozartClient
-
-        def all_notifications(notification: object, notification_type: str):
-            """Notification handler."""
-            print(f"{notification_type} : {notification}")
-
-        def volume_notifications(notification: object):
-            """Volume notification handler."""
-            print(notification)
-
-        # Setup API and WebSocket listener
-        mozart_client = MozartClient(host="192.168.0.1")
-        mozart_client.get_all_notifications(all_notifications)
-        mozart_client.get_volume_notifications(volume_notifications)
-
-        # Connect to the WebSocket notification channel
-        mozart_client.connect_notifications(remote_control=True)
-
-        # Run commands
-        mozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50))
-        mozart_client.activate_preset(id=2)
-        mozart_client.post_beolink_expand(jid="1234.1234567.12345678@products.bang-olufsen.com")
-
-        listeners = mozart_client.get_beolink_listeners()
-        print(listeners)
-
-        ```
-
-        <!--
-        type: tab
-        title: Asynchronous
-        -->
-
-        <!-- title: "Asynchronous API usage example"
-        lineNumbers: true
-        -->
-
-        ```python
-        from mozart_api.models import VolumeLevel
-        from mozart_api.mozart_client import MozartClient
-
-        def all_notifications(notification: object, notification_type: str):
-            """Notification handler."""
-            print(f"{notification_type} : {notification}")
-
-        def volume_notifications(notification: object):
-            """Volume notification handler."""
-            print(notification)
-
-        # Setup API and WebSocket listener
-        mozart_client = MozartClient(host="192.168.0.1")
-        mozart_client.get_all_notifications(all_notifications)
-        mozart_client.get_volume_notifications(volume_notifications)
-
-        # Connect to the WebSocket notification channel
-        mozart_client.connect_notifications(remote_control=True)
-
-        # Run commands
-        mozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50), async_req=True)
-        mozart_client.activate_preset(id=2, async_req=True)
-        mozart_client.post_beolink_expand(jid="1234.1234567.12345678@products.bang-olufsen.com", async_req=True)
-
-        listeners = mozart_client.get_beolink_listeners(async_req=True).get()
-        print(listeners)
-        ```
-
-        <!-- type: tab-end -->
-
-        Where `192.168.0.1` is a Mozart device's IP-address.
-
-        ### Beware
-
-        Some of the classes defined in the Mozart API are aliases to other data types, for example: `ActionList` is an array of `Action` objects. These classes are not generated and can therefore not be used in the Python API. instead, use the built in Python data types, for example when defining an ActionList, simply use a `list` instead.
-
-        ## Example CLI program
-
-        The CLI program carries out one command and then exits afterwards. The program needs to do a device-discovery on each command, which in noisy environments could take some time. If speed is important, an IP-address can be used instead.
-
-        Additionally since the CLI uses MDNS for device discovery, port number 5353 needs to be open.
-
-        ### Usage example
-
-        This example shows device discovery and afterwards joining a Beolink session with WebSocket events being printed.
-
-        ![example gif](https://raw.githubusercontent.com/bang-olufsen/mozart-open-api/main/docs/media/discovery_join.gif)
-
-        ### Device discovery
-
-        <!--
-        type: tab
-        title: Discover
-        -->
-
-        #### discover
-
-        Discover Mozart devices on the network.
-
-        ```terminal
-        mozart_api discover
-        ```
-
-        <!--
-        type: tab
-        title: Serial number
-        -->
-
-        #### serial number
-
-        Ensure that the serial number is reachable on the network.
-
-        ```terminal
-        mozart_api 12345678
-        ```
-
-        <!-- type: tab-end -->
-
-        ### Options
-
-        <!--
-        type: tab
-        title: Verbose
-        -->
-
-        #### verbose
-
-        Add as option to add verbose output.
-
-        ```terminal
-        mozart_api serial_number command command_args -v
-
-        mozart_api serial_number command command_args --verbose
-        ```
-
-        <!--
-        type: tab
-        title: Timeout
-        -->
-
-        #### timeout
-
-        Add as option with parameter to modify MDNS discovery timeout.
-
-        Optionally use '-1' to have a user-interrupted device discovery:
-
-        ```terminal
-        mozart_api serial_number command command_args -t 20
-
-        mozart_api serial_number command command_args --timeout 20
-
-        mozart_api serial_number command command_args --timeout -1
-        ```
-
-        <!--
-        type: tab
-        title: WebSocket
-        -->
-
-        #### websocket
-
-        Add as option to show WebSocket notifications before and after command execution.
-
-        Upon connection the overall state of the device will be immediately transferred.
-
-        ```terminal
-        mozart_api serial_number command command_args -w
-
-        mozart_api serial_number command command_args --websocket
-        ```
-
-        <!-- type: tab-end -->
-
-        ### Commands
-
-        <!--
-        type: tab
-        title: Playback
-        -->
-
-        #### preset
-
-        Will activate the _preset_ command.
-
-        ```terminal
-        mozart_api 12345678 preset 1
-        ```
-
-        #### play
-
-        Will activate the _play_ playback command.
-
-        ```terminal
-        mozart_api 12345678 play
-        ```
-
-        #### pause
-
-        Will activate the _pause_ playback command.
-
-        ```terminal
-        mozart_api 12345678 pause
-        ```
-
-        #### next
-
-        Will activate the _next_ playback command.
-
-        ```terminal
-        mozart_api 12345678 next
-        ```
-
-        #### previous
-
-        Will activate the _previous_ playback command.
-
-        ```terminal
-        mozart_api 12345678 previous
-        ```
-
-        <!--
-        type: tab
-        title: Volume
-        -->
-
-        #### mute
-
-        Will activate the mute command.
-
-        ```terminal
-        mozart_api 12345678 mute
-        ```
-
-        #### unmute
-
-        Will activate the unmute command.
-
-        ```terminal
-        mozart_api 12345678 unmute
-        ```
-
-        #### volume
-
-        Will activate the modify volume level command on the device (0-100).
-
-        ```terminal
-        mozart_api 12345678 volume 50
-        ```
-
-        <!--
-        type: tab
-        title: Beolink
-        -->
-
-        #### join
-
-        Will join a Beolink experience if available or will join a specific Beolink experience if available.
-
-        ```terminal
-        mozart_api 12345678 join
-
-        mozart_api 12345678 join 23456789
-        ```
-
-        #### allstandby
-
-        Will set all connected Beolink devices to networkStandby.
-
-        ```terminal
-        mozart_api 12345678 allstandby
-        ```
-
-        <!--
-        type: tab
-        title: Miscellaneous
-        -->
-
-        #### info
-
-        Will print device information.
-
-        ```terminal
-        mozart_api 12345678 info
-        ```
-
-        <!-- type: tab-end -->
+    description: "[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/bang-olufsen/mozart-open-api/blob/main/LICENSE)\n\
+        [![Version](https://img.shields.io/pypi/v/mozart-api?color=g)](https://pypi.org/project/mozart-api)\n\
+        [![Downloads](https://img.shields.io/pypi/dm/mozart-api)](https://pypi.org/project/mozart-api)\n\
+        ![Python version](https://img.shields.io/pypi/pyversions/mozart-api)\n\nThe\
+        \ Mozart API is a REST API with async capabilities and WebSocket notification\
+        \ channel for immediate state information. Currently the API is distributed\
+        \ as a Python package and as an OpenAPI document that can be found in the\
+        \ [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).\n\
+        \nSupported by:\n\n- [Beolab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)\n\
+        - [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)\n\
+        - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)\n\
+        - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
+        - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
+        \n\nThis API documentation has been generated for version 2.3.4.15123 of the\
+        \ Mozart platform and API generation version 2.3.4.15123.6.\n\n## Python API\n\
+        \nThe Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
+        \ version 4.3.1. On top of the generated API, a helper file, mozart_client.py,\
+        \ has been made that makes the API more pythonic. We recommend using this.\n\
+        \nAnother file, mozart_cli.py, has been made for using the Mozart API in a\
+        \ simple CLI program. This has been set as the \"entry point\" for the Python\
+        \ package.\n\n### Installation\n\nThe Mozart Open API can be installed with\
+        \ pip and requires [Python](https://www.python.org/downloads/).\n\nInstall\
+        \ using pip:\n\n```terminal\npip3 install mozart-api\n```\n\n### API usage\n\
+        \nTo use the Python API:\n\n- Create a MozartClient object\n- Choose which\
+        \ (if any) WebSocket events to listen to\n- Connect to the WebSocket notification\
+        \ channel (if needed)\n- Use any of the endpoints\n\n#### Example\n\n<!--\n\
+        type: tab\ntitle: Synchronous\n-->\n\n<!-- title: \"Synchronous API usage\
+        \ example\"\nlineNumbers: true\n-->\n\n```python\nfrom mozart_api.models import\
+        \ VolumeLevel\nfrom mozart_api.mozart_client import MozartClient\n\ndef all_notifications(notification:\
+        \ object, notification_type: str):\n    \"\"\"Notification handler.\"\"\"\n\
+        \    print(f\"{notification_type} : {notification}\")\n\ndef volume_notifications(notification:\
+        \ object):\n    \"\"\"Volume notification handler.\"\"\"\n    print(notification)\n\
+        \n# Setup API and WebSocket listener\nmozart_client = MozartClient(host=\"\
+        192.168.0.1\")\nmozart_client.get_all_notifications(all_notifications)\nmozart_client.get_volume_notifications(volume_notifications)\n\
+        \n# Connect to the WebSocket notification channel\nmozart_client.connect_notifications(remote_control=True)\n\
+        \n# Run commands\nmozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50))\n\
+        mozart_client.activate_preset(id=2)\nmozart_client.post_beolink_expand(jid=\"\
+        1234.1234567.12345678@products.bang-olufsen.com\")\n\nlisteners = mozart_client.get_beolink_listeners()\n\
+        print(listeners)\n\n```\n\n<!--\ntype: tab\ntitle: Asynchronous\n-->\n\n<!--\
+        \ title: \"Asynchronous API usage example\"\nlineNumbers: true\n-->\n\n```python\n\
+        from mozart_api.models import VolumeLevel\nfrom mozart_api.mozart_client import\
+        \ MozartClient\n\ndef all_notifications(notification: object, notification_type:\
+        \ str):\n    \"\"\"Notification handler.\"\"\"\n    print(f\"{notification_type}\
+        \ : {notification}\")\n\ndef volume_notifications(notification: object):\n\
+        \    \"\"\"Volume notification handler.\"\"\"\n    print(notification)\n\n\
+        # Setup API and WebSocket listener\nmozart_client = MozartClient(host=\"192.168.0.1\"\
+        )\nmozart_client.get_all_notifications(all_notifications)\nmozart_client.get_volume_notifications(volume_notifications)\n\
+        \n# Connect to the WebSocket notification channel\nmozart_client.connect_notifications(remote_control=True)\n\
+        \n# Run commands\nmozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50),\
+        \ async_req=True)\nmozart_client.activate_preset(id=2, async_req=True)\nmozart_client.post_beolink_expand(jid=\"\
+        1234.1234567.12345678@products.bang-olufsen.com\", async_req=True)\n\nlisteners\
+        \ = mozart_client.get_beolink_listeners(async_req=True).get()\nprint(listeners)\n\
+        ```\n\n<!-- type: tab-end -->\n\nWhere `192.168.0.1` is a Mozart device's\
+        \ IP-address.\n\n#### Beware\n\nSome of the classes defined in the Mozart\
+        \ API are aliases to other data types, for example: `ActionList` is an array\
+        \ of `Action` objects. These classes are not generated and can therefore not\
+        \ be used in the Python API. instead, use the built in Python data types,\
+        \ for example when defining an ActionList, simply use a `list` instead.\n\n\
+        #### WebSocket events\n\nThe most convenient way of getting state information\
+        \ from a Mozart device is through the WebSocket notification channel.\n\n\
+        To receive `WebSocketEventBeoRemoteButton` events requires that `remote_control=True`\
+        \ is defined when running the `connect_notifications()` method.\n\nA callback\
+        \ is available for each of the WebSocket events as well as:\n\n<!--\ntype:\
+        \ tab\ntitle: On connection lost\n-->\n\nThe `get_on_connection_lost` method\
+        \ will set a callback when the WebSocket listener loses connection.\n\n<!--\
+        \ title: \"On connection lost example\"\nlineNumbers: true\n-->\n\n```python\n\
+        from mozart_api.mozart_client import MozartClient\n\n\ndef on_connection_lost():\n\
+        \    \"\"\"Notification handler.\"\"\"\n    print(\"Connection lost\")\n\n\
+        \nmozart_client = MozartClient(host=\"192.168.0.1\")\nmozart_client.get_on_connection_lost(on_connection_lost)\n\
+        mozart_client.connect_notifications()\n```\n\n<!--\ntype: tab\ntitle: On connection\n\
+        -->\n\nThe `get_on_connection` method will set a callback when the WebSocket\
+        \ listener successfully establishes a connection.\n\n<!-- title: \"On connection\
+        \ example\"\nlineNumbers: true\n-->\n\n```python\nfrom mozart_api.mozart_client\
+        \ import MozartClient\n\n\ndef on_connection():\n    \"\"\"Notification handler.\"\
+        \"\"\n    print(\"Connected\")\n\n\nmozart_client = MozartClient(host=\"192.168.0.1\"\
+        )\nmozart_client.get_on_connection(on_connection)\nmozart_client.connect_notifications()\n\
+        ```\n\n<!--\ntype: tab\ntitle: All notifications\n-->\n\nThe `get_all_notifications`\
+        \ method will set a callback on all WebSocket notifications received.\n\n\
+        The notification_type will return the name of the event with the `WebSocketEvent`\
+        \ prefix removed and the rest converted to snake_case: `WebSocketEventAlarmTriggered`\
+        \ \u279E `alarm_triggered`\n\n<!-- title: \"All notifications example\"\n\
+        lineNumbers: true\n-->\n\n```python\nfrom mozart_api.mozart_client import\
+        \ MozartClient\n\n\ndef all_notifications(notification: object, notification_type:\
+        \ str):\n    \"\"\"Notification handler.\"\"\"\n    print(f\"{notification_type}\
+        \ : {notification}\")\n\n\nmozart_client = MozartClient(host=\"192.168.0.1\"\
+        )\nmozart_client.get_all_notifications(all_notifications)\nmozart_client.connect_notifications()\n\
+        ```\n\n<!--\ntype: tab\ntitle: All notifications (raw)\n-->\n\nThe `get_all_notifications_raw`\
+        \ method will set a callback on all WebSocket notifications received and will\
+        \ not deserialize the received JSON or dict.\n\n<!-- title: \"All notifications\
+        \ (raw) example\"\nlineNumbers: true\n-->\n\n```python\nfrom mozart_api.mozart_client\
+        \ import MozartClient\n\n\ndef all_notifications_raw(notification: dict):\n\
+        \    \"\"\"Notification handler.\"\"\"\n    print(notification)\n\n\nmozart_client\
+        \ = MozartClient(host=\"192.168.0.1\")\nmozart_client.get_all_notifications_raw(all_notifications_raw)\n\
+        mozart_client.connect_notifications()\n```\n\n<!-- type: tab-end -->\n\n####\
+        \ Discovering Mozart devices on the network\n\nMozart devices can be found\
+        \ through MDNS using the service name: `_bangolufsen._tcp.local.`\n\nThe service\
+        \ provides everything immedeately necessary for using the device, including\
+        \ IP address, all components for the Beolink JID, model name, friendly name,\
+        \ software version and more.\n\n### Example CLI program\n\nThe CLI program\
+        \ carries out one command and then exits afterwards. The program needs to\
+        \ do a device-discovery on each command, which in noisy environments could\
+        \ take some time. If speed is important, an IP-address can be used instead.\n\
+        \nAdditionally since the CLI uses MDNS for device discovery, port number 5353\
+        \ needs to be open.\n\n#### Usage example\n\nThis example shows device discovery\
+        \ and afterwards joining a Beolink session with WebSocket events being printed.\n\
+        \n![example gif](https://raw.githubusercontent.com/bang-olufsen/mozart-open-api/main/docs/media/discovery_join.gif)\n\
+        \n#### Device discovery\n\n<!--\ntype: tab\ntitle: Discover\n-->\n\n#####\
+        \ discover\n\nDiscover Mozart devices on the network.\n\n```terminal\nmozart_api\
+        \ discover\n```\n\n<!--\ntype: tab\ntitle: Serial number\n-->\n\n##### serial\
+        \ number\n\nEnsure that the serial number is reachable on the network.\n\n\
+        ```terminal\nmozart_api 12345678\n```\n\n<!-- type: tab-end -->\n\n#### Options\n\
+        \n<!--\ntype: tab\ntitle: Verbose\n-->\n\n##### verbose\n\nAdd as option to\
+        \ add verbose output.\n\n```terminal\nmozart_api serial_number command command_args\
+        \ -v\n\nmozart_api serial_number command command_args --verbose\n```\n\n<!--\n\
+        type: tab\ntitle: Timeout\n-->\n\n##### timeout\n\nAdd as option with parameter\
+        \ to modify MDNS discovery timeout.\n\nOptionally use '-1' to have a user-interrupted\
+        \ device discovery:\n\n```terminal\nmozart_api serial_number command command_args\
+        \ -t 20\n\nmozart_api serial_number command command_args --timeout 20\n\n\
+        mozart_api serial_number command command_args --timeout -1\n```\n\n<!--\n\
+        type: tab\ntitle: WebSocket\n-->\n\n##### websocket\n\nAdd as option to show\
+        \ WebSocket notifications before and after command execution.\n\nUpon connection\
+        \ the overall state of the device will be immediately transferred.\n\n```terminal\n\
+        mozart_api serial_number command command_args -w\n\nmozart_api serial_number\
+        \ command command_args --websocket\n```\n\n<!-- type: tab-end -->\n\n####\
+        \ Commands\n\n<!--\ntype: tab\ntitle: Playback\n-->\n\n##### preset\n\nWill\
+        \ activate the _preset_ command.\n\n```terminal\nmozart_api 12345678 preset\
+        \ 1\n```\n\n##### play\n\nWill activate the _play_ playback command.\n\n```terminal\n\
+        mozart_api 12345678 play\n```\n\n##### pause\n\nWill activate the _pause_\
+        \ playback command.\n\n```terminal\nmozart_api 12345678 pause\n```\n\n#####\
+        \ next\n\nWill activate the _next_ playback command.\n\n```terminal\nmozart_api\
+        \ 12345678 next\n```\n\n##### previous\n\nWill activate the _previous_ playback\
+        \ command.\n\n```terminal\nmozart_api 12345678 previous\n```\n\n<!--\ntype:\
+        \ tab\ntitle: Volume\n-->\n\n##### mute\n\nWill activate the mute command.\n\
+        \n```terminal\nmozart_api 12345678 mute\n```\n\n##### unmute\n\nWill activate\
+        \ the unmute command.\n\n```terminal\nmozart_api 12345678 unmute\n```\n\n\
+        ##### volume\n\nWill activate the modify volume level command on the device\
+        \ (0-100).\n\n```terminal\nmozart_api 12345678 volume 50\n```\n\n<!--\ntype:\
+        \ tab\ntitle: Beolink\n-->\n\n##### join\n\nWill join a Beolink experience\
+        \ if available or will join a specific Beolink experience if available.\n\n\
+        ```terminal\nmozart_api 12345678 join\n\nmozart_api 12345678 join 23456789\n\
+        ```\n\n##### allstandby\n\nWill set all connected Beolink devices to networkStandby.\n\
+        \n```terminal\nmozart_api 12345678 allstandby\n```\n\n<!--\ntype: tab\ntitle:\
+        \ Miscellaneous\n-->\n\n##### info\n\nWill print device information.\n\n```terminal\n\
+        mozart_api 12345678 info\n```\n\n<!-- type: tab-end -->\n\n"
     license:
         name: MIT
         url: https://opensource.org/licenses/MIT
@@ -3567,10 +5188,43 @@ paths:
             tags:
             - Beolink
             - mozart
+    /api/v1/content:
+        get:
+            description: |-
+                Use the `get-content` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_content()
+                ```
+                ```mozart_api
+                mozart_api.get_content()
+                ```
+                ```content_api
+                content_api.get_content()
+                ```
+            operationId: get-content
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContentItemMap'
+                    description: Successful request
+            summary: Get a list of available content
+            tags:
+            - Content
+            - mozart
+        parameters:
+        -   description: Filter result that start with x. It could be input source
+                "tv", "netradio" or content "tv://TV", "tv://netflix"
+            in: query
+            name: startWith
+            required: false
+            schema:
+                type: string
     /api/v1/overlay/play:
         post:
             description: |-
-                Play some audio as an overlay. This will duck currently playing music while the audio is playing.
+                Play some audio as an overlay. This will duck currently playing music while the audio is playing. Currently 100 unique TTS messages can be generated a day and generated messages are cached for 24 hours.
 
                 Use the `post-overlay-play` method in the Python package with one of:
                 ```mozart_client
@@ -3954,6 +5608,38 @@ paths:
             tags:
             - Playback
             - mozart
+    /api/v1/playback/state:
+        get:
+            description: |-
+                Use the `get-playback-state` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_playback_state()
+                ```
+                ```mozart_api
+                mozart_api.get_playback_state()
+                ```
+                ```playback_api
+                playback_api.get_playback_state()
+                ```
+            operationId: get-playback-state
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PlaybackState'
+                    description: Model describing the current playback state and meta
+                        data
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the current playback state
+            tags:
+            - Playback
+            - mozart
     /api/v1/playback/uri:
         post:
             description: |-
@@ -3987,6 +5673,145 @@ paths:
             summary: Set the URI from which sound is streamed
             tags:
             - Playback
+            - mozart
+    /api/v1/remote/key/{id}/trigger:
+        post:
+            description: |-
+                Use the `post-remote-key-trigger` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_remote_key_trigger()
+                ```
+                ```mozart_api
+                mozart_api.post_remote_key_trigger()
+                ```
+                ```remote_api
+                remote_api.post_remote_key_trigger()
+                ```
+            operationId: post-remote-key-trigger
+            parameters:
+            -   description: Key identifier
+                in: path
+                name: id
+                required: true
+                schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RemoteUIKeyState'
+                required: true
+            responses:
+                '204':
+                    description: Remote input key press registered successfully
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Failed to register key press
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Key not found
+            summary: Remote input key press
+            tags:
+            - Remote
+            - mozart
+    /api/v1/scene/match-trigger:
+        post:
+            description: |-
+                Use the `post-scene-match-trigger` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_scene_match_trigger()
+                ```
+                ```mozart_api
+                mozart_api.post_scene_match_trigger()
+                ```
+                ```scenes_api
+                scenes_api.post_scene_match_trigger()
+                ```
+            operationId: post-scene-match-trigger
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SceneMatch'
+                required: true
+            responses:
+                '204':
+                    description: Successful request
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Bad request no match objects provided
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Could not find any matching scene
+            summary: Trigger the first scene with same non null objects provided in
+                the SceneMatch object
+            tags:
+            - Scenes
+            - mozart
+    /api/v1/scene/run:
+        post:
+            description: |-
+                Use the `run-provided-scene` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.run_provided_scene()
+                ```
+                ```mozart_api
+                mozart_api.run_provided_scene()
+                ```
+                ```scenes_api
+                scenes_api.run_provided_scene()
+                ```
+            operationId: run-provided-scene
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SceneProperties'
+                description: The scene you want to run
+                required: true
+            responses:
+                '204':
+                    description: Successful request
+            summary: Run provided scene
+            tags:
+            - Scenes
+            - mozart
+    /api/v1/scenes:
+        get:
+            description: |-
+                Use the `get-all-scenes` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_all_scenes()
+                ```
+                ```mozart_api
+                mozart_api.get_all_scenes()
+                ```
+                ```scenes_api
+                scenes_api.get_all_scenes()
+                ```
+            operationId: get-all-scenes
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SceneMap'
+                    description: Successful request
+            summary: Get a list of configured scenes
+            tags:
+            - Scenes
             - mozart
     /api/v1/setup/bluetooth/devices:
         get:
@@ -4106,6 +5931,110 @@ paths:
             tags:
             - Software update
             - mozart
+    /api/v1/sound/features:
+        get:
+            description: |-
+                Use the `get-sound-features` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_sound_features()
+                ```
+                ```mozart_api
+                mozart_api.get_sound_features()
+                ```
+                ```sound_api
+                sound_api.get_sound_features()
+                ```
+            operationId: get-sound-features
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SupportedSoundFeatures'
+                    description: Supported sound features
+            summary: |
+                Get available sound features
+                that match the current role (standalone or multichannel).
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/listening-modes:
+        get:
+            description: |-
+                Use the `get-listening-mode-set` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_listening_mode_set()
+                ```
+                ```mozart_api
+                mozart_api.get_listening_mode_set()
+                ```
+                ```sound_api
+                sound_api.get_listening_mode_set()
+                ```
+            operationId: get-listening-mode-set
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListeningModeSet'
+                    description: the list of listening modes
+            summary: |
+                Get available listening modes that match the current role
+                (standalone or multichannel).
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/listening-modes/active:
+        get:
+            description: |-
+                Use the `get-active-listening-mode` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_active_listening_mode()
+                ```
+                ```mozart_api
+                mozart_api.get_active_listening_mode()
+                ```
+                ```sound_api
+                sound_api.get_active_listening_mode()
+                ```
+            operationId: get-active-listening-mode
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListeningModeRef'
+                    description: the active listening mode
+            summary: Get the active listening mode
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/listening-modes/{id}/activate:
+        parameters:
+        -   $ref: '#/components/parameters/ListeningModeID'
+        post:
+            description: |-
+                Use the `activate-listening-mode` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.activate_listening_mode()
+                ```
+                ```mozart_api
+                mozart_api.activate_listening_mode()
+                ```
+                ```sound_api
+                sound_api.activate_listening_mode()
+                ```
+            operationId: activate-listening-mode
+            responses:
+                '204':
+                    description: Listening mode active
+                '404':
+                    $ref: '#/components/responses/MissingListeningMode'
+            summary: Activate a listening mode
+            tags:
+            - Sound
+            - mozart
     /api/v1/sound/settings/adjustments/bass:
         put:
             description: |-
@@ -4137,6 +6066,40 @@ paths:
                                 $ref: '#/components/schemas/ErrorModel'
                     description: invalid request
             summary: Update the sound settings adjustments for bass
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/settings/adjustments/directivity:
+        put:
+            description: |-
+                Use the `set-sound-settings-adjustments-directivity` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_sound_settings_adjustments_directivity()
+                ```
+                ```mozart_api
+                mozart_api.set_sound_settings_adjustments_directivity()
+                ```
+                ```sound_api
+                sound_api.set_sound_settings_adjustments_directivity()
+                ```
+            operationId: set-sound-settings-adjustments-directivity
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Directivity'
+                description: the directivity
+                required: true
+            responses:
+                '201':
+                    description: accepted the directivity sound settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Update the sound settings adjustments for directivity
             tags:
             - Sound
             - mozart
@@ -4205,6 +6168,37 @@ paths:
                                 $ref: '#/components/schemas/ErrorModel'
                     description: invalid request
             summary: Update the sound settings adjustments for treble
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/volume:
+        get:
+            description: |-
+                Use the `get-current-volume` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_current_volume()
+                ```
+                ```mozart_api
+                mozart_api.get_current_volume()
+                ```
+                ```sound_api
+                sound_api.get_current_volume()
+                ```
+            operationId: get-current-volume
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/VolumeState'
+                    description: The currently active volume
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the current volume state
             tags:
             - Sound
             - mozart
@@ -4368,6 +6362,58 @@ paths:
             summary: Get the overall state from the product
             tags:
             - Product
+            - mozart
+    /api/v1/state/power:
+        get:
+            description: |-
+                Use the `get-power-state` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_power_state()
+                ```
+                ```mozart_api
+                mozart_api.get_power_state()
+                ```
+                ```power_api
+                power_api.get_power_state()
+                ```
+            operationId: get-power-state
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PowerStateEnum'
+                    description: The power state of the product
+            summary: Get power state of the product
+            tags:
+            - Power
+            - mozart
+    /api/v1/state/standby:
+        put:
+            description: |-
+                Use the `post-standby` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_standby()
+                ```
+                ```mozart_api
+                mozart_api.post_standby()
+                ```
+                ```power_api
+                power_api.post_standby()
+                ```
+            operationId: post-standby
+            responses:
+                '200':
+                    description: The device is put in standby
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Put the device in standby
+            tags:
+            - Power
             - mozart
 security: []
 servers:
