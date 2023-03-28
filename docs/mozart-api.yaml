@@ -25,12 +25,6 @@ components:
             required: true
             schema:
                 $ref: '#/components/schemas/SpeakerId'
-    requestBodies:
-        OptionalEnable:
-            content:
-                application/json:
-                    schema:
-                        $ref: '#/components/schemas/RequiredEnable'
     responses:
         BadListeningMode:
             content:
@@ -60,8 +54,6 @@ components:
                 `WebsocketEventBeolinkJoinResult` web socket event.
         EmptySuccess:
             description: Success
-        MicrophoneMuted:
-            description: Action can not be completed since microphone is muted
         MissingListeningMode:
             description: No such listening mode
         NotFound:
@@ -70,16 +62,6 @@ components:
                     schema:
                         $ref: '#/components/schemas/ErrorModel'
             description: Resource not found
-        Redirect:
-            description: Redirect to another resource
-            headers:
-                Location:
-                    description: URL of the other resource
-                    schema:
-                        format: uri
-                        type: string
-        WrongRoomCompensationType:
-            description: The requested room compensation type is not supported
     schemas:
         Action:
             description: |
@@ -239,12 +221,6 @@ components:
                 buttonName:
                     description: Name of the Button used for button-press types ('buttonShortPress')
                     enum:
-                    - microphone
-                    - bluetooth
-                    - next
-                    - previous
-                    - playPause
-                    - previousNext
                     - preset1
                     - preset2
                     - preset3
@@ -894,6 +870,11 @@ components:
                 videoTimings:
                     $ref: '#/components/schemas/VideoTimings'
             type: object
+        HomeControlUri:
+            properties:
+                uri:
+                    type: string
+            type: object
         InstallRecordIdState:
             properties:
                 value:
@@ -1100,6 +1081,10 @@ components:
             properties:
                 address:
                     type: string
+                batteryLevel:
+                    maximum: 100
+                    minimum: 0
+                    type: integer
                 name:
                     type: string
             required:
@@ -1353,6 +1338,13 @@ components:
                     - narrow
                     - wide
                     type: string
+        ProductFriendlyName:
+            properties:
+                friendlyName:
+                    description: |
+                        The friendly name of the product, assignable by the end user, e.g. 'Kitchen speaker
+                    type: string
+            type: object
         ProductState:
             properties:
                 microphones:
@@ -1372,6 +1364,74 @@ components:
                 volume:
                     $ref: '#/components/schemas/VolumeState'
             type: object
+        RemoteMenuItem:
+            allOf:
+            -   $ref: '#/components/schemas/RemoteMenuItemProperties'
+            -   properties:
+                    available:
+                        nullable: true
+                        type: boolean
+                    content:
+                        $ref: '#/components/schemas/ContentItem'
+                    fixed:
+                        description: True if this is a fixed menu item. A fixed item
+                            can't be deleted or moved
+                        type: boolean
+                    id:
+                        description: Unique ID for this menu item
+                        format: uuid
+                        type: string
+                required:
+                - id
+                - fixed
+                type: object
+        RemoteMenuItemMap:
+            additionalProperties:
+                $ref: '#/components/schemas/RemoteMenuItem'
+            example:
+                6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0:
+                    contentUri: netRadio://123456
+                    label: P3
+                ee5196ce-65c4-4c56-9a48-1943c4afef9c:
+                    contentUri: tv://netflix
+                    label: Netflix
+            type: object
+        RemoteMenuItemProperties:
+            allOf:
+            -   $ref: '#/components/schemas/SceneTriggerBaseProperties'
+            -   properties:
+                    disabled:
+                        nullable: true
+                        type: boolean
+                    dynamicList:
+                        description: |
+                            Let mozart create a dynamic list. This list will be attached as children to the menu item. If dynamicList is set it's not possible to change or manipulate any of the children because mozart can alter them at any given time
+                        enum:
+                        - none
+                        - radioFavorites
+                        nullable: true
+                        type: string
+                    firstChildMenuItemId:
+                        description: ID of the first child menu item
+                        format: uuid
+                        nullable: true
+                        type: string
+                    label:
+                        description: Alternative label, if omitted mozart will try
+                            its best
+                        nullable: true
+                        type: string
+                    nextSiblingMenuItemId:
+                        description: ID of the next sibling menu item
+                        format: uuid
+                        nullable: true
+                        type: string
+                    parentMenuItemId:
+                        description: ID of the parent menu item
+                        format: uuid
+                        nullable: true
+                        type: string
+                type: object
         RemoteUIKeyState:
             properties:
                 state:
@@ -1398,13 +1458,6 @@ components:
                     - error
                     - unknown
                     type: string
-        RequiredEnable:
-            properties:
-                enabled:
-                    type: boolean
-            required:
-            - enabled
-            type: object
         RoomCompensation:
             properties:
                 value:
@@ -1645,6 +1698,8 @@ components:
                               The microphone is muted (soft-off, using touch button).
                             microphoneSwitchOff:
                               The microphone switch is set in its off position.
+                            microphoneSignalMissing:
+                              No signal was detected. Is the microphone blocked?
                             externalMicrophoneMissing:
                               The external microphone is not connected.
                               Is only relevant for advanced room compensation.
@@ -1662,7 +1717,7 @@ components:
                               The speaker list contains invalid speakers.
                               Valid speakers are: all external speakers and non-virtual internal speakers.
                               Is only relevant for advanced room compensation.
-                            invalidAction
+                            invalidAction:
                               Could not start with given action.
                               Eg. can't run from last failed speaker if there isn't any failed run.
                               Is only relevant for advanced room compensation.
@@ -1672,6 +1727,7 @@ components:
                         - noError
                         - microphoneMuted
                         - microphoneSwitchOff
+                        - microphoneSignalMissing
                         - externalMicrophoneMissing
                         - externalMicrophoneInvalidPosition
                         - noisyEnvironment
@@ -1785,6 +1841,14 @@ components:
             properties:
                 actionList:
                     $ref: '#/components/schemas/ActionList'
+                clientContext:
+                    description: |
+                        An optional generic string property supplied from the client. If
+                        supplied it will overwrite any currently stored clientContext. If
+                        not supplied any stored clientContext will be left unchanged.
+                    maxLength: 4096
+                    nullable: true
+                    type: string
                 label:
                     nullable: true
                     type: string
@@ -1980,6 +2044,9 @@ components:
                     - wpl
                     - tv
                     - deezer
+                    - classicsAdapter
+                    - usbIn
+                    - tidalConnect
                     - unknown
                     type: string
         SpatialEnvelopment:
@@ -2538,9 +2605,8 @@ components:
                     """React on WebSocketEventActiveHdmiInputSignal events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventActiveHdmiInputSignal":
                                     print(notification["eventData"])
@@ -2603,9 +2669,8 @@ components:
                     """React on WebSocketEventActiveListeningMode events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventActiveListeningMode":
                                     print(notification["eventData"])
@@ -2668,9 +2733,8 @@ components:
                     """React on WebSocketEventActiveSpeakerGroup events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventActiveSpeakerGroup":
                                     print(notification["eventData"])
@@ -2733,9 +2797,8 @@ components:
                     """React on WebSocketEventAlarmTimer events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventAlarmTimer":
                                     print(notification["eventData"])
@@ -2798,9 +2861,8 @@ components:
                     """React on WebSocketEventAlarmTriggered events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventAlarmTriggered":
                                     print(notification["eventData"])
@@ -2863,9 +2925,8 @@ components:
                     """React on WebSocketEventBattery events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventBattery":
                                     print(notification["eventData"])
@@ -2928,9 +2989,8 @@ components:
                     """React on WebSocketEventBeoRemoteButton events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/remoteControl") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventBeoRemoteButton":
                                     print(notification["eventData"])
@@ -2993,9 +3053,8 @@ components:
                     """React on WebSocketEventBeolinkExperiencesResult events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventBeolinkExperiencesResult":
                                     print(notification["eventData"])
@@ -3061,9 +3120,8 @@ components:
                     """React on WebSocketEventBeolinkJoinResult events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventBeolinkJoinResult":
                                     print(notification["eventData"])
@@ -3129,9 +3187,8 @@ components:
                     """React on WebSocketEventButton events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventButton":
                                     print(notification["eventData"])
@@ -3194,9 +3251,8 @@ components:
                     """React on WebSocketEventCurtains events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventCurtains":
                                     print(notification["eventData"])
@@ -3259,9 +3315,8 @@ components:
                     """React on WebSocketEventHdmiVideoFormatSignal events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventHdmiVideoFormatSignal":
                                     print(notification["eventData"])
@@ -3325,9 +3380,8 @@ components:
                     """React on WebSocketEventNotification events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventNotification":
                                     print(notification["eventData"])
@@ -3390,9 +3444,8 @@ components:
                     """React on WebSocketEventPlaybackError events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventPlaybackError":
                                     print(notification["eventData"])
@@ -3455,9 +3508,8 @@ components:
                     """React on WebSocketEventPlaybackMetadata events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventPlaybackMetadata":
                                     print(notification["eventData"])
@@ -3520,9 +3572,8 @@ components:
                     """React on WebSocketEventPlaybackProgress events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventPlaybackProgress":
                                     print(notification["eventData"])
@@ -3585,9 +3636,8 @@ components:
                     """React on WebSocketEventPlaybackSource events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventPlaybackSource":
                                     print(notification["eventData"])
@@ -3650,9 +3700,8 @@ components:
                     """React on WebSocketEventPlaybackState events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventPlaybackState":
                                     print(notification["eventData"])
@@ -3715,9 +3764,8 @@ components:
                     """React on WebSocketEventPowerState events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventPowerState":
                                     print(notification["eventData"])
@@ -3780,9 +3828,8 @@ components:
                     """React on WebSocketEventPucInstallRemoteIdStatus events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventPucInstallRemoteIdStatus":
                                     print(notification["eventData"])
@@ -3845,9 +3892,8 @@ components:
                     """React on WebSocketEventRole events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventRole":
                                     print(notification["eventData"])
@@ -3913,9 +3959,8 @@ components:
                     """React on WebSocketEventRoomCompensationCurrentMeasurementEvent events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventRoomCompensationCurrentMeasurementEvent":
                                     print(notification["eventData"])
@@ -3978,9 +4023,8 @@ components:
                     """React on WebSocketEventRoomCompensationState events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventRoomCompensationState":
                                     print(notification["eventData"])
@@ -4043,9 +4087,8 @@ components:
                     """React on WebSocketEventSoftwareUpdateState events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventSoftwareUpdateState":
                                     print(notification["eventData"])
@@ -4108,9 +4151,8 @@ components:
                     """React on WebSocketEventSoundSettings events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventSoundSettings":
                                     print(notification["eventData"])
@@ -4173,9 +4215,8 @@ components:
                     """React on WebSocketEventSourceChange events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventSourceChange":
                                     print(notification["eventData"])
@@ -4238,9 +4279,8 @@ components:
                     """React on WebSocketEventSpeakerGroupChanged events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventSpeakerGroupChanged":
                                     print(notification["eventData"])
@@ -4303,9 +4343,8 @@ components:
                     """React on WebSocketEventStandConnected events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventStandConnected":
                                     print(notification["eventData"])
@@ -4368,9 +4407,8 @@ components:
                     """React on WebSocketEventStandPosition events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventStandPosition":
                                     print(notification["eventData"])
@@ -4433,9 +4471,8 @@ components:
                     """React on WebSocketEventTvInfo events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventTvInfo":
                                     print(notification["eventData"])
@@ -4498,9 +4535,8 @@ components:
                     """React on WebSocketEventVolume events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventVolume":
                                     print(notification["eventData"])
@@ -4564,9 +4600,8 @@ components:
                     """React on WebSocketEventWisaOutState events."""
                     async with ClientSession() as session:
                         async with session.ws_connect(url="ws://192.168.0.1:9339/") as websocket:
-
-                            while True:
-                                notification = await websocket.receive_json()
+                            async for notification in websocket:
+                                notification = notification.json()
 
                                 if notification["eventType"] == "WebSocketEventWisaOutState":
                                     print(notification["eventData"])
@@ -4614,6 +4649,7 @@ components:
                     - idle
                     - discovering
                     - deleting
+                    - updatingSpeakerFirmware
                     type: string
             type: object
 info:
@@ -4633,9 +4669,9 @@ info:
         - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)\n\
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
-        \n\nThis API documentation has been generated for version 2.3.4.15123 of the\
-        \ Mozart platform and API generation version 2.3.4.15123.6.\n\n## Python API\n\
-        \nThe Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
+        \nThis API documentation has been generated for version 2.5.3.123 of the Mozart\
+        \ platform and API generation version 2.5.3.123.0.\n\n## Python API\n\nThe\
+        \ Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
         \ version 4.3.1. On top of the generated API, a helper file, mozart_client.py,\
         \ has been made that makes the API more pythonic. We recommend using this.\n\
         \nAnother file, mozart_cli.py, has been made for using the Mozart API in a\
@@ -5674,6 +5710,93 @@ paths:
             tags:
             - Playback
             - mozart
+    /api/v1/product/info/friendlyname:
+        put:
+            description: |-
+                Use the `set-product-friendly-name` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_product_friendly_name()
+                ```
+                ```mozart_api
+                mozart_api.set_product_friendly_name()
+                ```
+                ```product_api
+                product_api.set_product_friendly_name()
+                ```
+            operationId: set-product-friendly-name
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ProductFriendlyName'
+                description: the friendly name for the product
+                required: true
+            responses:
+                '204':
+                    description: product friendly name updated
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the friendly name
+            tags:
+            - Product
+            - mozart
+    /api/v1/remote:
+        get:
+            description: |-
+                Use the `get-remote-menu` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_remote_menu()
+                ```
+                ```mozart_api
+                mozart_api.get_remote_menu()
+                ```
+                ```remote_api
+                remote_api.get_remote_menu()
+                ```
+            operationId: get-remote-menu
+            parameters:
+            -   description: Get all descendants to this item
+                in: query
+                name: descendantsTo
+                schema:
+                    format: uuid
+                    type: string
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            example:
+                                6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0:
+                                    contentUri: tv
+                                    firstChildMenuItemID: ee5196ce-65c4-4c56-9a48-1943c4afef9c
+                                    fixed: true
+                                    id: 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0
+                                    label: TV
+                                    parentMenuItemId: null
+                                dd5196ce-65c4-4c56-9a48-1943c4afef9c:
+                                    contentUri: tv://HBO
+                                    fixed: false
+                                    id: dd5196ce-65c4-4c56-9a48-1943c4afef9c
+                                    label: HBO
+                                    parentMenuItemId: 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0
+                                ee5196ce-65c4-4c56-9a48-1943c4afef9c:
+                                    contentUri: tv://Netflix
+                                    fixed: false
+                                    id: ee5196ce-65c4-4c56-9a48-1943c4afef9c
+                                    label: Netflix
+                                    nextSiblingMenuItemId: dd5196ce-65c4-4c56-9a48-1943c4afef9c
+                                    parentMenuItemId: 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0
+                            schema:
+                                $ref: '#/components/schemas/RemoteMenuItemMap'
+                    description: Successful request
+            summary: Get all remote menu items
+            tags:
+            - Remote
+            - mozart
     /api/v1/remote/key/{id}/trigger:
         post:
             description: |-
@@ -5717,6 +5840,41 @@ paths:
                                 $ref: '#/components/schemas/ErrorModel'
                     description: Key not found
             summary: Remote input key press
+            tags:
+            - Remote
+            - mozart
+    /api/v1/remote/{id}/trigger:
+        parameters:
+        -   description: Remote menu item ID
+            in: path
+            name: id
+            required: true
+            schema:
+                format: uuid
+                type: string
+        post:
+            description: |-
+                Use the `post-remote-trigger` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_remote_trigger()
+                ```
+                ```mozart_api
+                mozart_api.post_remote_trigger()
+                ```
+                ```remote_api
+                remote_api.post_remote_trigger()
+                ```
+            operationId: post-remote-trigger
+            responses:
+                '204':
+                    description: Menu item successfully triggered
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Menu item not found
+            summary: Trigger a remote menu item
             tags:
             - Remote
             - mozart
@@ -5785,6 +5943,47 @@ paths:
                 '204':
                     description: Successful request
             summary: Run provided scene
+            tags:
+            - Scenes
+            - mozart
+    /api/v1/scene/{id}/trigger:
+        post:
+            description: |-
+                Use the `post-scene-trigger` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.post_scene_trigger()
+                ```
+                ```mozart_api
+                mozart_api.post_scene_trigger()
+                ```
+                ```scenes_api
+                scenes_api.post_scene_trigger()
+                ```
+            operationId: post-scene-trigger
+            parameters:
+            -   description: ID of the scene
+                in: path
+                name: id
+                required: true
+                schema:
+                    format: uuid
+                    type: string
+            responses:
+                '204':
+                    description: Successful request
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Bad request can't convert id to UUID
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Could not find scene
+            summary: Trigger a specific scene
             tags:
             - Scenes
             - mozart
@@ -5866,6 +6065,70 @@ paths:
                                 $ref: '#/components/schemas/PresetMap'
                     description: The preset audio source mapping
             summary: Get the preset configuration
+            tags:
+            - Settings
+            - mozart
+    /api/v1/setup/remote/home-control-uri:
+        get:
+            description: |-
+                Use the `get-remote-home-control-uri` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_remote_home_control_uri()
+                ```
+                ```mozart_api
+                mozart_api.get_remote_home_control_uri()
+                ```
+                ```settings_api
+                settings_api.get_remote_home_control_uri()
+                ```
+            operationId: get-remote-home-control-uri
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HomeControlUri'
+                    description: HomeControl dashboard Uri
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the HomeControl dashboard URI
+            tags:
+            - Settings
+            - mozart
+        put:
+            description: |-
+                Use the `set-remote-home-control-uri` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.set_remote_home_control_uri()
+                ```
+                ```mozart_api
+                mozart_api.set_remote_home_control_uri()
+                ```
+                ```settings_api
+                settings_api.set_remote_home_control_uri()
+                ```
+            operationId: set-remote-home-control-uri
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HomeControlUri'
+                description: the new HomeControl dashboard uri
+                required: true
+            responses:
+                '200':
+                    description: HomeControl uri updated
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the HomeControl dashboard URI
             tags:
             - Settings
             - mozart
@@ -6170,6 +6433,31 @@ paths:
             summary: Update the sound settings adjustments for treble
             tags:
             - Sound
+            - mozart
+    /api/v1/sound/speakergroup/active:
+        get:
+            description: |-
+                Use the `get-speakergroup-active` method in the Python package with one of:
+                ```mozart_client
+                mozart_client.get_speakergroup_active()
+                ```
+                ```mozart_api
+                mozart_api.get_speakergroup_active()
+                ```
+                ```speakergroup_api
+                speakergroup_api.get_speakergroup_active()
+                ```
+            operationId: get-speakergroup-active
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SpeakerGroupOverview'
+                    description: The active speaker group, or empty if none
+            summary: Get the active speaker group
+            tags:
+            - SpeakerGroup
             - mozart
     /api/v1/sound/volume:
         get:
