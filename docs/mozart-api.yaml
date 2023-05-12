@@ -4665,12 +4665,15 @@ info:
         \ as a Python package and as an OpenAPI document that can be found in the\
         \ [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).\n\
         \nSupported by:\n\n- [Beolab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)\n\
+        - [Beosound 2 3rd gen](https://www.bang-olufsen.com/en/dk/speakers/beosound-2)\n\
+        - [Beosound A5](https://www.bang-olufsen.com/en/dk/speakers/beosound-a5)\n\
+        - [Beosound A9 5th gen](https://www.bang-olufsen.com/en/dk/speakers/beosound-a9)\n\
         - [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)\n\
         - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)\n\
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
         \nThis API documentation has been generated for version 2.5.3.123 of the Mozart\
-        \ platform and API generation version 2.5.3.123.0.\n\n## Python API\n\nThe\
+        \ platform and API generation version 2.5.3.123.1.\n\n## Python API\n\nThe\
         \ Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
         \ version 4.3.1. On top of the generated API, a helper file, mozart_client.py,\
         \ has been made that makes the API more pythonic. We recommend using this.\n\

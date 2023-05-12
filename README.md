@@ -12,6 +12,9 @@ The Mozart API is a REST API with async capabilities and WebSocket notification 
 Supported by:
 
 - [Beolab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)
+- [Beosound 2 3rd gen](https://www.bang-olufsen.com/en/dk/speakers/beosound-2)
+- [Beosound A5](https://www.bang-olufsen.com/en/dk/speakers/beosound-a5)
+- [Beosound A9 5th gen](https://www.bang-olufsen.com/en/dk/speakers/beosound-a9)
 - [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)
 - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)
 - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)
