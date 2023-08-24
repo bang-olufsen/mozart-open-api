@@ -4672,9 +4672,9 @@ info:
         - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)\n\
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
-        \nThis API documentation has been generated for version 2.5.3.123 of the Mozart\
-        \ platform and API generation version 2.5.3.123.1.\n\n## Python API\n\nThe\
-        \ Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
+        \n\nThis API documentation has been generated for version 2.5.3.123 of the\
+        \ Mozart platform and API generation version 2.5.3.123.2.\n\n## Python API\n\
+        \nThe Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
         \ version 4.3.1. On top of the generated API, a helper file, mozart_client.py,\
         \ has been made that makes the API more pythonic. We recommend using this.\n\
         \nAnother file, mozart_cli.py, has been made for using the Mozart API in a\
@@ -4718,13 +4718,14 @@ info:
         \ be used in the Python API. instead, use the built in Python data types,\
         \ for example when defining an ActionList, simply use a `list` instead.\n\n\
         #### WebSocket events\n\nThe most convenient way of getting state information\
-        \ from a Mozart device is through the WebSocket notification channel.\n\n\
-        To receive `WebSocketEventBeoRemoteButton` events requires that `remote_control=True`\
-        \ is defined when running the `connect_notifications()` method.\n\nA callback\
-        \ is available for each of the WebSocket events as well as:\n\n<!--\ntype:\
-        \ tab\ntitle: On connection lost\n-->\n\nThe `get_on_connection_lost` method\
-        \ will set a callback when the WebSocket listener loses connection.\n\n<!--\
-        \ title: \"On connection lost example\"\nlineNumbers: true\n-->\n\n```python\n\
+        \ from a Mozart device is through the WebSocket notification channel. All\
+        \ notification types are available as a set of strings in the NOTIFICATION_TYPES\
+        \ constant.\n\nTo receive `WebSocketEventBeoRemoteButton` events requires\
+        \ that `remote_control=True` is defined when running the `connect_notifications()`\
+        \ method.\n\nA callback is available for each of the WebSocket events as well\
+        \ as:\n\n<!--\ntype: tab\ntitle: On connection lost\n-->\n\nThe `get_on_connection_lost`\
+        \ method will set a callback when the WebSocket listener loses connection.\n\
+        \n<!-- title: \"On connection lost example\"\nlineNumbers: true\n-->\n\n```python\n\
         from mozart_api.mozart_client import MozartClient\n\n\ndef on_connection_lost():\n\
         \    \"\"\"Notification handler.\"\"\"\n    print(\"Connection lost\")\n\n\
         \nmozart_client = MozartClient(host=\"192.168.0.1\")\nmozart_client.get_on_connection_lost(on_connection_lost)\n\
@@ -4755,7 +4756,7 @@ info:
         mozart_client.connect_notifications()\n```\n\n<!-- type: tab-end -->\n\n####\
         \ Discovering Mozart devices on the network\n\nMozart devices can be found\
         \ through MDNS using the service name: `_bangolufsen._tcp.local.`\n\nThe service\
-        \ provides everything immedeately necessary for using the device, including\
+        \ provides everything immediately necessary for using the device, including\
         \ IP address, all components for the Beolink JID, model name, friendly name,\
         \ software version and more.\n\n### Example CLI program\n\nThe CLI program\
         \ carries out one command and then exits afterwards. The program needs to\
