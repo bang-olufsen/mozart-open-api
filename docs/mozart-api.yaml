@@ -61,6 +61,7 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/ErrorModel'
+                        type: object
             description: Resource not found
     schemas:
         Action:
@@ -886,6 +887,45 @@ components:
                     - downloadFinished
                     - downloadFailed
                     type: string
+        LatencyProfile:
+            description: |
+                The latency profile of this speaker group.
+                Needed to handle Beolab's with latency dependant audio quality.
+                Default is set to performance.
+            properties:
+                value:
+                    enum:
+                    - performance
+                    - quality
+                    type: string
+            type: object
+        LgeTvSoundSettings:
+            properties:
+                digitalOutput:
+                    enum:
+                    - auto
+                    - passThrough
+                    - pcm
+                    - unknown
+                    type: string
+                eArc:
+                    type: boolean
+                output:
+                    enum:
+                    - tvSpeaker
+                    - externalOptical
+                    - externalArc
+                    - bluetooth
+                    - wisaSpeakers
+                    - lineout
+                    - headphone
+                    - tvSpeakerAndExternalOptical
+                    - tvSpeakerAndHeadphone
+                    - tvSpeakerAndBluetooth
+                    - externalArcBno
+                    - unknown
+                    type: string
+            type: object
         ListeningMode:
             allOf:
             -   $ref: '#/components/schemas/ListeningModeProps'
@@ -1081,12 +1121,25 @@ components:
             properties:
                 address:
                     type: string
+                appVersion:
+                    type: string
                 batteryLevel:
                     maximum: 100
                     minimum: 0
                     type: integer
+                dbVersion:
+                    type: string
                 name:
                     type: string
+                serialNumber:
+                    type: string
+                updated:
+                    items:
+                        enum:
+                        - app
+                        - db
+                        type: string
+                    type: array
             required:
             - address
             - name
@@ -1211,7 +1264,7 @@ components:
                     type: string
                 organization:
                     description: |
-                        This can be filled by gstreamers GST_TAG_ORGANIZATION. Mozart can also fill this with netradio station name like "P3" and TV content like "Netflix". This is needed so it's possible to show who the provider is for the playing audio track/content.
+                        This can be filled by gstreamer's GST_TAG_ORGANIZATION. Mozart can also fill this with netradio station name like "P3" and TV content like "Netflix". This is needed so it's possible to show who the provider is for the playing audio track/content.
                     type: string
                 outputChannelProcessing:
                     description: e.g. downmix
@@ -1390,10 +1443,14 @@ components:
                 $ref: '#/components/schemas/RemoteMenuItem'
             example:
                 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0:
-                    contentUri: netRadio://123456
+                    content:
+                        contentUri: netRadio://123456
+                        source: netRadio
                     label: P3
                 ee5196ce-65c4-4c56-9a48-1943c4afef9c:
-                    contentUri: tv://netflix
+                    content:
+                        contentUri: tv://netflix
+                        source: netRadio
                     label: Netflix
             type: object
         RemoteMenuItemProperties:
@@ -1479,9 +1536,9 @@ components:
                         started:
                           The measurement has started.
                         done:
-                          The measurement has ended sucessfully.
+                          The measurement has ended successfully.
                         lastDone:
-                          The last measurement in the run has ended sucessfully.
+                          The last measurement in the run has ended successfully.
                         error:
                           An error occurred during measurement.
                     enum:
@@ -1597,10 +1654,13 @@ components:
                     continueOnError:
                         description: |
                             On failing measurement on a speaker, default behavior is to stop measurement and skip the remaining speakers.
-                            Setting continueOnError to true will make the measuremnt process continue and finish measurement on all speakers,
+                            Setting continueOnError to true will make the measurement process continue and finish measurement on all speakers,
                             even though an error ocurred on one of the speakers.
                         nullable: true
                         type: boolean
+                    latencyProfile:
+                        $ref: '#/components/schemas/LatencyProfile'
+                        nullable: true
                     skipAutomaticRoleAssignment:
                         description: Skip calculation of automatic role assignment.
                         nullable: true
@@ -1771,7 +1831,7 @@ components:
                           For speakers without external speakers.
                         advanced:
                           For products with external speakers or other advanced multichannel capabilities.
-                          This requries that at least action in the other properties of RoomCompensationProperties is set.
+                          This requires that at least action in the other properties of RoomCompensationProperties is set.
                     enum:
                     - simple
                     - advanced
@@ -1898,6 +1958,7 @@ components:
                     - downloadFailed
                     - installingUpdate
                     - installationFailed
+                    - installationDonePendingReboot
                     - schedulerFailed
                     - rebooting
                     type: string
@@ -2026,28 +2087,28 @@ components:
         SourceTypeEnum:
             properties:
                 value:
-                    enum:
-                    - beolink
-                    - bluetooth
-                    - dlna
-                    - qplay
-                    - airPlay
-                    - lineIn
-                    - chromeCast
-                    - uriStreamer
-                    - netRadio
-                    - local
-                    - generator
-                    - spotify
-                    - spdif
-                    - pl
-                    - wpl
-                    - tv
-                    - deezer
-                    - classicsAdapter
-                    - usbIn
-                    - tidalConnect
-                    - unknown
+                    description: |-
+                        - beolink
+                        - bluetooth
+                        - dlna
+                        - qplay
+                        - airPlay
+                        - lineIn
+                        - chromeCast
+                        - uriStreamer
+                        - netRadio
+                        - local
+                        - generator
+                        - spotify
+                        - spdif
+                        - pl
+                        - wpl
+                        - tv
+                        - deezer
+                        - usbIn
+                        - tidalConnect
+                        - unknown
+                    example: netRadio
                     type: string
         SpatialEnvelopment:
             properties:
@@ -2222,6 +2283,9 @@ components:
                         $ref: '#/components/schemas/SpeakerGroupMember'
                     nullable: true
                     type: array
+                latencyProfile:
+                    $ref: '#/components/schemas/LatencyProfile'
+                    nullable: true
                 roomCompensationId:
                     description: |
                         ID of the calculated coefficents for this group, made during advanced room compensation.
@@ -2246,7 +2310,7 @@ components:
                 distance:
                     description: Distance from listening position in cm
                     format: int32
-                    maximum: 1000
+                    maximum: 1500
                     minimum: 0
                     nullable: true
                     type: integer
@@ -2465,10 +2529,17 @@ components:
                     nullable: true
                     type: integer
             type: object
+        TvSoundSettings:
+            properties:
+                lge:
+                    $ref: '#/components/schemas/LgeTvSoundSettings'
+            type: object
         TvState:
             properties:
                 integration:
                     $ref: '#/components/schemas/TvIntegrationTypes'
+                soundSettings:
+                    $ref: '#/components/schemas/TvSoundSettings'
                 tvInfo:
                     $ref: '#/components/schemas/TvProperties'
             type: object
@@ -4659,23 +4730,24 @@ info:
     description: "[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/bang-olufsen/mozart-open-api/blob/main/LICENSE)\n\
         [![Version](https://img.shields.io/pypi/v/mozart-api?color=g)](https://pypi.org/project/mozart-api)\n\
         [![Downloads](https://img.shields.io/pypi/dm/mozart-api)](https://pypi.org/project/mozart-api)\n\
-        ![Python version](https://img.shields.io/pypi/pyversions/mozart-api)\n\nThe\
-        \ Mozart API is a REST API with async capabilities and WebSocket notification\
+        ![Python version](https://img.shields.io/pypi/pyversions/mozart-api)\n\n\n\
+        The Mozart API is a REST API with async capabilities and WebSocket notification\
         \ channel for immediate state information. Currently the API is distributed\
         \ as a Python package and as an OpenAPI document that can be found in the\
         \ [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).\n\
-        \nSupported by:\n\n- [Beolab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)\n\
-        - [Beosound 2 3rd gen](https://www.bang-olufsen.com/en/dk/speakers/beosound-2)\n\
-        - [Beosound A5](https://www.bang-olufsen.com/en/dk/speakers/beosound-a5)\n\
-        - [Beosound A9 5th gen](https://www.bang-olufsen.com/en/dk/speakers/beosound-a9)\n\
-        - [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)\n\
+        \n\nSupported by:\n\n- [Beolab 8](https://www.bang-olufsen.com/en/dk/speakers/beolab-8)\n\
+        - [Beolab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)\n- [Beosound\
+        \ 2 3rd gen](https://www.bang-olufsen.com/en/dk/speakers/beosound-2)\n- [Beosound\
+        \ A5](https://www.bang-olufsen.com/en/dk/speakers/beosound-a5)\n- [Beosound\
+        \ A9 5th gen](https://www.bang-olufsen.com/en/dk/speakers/beosound-a9)\n-\
+        \ [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)\n\
         - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)\n\
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
-        \n\nThis API documentation has been generated for version 2.5.3.123 of the\
-        \ Mozart platform and API generation version 2.5.3.123.2.\n\n## Python API\n\
+        \n\nThis API documentation has been generated for version 3.2.1.150 of the\
+        \ Mozart platform and API generation version 3.2.1.150.1.\n\n## Python API\n\
         \nThe Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
-        \ version 4.3.1. On top of the generated API, a helper file, mozart_client.py,\
+        \ version 7.0.0. On top of the generated API, a helper file, mozart_client.py,\
         \ has been made that makes the API more pythonic. We recommend using this.\n\
         \nAnother file, mozart_cli.py, has been made for using the Mozart API in a\
         \ simple CLI program. This has been set as the \"entry point\" for the Python\
@@ -4803,7 +4875,8 @@ info:
         ```\n\n##### allstandby\n\nWill set all connected Beolink devices to networkStandby.\n\
         \n```terminal\nmozart_api 12345678 allstandby\n```\n\n<!--\ntype: tab\ntitle:\
         \ Miscellaneous\n-->\n\n##### info\n\nWill print device information.\n\n```terminal\n\
-        mozart_api 12345678 info\n```\n\n<!-- type: tab-end -->\n\n"
+        mozart_api 12345678 info\n```\n\n##### version\n\nWill print device API version.\n\
+        \n```terminal\nmozart_api version\n```\n\n<!-- type: tab-end -->\n"
     license:
         name: MIT
         url: https://opensource.org/licenses/MIT
@@ -5775,20 +5848,26 @@ paths:
                         application/json:
                             example:
                                 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0:
-                                    contentUri: tv
-                                    firstChildMenuItemID: ee5196ce-65c4-4c56-9a48-1943c4afef9c
+                                    content:
+                                        contentUri: tv
+                                        source: tv
+                                    firstChildMenuItemId: ee5196ce-65c4-4c56-9a48-1943c4afef9c
                                     fixed: true
                                     id: 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0
                                     label: TV
                                     parentMenuItemId: null
                                 dd5196ce-65c4-4c56-9a48-1943c4afef9c:
-                                    contentUri: tv://HBO
+                                    content:
+                                        contentUri: tv://HBO
+                                        source: tv
                                     fixed: false
                                     id: dd5196ce-65c4-4c56-9a48-1943c4afef9c
                                     label: HBO
                                     parentMenuItemId: 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0
                                 ee5196ce-65c4-4c56-9a48-1943c4afef9c:
-                                    contentUri: tv://Netflix
+                                    content:
+                                        contentUri: tv://Netflix
+                                        source: tv
                                     fixed: false
                                     id: ee5196ce-65c4-4c56-9a48-1943c4afef9c
                                     label: Netflix
