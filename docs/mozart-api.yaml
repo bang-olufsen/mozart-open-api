@@ -4731,10 +4731,10 @@ info:
         [![Version](https://img.shields.io/pypi/v/mozart-api?color=g)](https://pypi.org/project/mozart-api)\n\
         [![Downloads](https://img.shields.io/pypi/dm/mozart-api)](https://pypi.org/project/mozart-api)\n\
         ![Python version](https://img.shields.io/pypi/pyversions/mozart-api)\n\n\n\
-        The Mozart API is a REST API with async capabilities and WebSocket notification\
-        \ channel for immediate state information. Currently the API is distributed\
-        \ as a Python package and as an OpenAPI document that can be found in the\
-        \ [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).\n\
+        The Mozart API is an async REST API with WebSocket notification channel for\
+        \ immediate state information from Mozart devices. Currently the API is distributed\
+        \ as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI\
+        \ document that can be found in the [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).\n\
         \n\nSupported by:\n\n- [Beolab 8](https://www.bang-olufsen.com/en/dk/speakers/beolab-8)\n\
         - [Beolab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)\n- [Beosound\
         \ 2 3rd gen](https://www.bang-olufsen.com/en/dk/speakers/beosound-2)\n- [Beosound\
@@ -4745,9 +4745,9 @@ info:
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
         \n\nThis API documentation has been generated for version 3.2.1.150 of the\
-        \ Mozart platform and API generation version 3.2.1.150.2.\n\n## Python API\n\
+        \ Mozart platform and API generation version 3.2.1.150.3.\n\n## Python API\n\
         \nThe Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
-        \ version 7.0.0. On top of the generated API, a helper file, mozart_client.py,\
+        \ version 7.1.0. On top of the generated API, a helper file, mozart_client.py,\
         \ has been made that makes the API more pythonic. We recommend using this.\n\
         \nAnother file, mozart_cli.py, has been made for using the Mozart API in a\
         \ simple CLI program. This has been set as the \"entry point\" for the Python\
@@ -4756,34 +4756,21 @@ info:
         \ using pip:\n\n```terminal\npip3 install mozart-api\n```\n\n### API usage\n\
         \nTo use the Python API:\n\n- Create a MozartClient object\n- Choose which\
         \ (if any) WebSocket events to listen to\n- Connect to the WebSocket notification\
-        \ channel (if needed)\n- Use any of the endpoints\n\n#### Example\n\n<!--\n\
-        type: tab\ntitle: Synchronous\n-->\n\n<!-- title: \"Synchronous API usage\
-        \ example\"\nlineNumbers: true\n-->\n\n```python\nfrom mozart_api.models import\
-        \ VolumeLevel\nfrom mozart_api.mozart_client import MozartClient\n\ndef all_notifications(notification:\
-        \ object, notification_type: str):\n    \"\"\"Notification handler.\"\"\"\n\
-        \    print(f\"{notification_type} : {notification}\")\n\ndef volume_notifications(notification:\
-        \ object):\n    \"\"\"Volume notification handler.\"\"\"\n    print(notification)\n\
-        \n# Setup API and WebSocket listener\nmozart_client = MozartClient(host=\"\
-        192.168.0.1\")\nmozart_client.get_all_notifications(all_notifications)\nmozart_client.get_volume_notifications(volume_notifications)\n\
-        \n# Connect to the WebSocket notification channel\nmozart_client.connect_notifications(remote_control=True)\n\
-        \n# Run commands\nmozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50))\n\
-        mozart_client.activate_preset(id=2)\nmozart_client.post_beolink_expand(jid=\"\
-        1234.1234567.12345678@products.bang-olufsen.com\")\n\nlisteners = mozart_client.get_beolink_listeners()\n\
-        print(listeners)\n\n```\n\n<!--\ntype: tab\ntitle: Asynchronous\n-->\n\n<!--\
-        \ title: \"Asynchronous API usage example\"\nlineNumbers: true\n-->\n\n```python\n\
-        from mozart_api.models import VolumeLevel\nfrom mozart_api.mozart_client import\
-        \ MozartClient\n\ndef all_notifications(notification: object, notification_type:\
+        \ channel (if needed)\n- Use any of the endpoints\n\n#### Example\n\n<!--\
+        \ title: \"API usage example\"\nlineNumbers: true\n-->\n\n```python\nimport\
+        \ asyncio\n\nfrom mozart_api.models import VolumeLevel\nfrom mozart_api.mozart_client\
+        \ import MozartClient\n\n\ndef all_notifications(notification: object, notification_type:\
         \ str):\n    \"\"\"Notification handler.\"\"\"\n    print(f\"{notification_type}\
-        \ : {notification}\")\n\ndef volume_notifications(notification: object):\n\
+        \ : {notification}\")\n\n\ndef volume_notifications(notification: object):\n\
         \    \"\"\"Volume notification handler.\"\"\"\n    print(notification)\n\n\
-        # Setup API and WebSocket listener\nmozart_client = MozartClient(host=\"192.168.0.1\"\
-        )\nmozart_client.get_all_notifications(all_notifications)\nmozart_client.get_volume_notifications(volume_notifications)\n\
-        \n# Connect to the WebSocket notification channel\nmozart_client.connect_notifications(remote_control=True)\n\
-        \n# Run commands\nmozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50),\
-        \ async_req=True)\nmozart_client.activate_preset(id=2, async_req=True)\nmozart_client.post_beolink_expand(jid=\"\
-        1234.1234567.12345678@products.bang-olufsen.com\", async_req=True)\n\nlisteners\
-        \ = mozart_client.get_beolink_listeners(async_req=True).get()\nprint(listeners)\n\
-        ```\n\n<!-- type: tab-end -->\n\nWhere `192.168.0.1` is a Mozart device's\
+        \nasync def test_api():\n    \"\"\"Test Mozart API.\"\"\"\n    mozart_client\
+        \ = MozartClient(host=\"192.168.0.1\")\n\n    mozart_client.get_all_notifications(all_notifications)\n\
+        \    mozart_client.get_volume_notifications(volume_notifications)\n\n    mozart_client.connect_notifications(remote_control=True)\n\
+        \n    await mozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50))\n\
+        \    await mozart_client.activate_preset(id=2)\n    await mozart_client.post_beolink_expand(\n\
+        \        jid=\"1234.1234567.12345678@products.bang-olufsen.com\"\n    )\n\n\
+        \    listeners = await mozart_client.get_beolink_listeners()\n    print(listeners)\n\
+        \n\nasyncio.run(test_api())\n```\n\nWhere `192.168.0.1` is a Mozart device's\
         \ IP-address.\n\n#### Beware\n\nSome of the classes defined in the Mozart\
         \ API are aliases to other data types, for example: `ActionList` is an array\
         \ of `Action` objects. These classes are not generated and can therefore not\
