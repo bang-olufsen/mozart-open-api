@@ -18,81 +18,99 @@ import pprint
 import re  # noqa: F401
 import json
 
-
-from typing import Optional
-from pydantic import BaseModel, Field, StrictStr, validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Optional
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class RoomCompensationMeasurementError(BaseModel):
     """
     RoomCompensationMeasurementError
-    """
+    """  # noqa: E501
 
     error: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="noError:   The measurement went OK. lowSignal:   When there is too low signal in the recording, e.g. due to a loudspeaker being placed at   too great a distance from the microphone. speakerSilent:   No signal could be measured.   Could be because:     - The speaker is powered off or not connected.     - The left/right switch on a wired powerlink speaker is set in the wrong position.     - The speaker is placed in another room behind closed doors. noisy<Left/Right/External>Microphone:   When the recording of the given microphone is too noisy.   Could be because:     - Something is blocking the microphone externalMicrophoneLocation:   When the location of the external microphone is invalid. externalMicrophoneMissing:   If the external microphone was missing/disconnected during a measurement. microphonesDisabled:   If the microphones are either muted or disabled. noisyMeasurement:   When too much background noise has been detected during the measurement internalError:   Something went wrong internally - can not be fixed by the user. Try again. ",
     )
-    speaker_id: Optional[StrictStr] = Field(None, alias="speakerId")
-    __properties = ["error", "speakerId"]
+    speaker_id: Optional[StrictStr] = Field(default=None, alias="speakerId")
+    __properties: ClassVar[List[str]] = ["error", "speakerId"]
 
-    @validator("error")
+    @field_validator("error")
     def error_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in (
-            "noError",
-            "lowSignal",
-            "speakerSilent",
-            "noisyLeftMicrophone",
-            "noisyRightMicrophone",
-            "noisyExternalMicrophone",
-            "externalMicrophoneLocation",
-            "externalMicrophoneMissing",
-            "microphonesDisabled",
-            "noisyMeasurement",
-            "internalError",
+        if value not in set(
+            [
+                "noError",
+                "lowSignal",
+                "speakerSilent",
+                "noisyLeftMicrophone",
+                "noisyRightMicrophone",
+                "noisyExternalMicrophone",
+                "externalMicrophoneLocation",
+                "externalMicrophoneMissing",
+                "microphonesDisabled",
+                "noisyMeasurement",
+                "internalError",
+            ]
         ):
             raise ValueError(
                 "must be one of enum values ('noError', 'lowSignal', 'speakerSilent', 'noisyLeftMicrophone', 'noisyRightMicrophone', 'noisyExternalMicrophone', 'externalMicrophoneLocation', 'externalMicrophoneMissing', 'microphonesDisabled', 'noisyMeasurement', 'internalError')"
             )
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> RoomCompensationMeasurementError:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of RoomCompensationMeasurementError from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> RoomCompensationMeasurementError:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of RoomCompensationMeasurementError from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return RoomCompensationMeasurementError.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = RoomCompensationMeasurementError.parse_obj(
-            {"error": obj.get("error"), "speaker_id": obj.get("speakerId")}
+        _obj = cls.model_validate(
+            {"error": obj.get("error"), "speakerId": obj.get("speakerId")}
         )
         return _obj

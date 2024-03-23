@@ -18,9 +18,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-
-from typing import Optional
-from pydantic import BaseModel, Field, conint
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Any, ClassVar, Dict, List, Optional
+from typing_extensions import Annotated
 from mozart_api.models.overlay_play_request_from_usb_from_usb import (
     OverlayPlayRequestFromUsbFromUsb,
 )
@@ -28,47 +28,71 @@ from mozart_api.models.overlay_play_request_text_to_speech_text_to_speech import
     OverlayPlayRequestTextToSpeechTextToSpeech,
 )
 from mozart_api.models.uri import Uri
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class OverlayPlayRequest(BaseModel):
     """
     OverlayPlayRequest
-    """
+    """  # noqa: E501
 
-    volume_absolute: Optional[conint(strict=True, le=100, ge=0)] = Field(
-        None,
-        alias="volumeAbsolute",
+    volume_absolute: Optional[Annotated[int, Field(le=100, strict=True, ge=0)]] = Field(
+        default=None,
         description="An optional absolute volume level at which to play the URI. If not provided, the URI will play at the currently configured volume level on the product. The level should be provided in volume steps [0, 100] ",
+        alias="volumeAbsolute",
     )
     uri: Optional[Uri] = None
     text_to_speech: Optional[OverlayPlayRequestTextToSpeechTextToSpeech] = Field(
-        None, alias="textToSpeech"
+        default=None, alias="textToSpeech"
     )
-    from_usb: Optional[OverlayPlayRequestFromUsbFromUsb] = Field(None, alias="fromUsb")
-    __properties = ["volumeAbsolute", "uri", "textToSpeech", "fromUsb"]
+    from_usb: Optional[OverlayPlayRequestFromUsbFromUsb] = Field(
+        default=None, alias="fromUsb"
+    )
+    __properties: ClassVar[List[str]] = [
+        "volumeAbsolute",
+        "uri",
+        "textToSpeech",
+        "fromUsb",
+    ]
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> OverlayPlayRequest:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of OverlayPlayRequest from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of uri
         if self.uri:
             _dict["uri"] = self.uri.to_dict()
@@ -79,37 +103,39 @@ class OverlayPlayRequest(BaseModel):
         if self.from_usb:
             _dict["fromUsb"] = self.from_usb.to_dict()
         # set to None if volume_absolute (nullable) is None
-        # and __fields_set__ contains the field
-        if self.volume_absolute is None and "volume_absolute" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.volume_absolute is None and "volume_absolute" in self.model_fields_set:
             _dict["volumeAbsolute"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> OverlayPlayRequest:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of OverlayPlayRequest from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return OverlayPlayRequest.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = OverlayPlayRequest.parse_obj(
+        _obj = cls.model_validate(
             {
-                "volume_absolute": obj.get("volumeAbsolute"),
-                "uri": Uri.from_dict(obj.get("uri"))
-                if obj.get("uri") is not None
-                else None,
-                "text_to_speech": OverlayPlayRequestTextToSpeechTextToSpeech.from_dict(
-                    obj.get("textToSpeech")
-                )
-                if obj.get("textToSpeech") is not None
-                else None,
-                "from_usb": OverlayPlayRequestFromUsbFromUsb.from_dict(
-                    obj.get("fromUsb")
-                )
-                if obj.get("fromUsb") is not None
-                else None,
+                "volumeAbsolute": obj.get("volumeAbsolute"),
+                "uri": (
+                    Uri.from_dict(obj["uri"]) if obj.get("uri") is not None else None
+                ),
+                "textToSpeech": (
+                    OverlayPlayRequestTextToSpeechTextToSpeech.from_dict(
+                        obj["textToSpeech"]
+                    )
+                    if obj.get("textToSpeech") is not None
+                    else None
+                ),
+                "fromUsb": (
+                    OverlayPlayRequestFromUsbFromUsb.from_dict(obj["fromUsb"])
+                    if obj.get("fromUsb") is not None
+                    else None
+                ),
             }
         )
         return _obj

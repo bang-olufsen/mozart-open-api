@@ -12,19 +12,14 @@
     Do not edit the class manually.
 """  # noqa: E501
 
-
-import re  # noqa: F401
-import io
 import warnings
-
-from pydantic import validate_arguments, ValidationError
-from typing import overload, Optional, Union, Awaitable
-
+from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
+from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
-from pydantic import Field, StrictBool, StrictInt, StrictStr, conint
 
-from typing import Any, Dict, List, Optional
-
+from pydantic import Field, StrictBool, StrictInt, StrictStr, field_validator
+from typing import Optional
+from typing_extensions import Annotated
 from mozart_api.models.bass import Bass
 from mozart_api.models.battery_state import BatteryState
 from mozart_api.models.beolink_available_listener import BeolinkAvailableListener
@@ -35,6 +30,7 @@ from mozart_api.models.beolink_peer import BeolinkPeer
 from mozart_api.models.bluetooth_device_list import BluetoothDeviceList
 from mozart_api.models.content_item import ContentItem
 from mozart_api.models.directivity import Directivity
+from mozart_api.models.home_control_ixp import HomeControlIxp
 from mozart_api.models.home_control_uri import HomeControlUri
 from mozart_api.models.listening_mode import ListeningMode
 from mozart_api.models.listening_mode_ref import ListeningModeRef
@@ -57,6 +53,7 @@ from mozart_api.models.software_update_status import SoftwareUpdateStatus
 from mozart_api.models.sound_feature_set import SoundFeatureSet
 from mozart_api.models.source_array import SourceArray
 from mozart_api.models.speaker_group_overview import SpeakerGroupOverview
+from mozart_api.models.stand_movement import StandMovement
 from mozart_api.models.treble import Treble
 from mozart_api.models.uri import Uri
 from mozart_api.models.user_flow import UserFlow
@@ -65,9 +62,9 @@ from mozart_api.models.volume_mute import VolumeMute
 from mozart_api.models.volume_settings import VolumeSettings
 from mozart_api.models.volume_state import VolumeState
 
-from mozart_api.api_client import ApiClient
+from mozart_api.api_client import ApiClient, RequestSerialized
 from mozart_api.api_response import ApiResponse
-from mozart_api.exceptions import ApiTypeError, ApiValueError  # noqa: F401
+from mozart_api.rest import RESTResponseType
 
 
 class MozartApi:
@@ -82,1769 +79,3249 @@ class MozartApi:
             api_client = ApiClient.get_default()
         self.api_client = api_client
 
-    @validate_arguments
+    @validate_call
     async def activate_listening_mode(
-        self, id: conint(strict=True, ge=0), **kwargs
-    ) -> None:  # noqa: E501
-        """Activate a listening mode  # noqa: E501
+        self,
+        id: Annotated[int, Field(strict=True, ge=0)],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Activate a listening mode
 
 
         :param id: (required)
         :type id: int
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the activate_listening_mode_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.activate_listening_mode_with_http_info(
-            id, **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def activate_listening_mode_with_http_info(
-        self, id: conint(strict=True, ge=0), **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Activate a listening mode  # noqa: E501
-
-
-        :param id: (required)
-        :type id: int
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["id"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._activate_listening_mode_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method activate_listening_mode" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-        _collection_formats = {}
+    @validate_call
+    async def activate_listening_mode_with_http_info(
+        self,
+        id: Annotated[int, Field(strict=True, ge=0)],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Activate a listening mode
+
+
+        :param id: (required)
+        :type id: int
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._activate_listening_mode_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def activate_listening_mode_without_preload_content(
+        self,
+        id: Annotated[int, Field(strict=True, ge=0)],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Activate a listening mode
+
+
+        :param id: (required)
+        :type id: int
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._activate_listening_mode_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _activate_listening_mode_serialize(
+        self,
+        id,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-        if _params["id"] is not None:
-            _path_params["id"] = _params["id"]
-
+        if id is not None:
+            _path_params["id"] = id
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/listening-modes/{id}/activate",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/sound/listening-modes/{id}/activate",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def activate_preset(
         self,
         id: Annotated[
-            StrictInt,
-            Field(..., description="the id of the preset you want to trigger"),
+            StrictInt, Field(description="the id of the preset you want to trigger")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Trigger a preset  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Trigger a preset
 
 
         :param id: the id of the preset you want to trigger (required)
         :type id: int
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the activate_preset_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.activate_preset_with_http_info(id, **kwargs)  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._activate_preset_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "412": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def activate_preset_with_http_info(
         self,
         id: Annotated[
-            StrictInt,
-            Field(..., description="the id of the preset you want to trigger"),
+            StrictInt, Field(description="the id of the preset you want to trigger")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Trigger a preset  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Trigger a preset
 
 
         :param id: the id of the preset you want to trigger (required)
         :type id: int
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["id"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._activate_preset_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method activate_preset" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "412": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def activate_preset_without_preload_content(
+        self,
+        id: Annotated[
+            StrictInt, Field(description="the id of the preset you want to trigger")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Trigger a preset
+
+
+        :param id: the id of the preset you want to trigger (required)
+        :type id: int
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._activate_preset_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "412": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _activate_preset_serialize(
+        self,
+        id,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-        if _params["id"] is not None:
-            _path_params["id"] = _params["id"]
-
+        if id is not None:
+            _path_params["id"] = id
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/preset/{id}/trigger",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/playback/preset/{id}/trigger",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def add_to_queue(
         self,
         play_queue_item: Annotated[
-            PlayQueueItem, Field(..., description="the queue element you want to add")
+            PlayQueueItem, Field(description="the queue element you want to add")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Add an element to the queue  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Add an element to the queue
 
 
         :param play_queue_item: the queue element you want to add (required)
         :type play_queue_item: PlayQueueItem
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the add_to_queue_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.add_to_queue_with_http_info(
-            play_queue_item, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._add_to_queue_serialize(
+            play_queue_item=play_queue_item,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def add_to_queue_with_http_info(
         self,
         play_queue_item: Annotated[
-            PlayQueueItem, Field(..., description="the queue element you want to add")
+            PlayQueueItem, Field(description="the queue element you want to add")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Add an element to the queue  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Add an element to the queue
 
 
         :param play_queue_item: the queue element you want to add (required)
         :type play_queue_item: PlayQueueItem
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["play_queue_item"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._add_to_queue_serialize(
+            play_queue_item=play_queue_item,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method add_to_queue" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def add_to_queue_without_preload_content(
+        self,
+        play_queue_item: Annotated[
+            PlayQueueItem, Field(description="the queue element you want to add")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Add an element to the queue
+
+
+        :param play_queue_item: the queue element you want to add (required)
+        :type play_queue_item: PlayQueueItem
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._add_to_queue_serialize(
+            play_queue_item=play_queue_item,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _add_to_queue_serialize(
+        self,
+        play_queue_item,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["play_queue_item"] is not None:
-            _body_params = _params["play_queue_item"]
+        if play_queue_item is not None:
+            _body_params = play_queue_item
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/queue",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/playback/queue",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def get_active_listening_mode(
-        self, **kwargs
-    ) -> ListeningModeRef:  # noqa: E501
-        """Get the active listening mode  # noqa: E501
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ListeningModeRef:
+        """Get the active listening mode
 
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: ListeningModeRef
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_active_listening_mode_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_active_listening_mode_with_http_info(
-            **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def get_active_listening_mode_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get the active listening mode  # noqa: E501
-
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(ListeningModeRef, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_active_listening_mode_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_active_listening_mode" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
-
-        _collection_formats = {}
-
-        # process the path parameters
-        _path_params = {}
-
-        # process the query parameters
-        _query_params = []
-        # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
-        # process the form parameters
-        _form_params = []
-        _files = {}
-        # process the body parameter
-        _body_params = None
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["application/json"]
-        )  # noqa: E501
-
-        # authentication setting
-        _auth_settings = []  # noqa: E501
-
-        _response_types_map = {
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "ListeningModeRef",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/listening-modes/active",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_all_scenes(self, **kwargs) -> Dict[str, Scene]:  # noqa: E501
-        """Get a list of configured scenes  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: Dict[str, Scene]
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_all_scenes_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_all_scenes_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_all_scenes_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get a list of configured scenes  # noqa: E501
+    @validate_call
+    async def get_active_listening_mode_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[ListeningModeRef]:
+        """Get the active listening mode
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(Dict[str, Scene], status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_active_listening_mode_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_all_scenes" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "ListeningModeRef",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_active_listening_mode_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get the active listening mode
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_active_listening_mode_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "ListeningModeRef",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_active_listening_mode_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
-            "200": "Dict[str, Scene]",
-        }
-
-        return await self.api_client.call_api(
-            "/api/v1/scenes",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/sound/listening-modes/active",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
+    async def get_all_scenes(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> Dict[str, Scene]:
+        """Get a list of configured scenes
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_all_scenes_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, Scene]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
+    async def get_all_scenes_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[Dict[str, Scene]]:
+        """Get a list of configured scenes
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_all_scenes_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, Scene]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def get_all_scenes_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get a list of configured scenes
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_all_scenes_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, Scene]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_all_scenes_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )
+
+        # authentication setting
+        _auth_settings: List[str] = []
+
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/scenes",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
     async def get_available_sources(
         self,
         target_remote: Annotated[
             Optional[StrictBool], Field(description="filter sources for remote control")
         ] = None,
-        **kwargs
-    ) -> SourceArray:  # noqa: E501
-        """Get all the available sources  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> SourceArray:
+        """Get all the available sources
 
 
         :param target_remote: filter sources for remote control
         :type target_remote: bool
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: SourceArray
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_available_sources_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_available_sources_with_http_info(
-            target_remote, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._get_available_sources_serialize(
+            target_remote=target_remote,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "SourceArray",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def get_available_sources_with_http_info(
         self,
         target_remote: Annotated[
             Optional[StrictBool], Field(description="filter sources for remote control")
         ] = None,
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get all the available sources  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[SourceArray]:
+        """Get all the available sources
 
 
         :param target_remote: filter sources for remote control
         :type target_remote: bool
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(SourceArray, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["target_remote"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_available_sources_serialize(
+            target_remote=target_remote,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_available_sources" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
-
-        _collection_formats = {}
-
-        # process the path parameters
-        _path_params = {}
-
-        # process the query parameters
-        _query_params = []
-        if _params.get("target_remote") is not None:  # noqa: E501
-            _query_params.append(("target-remote", _params["target_remote"]))
-
-        # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
-        # process the form parameters
-        _form_params = []
-        _files = {}
-        # process the body parameter
-        _body_params = None
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["application/json"]
-        )  # noqa: E501
-
-        # authentication setting
-        _auth_settings = []  # noqa: E501
-
-        _response_types_map = {
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "SourceArray",
             "400": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/sources",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
             response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
         )
 
-    @validate_arguments
-    async def get_battery_state(self, **kwargs) -> BatteryState:  # noqa: E501
-        """Get battery state of the product  # noqa: E501
+    @validate_call
+    async def get_available_sources_without_preload_content(
+        self,
+        target_remote: Annotated[
+            Optional[StrictBool], Field(description="filter sources for remote control")
+        ] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get all the available sources
 
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: BatteryState
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_battery_state_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_battery_state_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_battery_state_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get battery state of the product  # noqa: E501
-
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
+        :param target_remote: filter sources for remote control
+        :type target_remote: bool
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(BatteryState, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_available_sources_serialize(
+            target_remote=target_remote,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_battery_state" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "SourceArray",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
 
-        _collection_formats = {}
+    def _get_available_sources_serialize(
+        self,
+        target_remote,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
+        if target_remote is not None:
+
+            _query_params.append(("target-remote", target_remote))
+
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/playback/sources",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_battery_state(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> BatteryState:
+        """Get battery state of the product
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_battery_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "BatteryState",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/battery",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_beolink_available_listeners(
-        self, **kwargs
-    ) -> List[BeolinkAvailableListener]:  # noqa: E501
-        """Get available listeners  # noqa: E501
+    @validate_call
+    async def get_battery_state_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[BatteryState]:
+        """Get battery state of the product
 
-        Get a list of devices that can be listening to this device active experience.   # noqa: E501
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: List[BeolinkAvailableListener]
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_beolink_available_listeners_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_beolink_available_listeners_with_http_info(
-            **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def get_beolink_available_listeners_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get available listeners  # noqa: E501
-
-        Get a list of devices that can be listening to this device active experience.   # noqa: E501
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(List[BeolinkAvailableListener], status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_battery_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_beolink_available_listeners" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "BatteryState",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_battery_state_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get battery state of the product
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_battery_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "BatteryState",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_battery_state_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/battery",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_beolink_available_listeners(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> List[BeolinkAvailableListener]:
+        """Get available listeners
+
+        Get a list of devices that can be listening to this device active experience.
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_beolink_available_listeners_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "List[BeolinkAvailableListener]",
             "400": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/beolink/available-listeners",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_beolink_join_result(
+    @validate_call
+    async def get_beolink_available_listeners_with_http_info(
         self,
-        id: Annotated[StrictStr, Field(..., description="Join request ID")],
-        **kwargs
-    ) -> BeolinkJoinResult:  # noqa: E501
-        """Get Beolink join result, test-endpoint  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[List[BeolinkAvailableListener]]:
+        """Get available listeners
 
-        Returns the result of a join request.  **WARNING:** This end-point is only for testing purposes. Only a limited number of results are kept, so if there are multiple API clients using the device at the same time, and you are polling this end-point, you may miss the result of your join request.   # noqa: E501
+        Get a list of devices that can be listening to this device active experience.
 
-        :param id: Join request ID (required)
-        :type id: str
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: BeolinkJoinResult
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_beolink_join_result_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_beolink_join_result_with_http_info(
-            id, **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def get_beolink_join_result_with_http_info(
-        self,
-        id: Annotated[StrictStr, Field(..., description="Join request ID")],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get Beolink join result, test-endpoint  # noqa: E501
-
-        Returns the result of a join request.  **WARNING:** This end-point is only for testing purposes. Only a limited number of results are kept, so if there are multiple API clients using the device at the same time, and you are polling this end-point, you may miss the result of your join request.   # noqa: E501
-
-        :param id: Join request ID (required)
-        :type id: str
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(BeolinkJoinResult, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["id"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_beolink_available_listeners_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_beolink_join_result" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "List[BeolinkAvailableListener]",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_beolink_available_listeners_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get available listeners
+
+        Get a list of devices that can be listening to this device active experience.
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_beolink_available_listeners_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "List[BeolinkAvailableListener]",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_beolink_available_listeners_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-        if _params["id"] is not None:
-            _path_params["id"] = _params["id"]
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/beolink/available-listeners",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_beolink_join_result(
+        self,
+        id: Annotated[StrictStr, Field(description="Join request ID")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> BeolinkJoinResult:
+        """Get Beolink join result, test-endpoint
+
+        Returns the result of a join request.  **WARNING:** This end-point is only for testing purposes. Only a limited number of results are kept, so if there are multiple API clients using the device at the same time, and you are polling this end-point, you may miss the result of your join request.
+
+        :param id: Join request ID (required)
+        :type id: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_beolink_join_result_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "BeolinkJoinResult",
             "404": None,
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/beolink/join-result/{id}",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_beolink_listeners(
-        self, **kwargs
-    ) -> List[BeolinkListener]:  # noqa: E501
-        """Get joined peers  # noqa: E501
+    @validate_call
+    async def get_beolink_join_result_with_http_info(
+        self,
+        id: Annotated[StrictStr, Field(description="Join request ID")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[BeolinkJoinResult]:
+        """Get Beolink join result, test-endpoint
 
-        Get a list of devices that are listening to this device active experience (that have joined).   # noqa: E501
+        Returns the result of a join request.  **WARNING:** This end-point is only for testing purposes. Only a limited number of results are kept, so if there are multiple API clients using the device at the same time, and you are polling this end-point, you may miss the result of your join request.
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: List[BeolinkListener]
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_beolink_listeners_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_beolink_listeners_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_beolink_listeners_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get joined peers  # noqa: E501
-
-        Get a list of devices that are listening to this device active experience (that have joined).   # noqa: E501
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
+        :param id: Join request ID (required)
+        :type id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(List[BeolinkListener], status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_beolink_join_result_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_beolink_listeners" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "BeolinkJoinResult",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_beolink_join_result_without_preload_content(
+        self,
+        id: Annotated[StrictStr, Field(description="Join request ID")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get Beolink join result, test-endpoint
+
+        Returns the result of a join request.  **WARNING:** This end-point is only for testing purposes. Only a limited number of results are kept, so if there are multiple API clients using the device at the same time, and you are polling this end-point, you may miss the result of your join request.
+
+        :param id: Join request ID (required)
+        :type id: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_beolink_join_result_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "BeolinkJoinResult",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_beolink_join_result_serialize(
+        self,
+        id,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
+        if id is not None:
+            _path_params["id"] = id
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/beolink/join-result/{id}",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_beolink_listeners(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> List[BeolinkListener]:
+        """Get joined peers
+
+        Get a list of devices that are listening to this device active experience (that have joined).
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_beolink_listeners_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "List[BeolinkListener]",
             "400": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/beolink/listeners",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_beolink_peers(self, **kwargs) -> List[BeolinkPeer]:  # noqa: E501
-        """Get discovered peers  # noqa: E501
+    @validate_call
+    async def get_beolink_listeners_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[List[BeolinkListener]]:
+        """Get joined peers
 
-        Get information about the Beolink peers discovered by this device.   # noqa: E501
+        Get a list of devices that are listening to this device active experience (that have joined).
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: List[BeolinkPeer]
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_beolink_peers_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_beolink_peers_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_beolink_peers_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get discovered peers  # noqa: E501
-
-        Get information about the Beolink peers discovered by this device.   # noqa: E501
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(List[BeolinkPeer], status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_beolink_listeners_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_beolink_peers" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "List[BeolinkListener]",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_beolink_listeners_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get joined peers
+
+        Get a list of devices that are listening to this device active experience (that have joined).
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_beolink_listeners_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "List[BeolinkListener]",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_beolink_listeners_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/beolink/listeners",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_beolink_peers(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> List[BeolinkPeer]:
+        """Get discovered peers
+
+        Get information about the Beolink peers discovered by this device.
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_beolink_peers_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "List[BeolinkPeer]",
             "400": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/beolink/peers",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_beolink_self(self, **kwargs) -> BeolinkPeer:  # noqa: E501
-        """Get information about this device  # noqa: E501
+    @validate_call
+    async def get_beolink_peers_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[List[BeolinkPeer]]:
+        """Get discovered peers
 
-        Returns Beolink information like about this device. This can be useful if you want to expand _to_ this device.   # noqa: E501
+        Get information about the Beolink peers discovered by this device.
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: BeolinkPeer
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_beolink_self_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_beolink_self_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_beolink_self_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get information about this device  # noqa: E501
-
-        Returns Beolink information like about this device. This can be useful if you want to expand _to_ this device.   # noqa: E501
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(BeolinkPeer, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_beolink_peers_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_beolink_self" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "List[BeolinkPeer]",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_beolink_peers_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get discovered peers
+
+        Get information about the Beolink peers discovered by this device.
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_beolink_peers_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "List[BeolinkPeer]",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_beolink_peers_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/beolink/peers",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_beolink_self(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> BeolinkPeer:
+        """Get information about this device
+
+        Returns Beolink information like about this device. This can be useful if you want to expand _to_ this device.
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_beolink_self_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "BeolinkPeer",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/beolink/self",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_bluetooth_devices_status(
-        self, **kwargs
-    ) -> BluetoothDeviceList:  # noqa: E501
-        """Get the bluetooth devices status  # noqa: E501
+    @validate_call
+    async def get_beolink_self_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[BeolinkPeer]:
+        """Get information about this device
 
+        Returns Beolink information like about this device. This can be useful if you want to expand _to_ this device.
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: BluetoothDeviceList
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_bluetooth_devices_status_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_bluetooth_devices_status_with_http_info(
-            **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def get_bluetooth_devices_status_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get the bluetooth devices status  # noqa: E501
-
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(BluetoothDeviceList, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_beolink_self_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_bluetooth_devices_status" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "BeolinkPeer",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_beolink_self_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get information about this device
+
+        Returns Beolink information like about this device. This can be useful if you want to expand _to_ this device.
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_beolink_self_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "BeolinkPeer",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_beolink_self_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/beolink/self",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_bluetooth_devices_status(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> BluetoothDeviceList:
+        """Get the bluetooth devices status
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_bluetooth_devices_status_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "BluetoothDeviceList",
             "400": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/setup/bluetooth/devices",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_bluetooth_remotes(
-        self, **kwargs
-    ) -> PairedRemoteResponse:  # noqa: E501
-        """Get a list of paired bluetooth remotes  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: PairedRemoteResponse
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_bluetooth_remotes_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_bluetooth_remotes_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_bluetooth_remotes_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get a list of paired bluetooth remotes  # noqa: E501
+    @validate_call
+    async def get_bluetooth_devices_status_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[BluetoothDeviceList]:
+        """Get the bluetooth devices status
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(PairedRemoteResponse, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_bluetooth_devices_status_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_bluetooth_remotes" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "BluetoothDeviceList",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_bluetooth_devices_status_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get the bluetooth devices status
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_bluetooth_devices_status_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "BluetoothDeviceList",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_bluetooth_devices_status_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
-            "200": "PairedRemoteResponse",
-            "400": "ErrorModel",
-        }
-
-        return await self.api_client.call_api(
-            "/api/v1/setup/remotes",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/setup/bluetooth/devices",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
+    async def get_bluetooth_remotes(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> PairedRemoteResponse:
+        """Get a list of paired bluetooth remotes
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_bluetooth_remotes_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "PairedRemoteResponse",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
+    async def get_bluetooth_remotes_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[PairedRemoteResponse]:
+        """Get a list of paired bluetooth remotes
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_bluetooth_remotes_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "PairedRemoteResponse",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def get_bluetooth_remotes_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get a list of paired bluetooth remotes
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_bluetooth_remotes_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "PairedRemoteResponse",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_bluetooth_remotes_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )
+
+        # authentication setting
+        _auth_settings: List[str] = []
+
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/setup/remotes",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
     async def get_content(
         self,
         start_with: Annotated[
@@ -1853,29 +3330,66 @@ class MozartApi:
                 description='Filter result that start with x. It could be input source "tv", "netradio" or content "tv://TV", "tv://netflix"'
             ),
         ] = None,
-        **kwargs
-    ) -> Dict[str, ContentItem]:  # noqa: E501
-        """Get a list of available content  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> Dict[str, ContentItem]:
+        """Get a list of available content
 
 
         :param start_with: Filter result that start with x. It could be input source \"tv\", \"netradio\" or content \"tv://TV\", \"tv://netflix\"
         :type start_with: str
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: Dict[str, ContentItem]
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_content_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_content_with_http_info(start_with, **kwargs)  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._get_content_serialize(
+            start_with=start_with,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, ContentItem]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def get_content_with_http_info(
         self,
         start_with: Annotated[
@@ -1884,5607 +3398,10800 @@ class MozartApi:
                 description='Filter result that start with x. It could be input source "tv", "netradio" or content "tv://TV", "tv://netflix"'
             ),
         ] = None,
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get a list of available content  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[Dict[str, ContentItem]]:
+        """Get a list of available content
 
 
         :param start_with: Filter result that start with x. It could be input source \"tv\", \"netradio\" or content \"tv://TV\", \"tv://netflix\"
         :type start_with: str
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(Dict[str, ContentItem], status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["start_with"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_content_serialize(
+            start_with=start_with,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_content" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, ContentItem]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_content_without_preload_content(
+        self,
+        start_with: Annotated[
+            Optional[StrictStr],
+            Field(
+                description='Filter result that start with x. It could be input source "tv", "netradio" or content "tv://TV", "tv://netflix"'
+            ),
+        ] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get a list of available content
+
+
+        :param start_with: Filter result that start with x. It could be input source \"tv\", \"netradio\" or content \"tv://TV\", \"tv://netflix\"
+        :type start_with: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_content_serialize(
+            start_with=start_with,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, ContentItem]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_content_serialize(
+        self,
+        start_with,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
-        if _params.get("start_with") is not None:  # noqa: E501
-            _query_params.append(("startWith", _params["start_with"]))
+        if start_with is not None:
+
+            _query_params.append(("startWith", start_with))
 
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
-            "200": "Dict[str, ContentItem]",
-        }
-
-        return await self.api_client.call_api(
-            "/api/v1/content",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/content",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
-    async def get_current_volume(self, **kwargs) -> VolumeState:  # noqa: E501
-        """Get the current volume state  # noqa: E501
+    @validate_call
+    async def get_current_volume(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> VolumeState:
+        """Get the current volume state
 
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: VolumeState
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_current_volume_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_current_volume_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_current_volume_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get the current volume state  # noqa: E501
-
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(VolumeState, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_current_volume_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_current_volume" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
-
-        _collection_formats = {}
-
-        # process the path parameters
-        _path_params = {}
-
-        # process the query parameters
-        _query_params = []
-        # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
-        # process the form parameters
-        _form_params = []
-        _files = {}
-        # process the body parameter
-        _body_params = None
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["application/json"]
-        )  # noqa: E501
-
-        # authentication setting
-        _auth_settings = []  # noqa: E501
-
-        _response_types_map = {
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "VolumeState",
             "400": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/volume",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_listening_mode_set(
-        self, **kwargs
-    ) -> List[ListeningMode]:  # noqa: E501
-        """Get available listening modes that match the current role (standalone or multichannel).   # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: List[ListeningMode]
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_listening_mode_set_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_listening_mode_set_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_listening_mode_set_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get available listening modes that match the current role (standalone or multichannel).   # noqa: E501
+    @validate_call
+    async def get_current_volume_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[VolumeState]:
+        """Get the current volume state
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(List[ListeningMode], status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_current_volume_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_listening_mode_set" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "VolumeState",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_current_volume_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get the current volume state
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_current_volume_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "VolumeState",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_current_volume_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/sound/volume",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_listening_mode_set(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> List[ListeningMode]:
+        """Get available listening modes that match the current role (standalone, multichannel or both(all)).
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_listening_mode_set_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "List[ListeningMode]",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/listening-modes",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_playback_state(self, **kwargs) -> PlaybackState:  # noqa: E501
-        """Get the current playback state  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: PlaybackState
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_playback_state_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_playback_state_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_playback_state_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get the current playback state  # noqa: E501
+    @validate_call
+    async def get_listening_mode_set_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[List[ListeningMode]]:
+        """Get available listening modes that match the current role (standalone, multichannel or both(all)).
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(PlaybackState, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_listening_mode_set_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_playback_state" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "List[ListeningMode]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_listening_mode_set_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get available listening modes that match the current role (standalone, multichannel or both(all)).
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_listening_mode_set_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "List[ListeningMode]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_listening_mode_set_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/sound/listening-modes",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_playback_state(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> PlaybackState:
+        """Get the current playback state
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_playback_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "PlaybackState",
             "400": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/state",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_power_state(self, **kwargs) -> PowerStateEnum:  # noqa: E501
-        """Get power state of the product  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: PowerStateEnum
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_power_state_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_power_state_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_power_state_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get power state of the product  # noqa: E501
+    @validate_call
+    async def get_playback_state_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[PlaybackState]:
+        """Get the current playback state
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(PowerStateEnum, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_playback_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_power_state" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "PlaybackState",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_playback_state_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get the current playback state
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_playback_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "PlaybackState",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_playback_state_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/playback/state",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_power_state(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> PowerStateEnum:
+        """Get power state of the product
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_power_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "PowerStateEnum",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/state/power",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_presets(self, **kwargs) -> Dict[str, Preset]:  # noqa: E501
-        """Get the preset configuration  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: Dict[str, Preset]
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_presets_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_presets_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_presets_with_http_info(self, **kwargs) -> ApiResponse:  # noqa: E501
-        """Get the preset configuration  # noqa: E501
+    @validate_call
+    async def get_power_state_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[PowerStateEnum]:
+        """Get power state of the product
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(Dict[str, Preset], status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_power_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_presets" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "PowerStateEnum",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_power_state_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get power state of the product
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_power_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "PowerStateEnum",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_power_state_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/state/power",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_presets(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> Dict[str, Preset]:
+        """Get the preset configuration
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_presets_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "Dict[str, Preset]",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/setup/presets",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_product_state(self, **kwargs) -> ProductState:  # noqa: E501
-        """Get the overall state from the product  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: ProductState
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_product_state_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_product_state_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_product_state_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get the overall state from the product  # noqa: E501
+    @validate_call
+    async def get_presets_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[Dict[str, Preset]]:
+        """Get the preset configuration
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(ProductState, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_presets_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_product_state" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, Preset]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_presets_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get the preset configuration
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_presets_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, Preset]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_presets_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/setup/presets",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_product_state(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ProductState:
+        """Get the overall state from the product
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_product_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "ProductState",
             "400": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/state",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_remote_home_control_uri(
-        self, **kwargs
-    ) -> HomeControlUri:  # noqa: E501
-        """Get the HomeControl dashboard URI  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: HomeControlUri
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_remote_home_control_uri_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_remote_home_control_uri_with_http_info(
-            **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def get_remote_home_control_uri_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get the HomeControl dashboard URI  # noqa: E501
+    @validate_call
+    async def get_product_state_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[ProductState]:
+        """Get the overall state from the product
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(HomeControlUri, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_product_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_remote_home_control_uri" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "ProductState",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_product_state_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get the overall state from the product
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_product_state_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "ProductState",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_product_state_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
-            "200": "HomeControlUri",
-            "400": "ErrorModel",
-        }
-
-        return await self.api_client.call_api(
-            "/api/v1/setup/remote/home-control-uri",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/state",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
+    async def get_remote_home_control_uri(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> HomeControlUri:
+        """Get HomeControl dashboard uri and (optional) Immersive Experience (IXP) start page
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_remote_home_control_uri_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "HomeControlUri",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
+    async def get_remote_home_control_uri_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[HomeControlUri]:
+        """Get HomeControl dashboard uri and (optional) Immersive Experience (IXP) start page
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_remote_home_control_uri_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "HomeControlUri",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def get_remote_home_control_uri_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get HomeControl dashboard uri and (optional) Immersive Experience (IXP) start page
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_remote_home_control_uri_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "HomeControlUri",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_remote_home_control_uri_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )
+
+        # authentication setting
+        _auth_settings: List[str] = []
+
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/setup/remote/home-control-uri",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
     async def get_remote_menu(
         self,
         descendants_to: Annotated[
             Optional[StrictStr], Field(description="Get all descendants to this item")
         ] = None,
-        **kwargs
-    ) -> Dict[str, RemoteMenuItem]:  # noqa: E501
-        """Get all remote menu items  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> Dict[str, RemoteMenuItem]:
+        """Get all remote menu items
 
 
         :param descendants_to: Get all descendants to this item
         :type descendants_to: str
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: Dict[str, RemoteMenuItem]
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_remote_menu_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_remote_menu_with_http_info(
-            descendants_to, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._get_remote_menu_serialize(
+            descendants_to=descendants_to,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, RemoteMenuItem]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def get_remote_menu_with_http_info(
         self,
         descendants_to: Annotated[
             Optional[StrictStr], Field(description="Get all descendants to this item")
         ] = None,
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get all remote menu items  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[Dict[str, RemoteMenuItem]]:
+        """Get all remote menu items
 
 
         :param descendants_to: Get all descendants to this item
         :type descendants_to: str
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(Dict[str, RemoteMenuItem], status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["descendants_to"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_remote_menu_serialize(
+            descendants_to=descendants_to,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_remote_menu" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, RemoteMenuItem]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_remote_menu_without_preload_content(
+        self,
+        descendants_to: Annotated[
+            Optional[StrictStr], Field(description="Get all descendants to this item")
+        ] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get all remote menu items
+
+
+        :param descendants_to: Get all descendants to this item
+        :type descendants_to: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_remote_menu_serialize(
+            descendants_to=descendants_to,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, RemoteMenuItem]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_remote_menu_serialize(
+        self,
+        descendants_to,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
-        if _params.get("descendants_to") is not None:  # noqa: E501
-            _query_params.append(("descendantsTo", _params["descendants_to"]))
+        if descendants_to is not None:
+
+            _query_params.append(("descendantsTo", descendants_to))
 
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
-            "200": "Dict[str, RemoteMenuItem]",
-        }
-
-        return await self.api_client.call_api(
-            "/api/v1/remote",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/remote",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
-    async def get_settings_queue(self, **kwargs) -> PlayQueueSettings:  # noqa: E501
-        """Get the current queue settings  # noqa: E501
+    @validate_call
+    async def get_settings_queue(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> PlayQueueSettings:
+        """Get the current queue settings
 
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: PlayQueueSettings
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_settings_queue_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_settings_queue_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_settings_queue_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get the current queue settings  # noqa: E501
-
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(PlayQueueSettings, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_settings_queue_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_settings_queue" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
-
-        _collection_formats = {}
-
-        # process the path parameters
-        _path_params = {}
-
-        # process the query parameters
-        _query_params = []
-        # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
-        # process the form parameters
-        _form_params = []
-        _files = {}
-        # process the body parameter
-        _body_params = None
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["application/json"]
-        )  # noqa: E501
-
-        # authentication setting
-        _auth_settings = []  # noqa: E501
-
-        _response_types_map = {
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "PlayQueueSettings",
             "400": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/queue/settings",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_softwareupdate_status(
-        self, **kwargs
-    ) -> SoftwareUpdateStatus:  # noqa: E501
-        """Get the current software update status  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: SoftwareUpdateStatus
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_softwareupdate_status_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_softwareupdate_status_with_http_info(
-            **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def get_softwareupdate_status_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get the current software update status  # noqa: E501
+    @validate_call
+    async def get_settings_queue_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[PlayQueueSettings]:
+        """Get the current queue settings
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(SoftwareUpdateStatus, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_settings_queue_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_softwareupdate_status" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "PlayQueueSettings",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_settings_queue_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get the current queue settings
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_settings_queue_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "PlayQueueSettings",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_settings_queue_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/playback/queue/settings",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_softwareupdate_status(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> SoftwareUpdateStatus:
+        """Get the current software update status
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_softwareupdate_status_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "SoftwareUpdateStatus",
             "400": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/softwareupdate",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_sound_features(
-        self, **kwargs
-    ) -> Dict[str, SoundFeatureSet]:  # noqa: E501
-        """Get available sound features that match the current role (standalone or multichannel).   # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: Dict[str, SoundFeatureSet]
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_sound_features_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_sound_features_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_sound_features_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get available sound features that match the current role (standalone or multichannel).   # noqa: E501
+    @validate_call
+    async def get_softwareupdate_status_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[SoftwareUpdateStatus]:
+        """Get the current software update status
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(Dict[str, SoundFeatureSet], status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_softwareupdate_status_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_sound_features" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "SoftwareUpdateStatus",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_softwareupdate_status_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get the current software update status
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_softwareupdate_status_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "SoftwareUpdateStatus",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_softwareupdate_status_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/softwareupdate",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_sound_features(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> Dict[str, SoundFeatureSet]:
+        """Get available sound features that match the current role (standalone or multichannel).
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_sound_features_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "Dict[str, SoundFeatureSet]",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/features",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_speakergroup_active(
-        self, **kwargs
-    ) -> SpeakerGroupOverview:  # noqa: E501
-        """Get the active speaker group  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: SpeakerGroupOverview
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_speakergroup_active_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_speakergroup_active_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_speakergroup_active_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get the active speaker group  # noqa: E501
+    @validate_call
+    async def get_sound_features_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[Dict[str, SoundFeatureSet]]:
+        """Get available sound features that match the current role (standalone or multichannel).
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(SpeakerGroupOverview, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_sound_features_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_speakergroup_active" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, SoundFeatureSet]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_sound_features_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get available sound features that match the current role (standalone or multichannel).
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_sound_features_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "Dict[str, SoundFeatureSet]",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_sound_features_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/sound/features",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_speakergroup_active(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> SpeakerGroupOverview:
+        """Get the active speaker group
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_speakergroup_active_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "SpeakerGroupOverview",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/speakergroup/active",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def get_volume_settings(self, **kwargs) -> VolumeSettings:  # noqa: E501
-        """Get the current volume settings for default and maximum volume level  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: VolumeSettings
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the get_volume_settings_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.get_volume_settings_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def get_volume_settings_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Get the current volume settings for default and maximum volume level  # noqa: E501
+    @validate_call
+    async def get_speakergroup_active_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[SpeakerGroupOverview]:
+        """Get the active speaker group
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(VolumeSettings, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._get_speakergroup_active_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method get_volume_settings" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "SpeakerGroupOverview",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def get_speakergroup_active_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get the active speaker group
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_speakergroup_active_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "SpeakerGroupOverview",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_speakergroup_active_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/sound/speakergroup/active",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
+    async def get_volume_settings(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> VolumeSettings:
+        """Get the current volume settings for default and maximum volume level
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_volume_settings_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
             "200": "VolumeSettings",
             "400": "ErrorModel",
         }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-        return await self.api_client.call_api(
-            "/api/v1/sound/volume/settings",
-            "GET",
-            _path_params,
-            _query_params,
-            _header_params,
+    @validate_call
+    async def get_volume_settings_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[VolumeSettings]:
+        """Get the current volume settings for default and maximum volume level
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_volume_settings_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "VolumeSettings",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def get_volume_settings_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Get the current volume settings for default and maximum volume level
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._get_volume_settings_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": "VolumeSettings",
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _get_volume_settings_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )
+
+        # authentication setting
+        _auth_settings: List[str] = []
+
+        return self.api_client.param_serialize(
+            method="GET",
+            resource_path="/api/v1/sound/volume/settings",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def join_beolink_peer(
         self,
-        jid: Annotated[StrictStr, Field(..., description="Jabber ID of peer to join")],
+        jid: Annotated[StrictStr, Field(description="Jabber ID of peer to join")],
         source: Annotated[
             Optional[StrictStr],
             Field(description="Ask to join a specific source on peer"),
         ] = None,
-        **kwargs
-    ) -> BeolinkJoinRequest:  # noqa: E501
-        """Join multi-room experience  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> BeolinkJoinRequest:
+        """Join multi-room experience
 
-        Join the experience currently active on peer with Jabber ID `{jid}`.   # noqa: E501
+        Join the experience currently active on peer with Jabber ID `{jid}`.
 
         :param jid: Jabber ID of peer to join (required)
         :type jid: str
         :param source: Ask to join a specific source on peer
         :type source: str
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: BeolinkJoinRequest
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the join_beolink_peer_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.join_beolink_peer_with_http_info(
-            jid, source, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._join_beolink_peer_serialize(
+            jid=jid,
+            source=source,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": "BeolinkJoinRequest",
+            "400": "ErrorModel",
+            "403": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def join_beolink_peer_with_http_info(
         self,
-        jid: Annotated[StrictStr, Field(..., description="Jabber ID of peer to join")],
+        jid: Annotated[StrictStr, Field(description="Jabber ID of peer to join")],
         source: Annotated[
             Optional[StrictStr],
             Field(description="Ask to join a specific source on peer"),
         ] = None,
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Join multi-room experience  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[BeolinkJoinRequest]:
+        """Join multi-room experience
 
-        Join the experience currently active on peer with Jabber ID `{jid}`.   # noqa: E501
+        Join the experience currently active on peer with Jabber ID `{jid}`.
 
         :param jid: Jabber ID of peer to join (required)
         :type jid: str
         :param source: Ask to join a specific source on peer
         :type source: str
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(BeolinkJoinRequest, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["jid", "source"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._join_beolink_peer_serialize(
+            jid=jid,
+            source=source,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method join_beolink_peer" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
-
-        _collection_formats = {}
-
-        # process the path parameters
-        _path_params = {}
-        if _params["jid"] is not None:
-            _path_params["jid"] = _params["jid"]
-
-        # process the query parameters
-        _query_params = []
-        if _params.get("source") is not None:  # noqa: E501
-            _query_params.append(("source", _params["source"]))
-
-        # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
-        # process the form parameters
-        _form_params = []
-        _files = {}
-        # process the body parameter
-        _body_params = None
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["application/json"]
-        )  # noqa: E501
-
-        # authentication setting
-        _auth_settings = []  # noqa: E501
-
-        _response_types_map = {
+        _response_types_map: Dict[str, Optional[str]] = {
             "202": "BeolinkJoinRequest",
             "400": "ErrorModel",
             "403": "ErrorModel",
         }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        return await self.api_client.call_api(
-            "/api/v1/beolink/join/{jid}",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+    @validate_call
+    async def join_beolink_peer_without_preload_content(
+        self,
+        jid: Annotated[StrictStr, Field(description="Jabber ID of peer to join")],
+        source: Annotated[
+            Optional[StrictStr],
+            Field(description="Ask to join a specific source on peer"),
+        ] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Join multi-room experience
+
+        Join the experience currently active on peer with Jabber ID `{jid}`.
+
+        :param jid: Jabber ID of peer to join (required)
+        :type jid: str
+        :param source: Ask to join a specific source on peer
+        :type source: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._join_beolink_peer_serialize(
+            jid=jid,
+            source=source,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": "BeolinkJoinRequest",
+            "400": "ErrorModel",
+            "403": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _join_beolink_peer_serialize(
+        self,
+        jid,
+        source,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        if jid is not None:
+            _path_params["jid"] = jid
+        # process the query parameters
+        if source is not None:
+
+            _query_params.append(("source", source))
+
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )
+
+        # authentication setting
+        _auth_settings: List[str] = []
+
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/beolink/join/{jid}",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def join_latest_beolink_experience(
-        self, **kwargs
-    ) -> BeolinkJoinRequest:  # noqa: E501
-        """Trigger touch to join  # noqa: E501
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> BeolinkJoinRequest:
+        """Trigger touch to join
 
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: BeolinkJoinRequest
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the join_latest_beolink_experience_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.join_latest_beolink_experience_with_http_info(
-            **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def join_latest_beolink_experience_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Trigger touch to join  # noqa: E501
-
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: tuple(BeolinkJoinRequest, status_code(int), headers(HTTPHeaderDict))
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._join_latest_beolink_experience_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method join_latest_beolink_experience" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
-
-        _collection_formats = {}
-
-        # process the path parameters
-        _path_params = {}
-
-        # process the query parameters
-        _query_params = []
-        # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
-        # process the form parameters
-        _form_params = []
-        _files = {}
-        # process the body parameter
-        _body_params = None
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["application/json"]
-        )  # noqa: E501
-
-        # authentication setting
-        _auth_settings = []  # noqa: E501
-
-        _response_types_map = {
+        _response_types_map: Dict[str, Optional[str]] = {
             "202": "BeolinkJoinRequest",
             "400": "ErrorModel",
             "403": "ErrorModel",
         }
-
-        return await self.api_client.call_api(
-            "/api/v1/beolink/join",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
         )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-    @validate_arguments
-    async def post_beolink_allstandby(self, **kwargs) -> None:  # noqa: E501
-        """Broadcast an all standby event to turn all Beolink devices off  # noqa: E501
-
-
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_beolink_allstandby_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_beolink_allstandby_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def post_beolink_allstandby_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Broadcast an all standby event to turn all Beolink devices off  # noqa: E501
+    @validate_call
+    async def join_latest_beolink_experience_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[BeolinkJoinRequest]:
+        """Trigger touch to join
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._join_latest_beolink_experience_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_beolink_allstandby" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": "BeolinkJoinRequest",
+            "400": "ErrorModel",
+            "403": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def join_latest_beolink_experience_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Trigger touch to join
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._join_latest_beolink_experience_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": "BeolinkJoinRequest",
+            "400": "ErrorModel",
+            "403": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _join_latest_beolink_experience_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/beolink/allstandby",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/beolink/join",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
+    async def post_beolink_allstandby(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Broadcast an all standby event to turn all Beolink devices off
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_beolink_allstandby_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
+    async def post_beolink_allstandby_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Broadcast an all standby event to turn all Beolink devices off
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_beolink_allstandby_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def post_beolink_allstandby_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Broadcast an all standby event to turn all Beolink devices off
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_beolink_allstandby_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_beolink_allstandby_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )
+
+        # authentication setting
+        _auth_settings: List[str] = []
+
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/beolink/allstandby",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
     async def post_beolink_expand(
         self,
         jid: Annotated[
             StrictStr,
-            Field(
-                ..., description="Jabber id of peer to expand the active experience to"
-            ),
+            Field(description="Jabber id of peer to expand the active experience to"),
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Expand the current active experience  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Expand the current active experience
 
-        Expand the current active experience to another device with jabber id `{jid}`.   # noqa: E501
+        Expand the current active experience to another device with jabber id `{jid}`.
 
         :param jid: Jabber id of peer to expand the active experience to (required)
         :type jid: str
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_beolink_expand_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_beolink_expand_with_http_info(
-            jid, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._post_beolink_expand_serialize(
+            jid=jid,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+            "403": "ErrorModel",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def post_beolink_expand_with_http_info(
         self,
         jid: Annotated[
             StrictStr,
-            Field(
-                ..., description="Jabber id of peer to expand the active experience to"
-            ),
+            Field(description="Jabber id of peer to expand the active experience to"),
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Expand the current active experience  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Expand the current active experience
 
-        Expand the current active experience to another device with jabber id `{jid}`.   # noqa: E501
+        Expand the current active experience to another device with jabber id `{jid}`.
 
         :param jid: Jabber id of peer to expand the active experience to (required)
         :type jid: str
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["jid"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_beolink_expand_serialize(
+            jid=jid,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_beolink_expand" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+            "403": "ErrorModel",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def post_beolink_expand_without_preload_content(
+        self,
+        jid: Annotated[
+            StrictStr,
+            Field(description="Jabber id of peer to expand the active experience to"),
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Expand the current active experience
+
+        Expand the current active experience to another device with jabber id `{jid}`.
+
+        :param jid: Jabber id of peer to expand the active experience to (required)
+        :type jid: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_beolink_expand_serialize(
+            jid=jid,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+            "403": "ErrorModel",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_beolink_expand_serialize(
+        self,
+        jid,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-        if _params["jid"] is not None:
-            _path_params["jid"] = _params["jid"]
-
+        if jid is not None:
+            _path_params["jid"] = jid
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/beolink/expand/{jid}",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/beolink/expand/{jid}",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
-    async def post_beolink_leave(self, **kwargs) -> None:  # noqa: E501
-        """Leave the ongoing experience (disconnect this device from remote)  # noqa: E501
+    @validate_call
+    async def post_beolink_leave(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Leave the ongoing experience (disconnect this device from remote)
 
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_beolink_leave_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_beolink_leave_with_http_info(**kwargs)  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._post_beolink_leave_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def post_beolink_leave_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Leave the ongoing experience (disconnect this device from remote)  # noqa: E501
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Leave the ongoing experience (disconnect this device from remote)
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_beolink_leave_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_beolink_leave" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def post_beolink_leave_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Leave the ongoing experience (disconnect this device from remote)
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_beolink_leave_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_beolink_leave_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/beolink/leave",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/beolink/leave",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def post_beolink_unexpand(
         self,
-        jid: Annotated[
-            StrictStr, Field(..., description="Jabber id of peer to unexpand")
-        ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Unexpand (disconnect) a device from the multiroom session  # noqa: E501
+        jid: Annotated[StrictStr, Field(description="Jabber id of peer to unexpand")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Unexpand (disconnect) a device from the multiroom session
 
-        Disconnect the device with jabber id `{jid}` from the current active experience.   # noqa: E501
+        Disconnect the device with jabber id `{jid}` from the current active experience.
 
         :param jid: Jabber id of peer to unexpand (required)
         :type jid: str
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_beolink_unexpand_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_beolink_unexpand_with_http_info(
-            jid, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._post_beolink_unexpand_serialize(
+            jid=jid,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def post_beolink_unexpand_with_http_info(
         self,
-        jid: Annotated[
-            StrictStr, Field(..., description="Jabber id of peer to unexpand")
-        ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Unexpand (disconnect) a device from the multiroom session  # noqa: E501
+        jid: Annotated[StrictStr, Field(description="Jabber id of peer to unexpand")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Unexpand (disconnect) a device from the multiroom session
 
-        Disconnect the device with jabber id `{jid}` from the current active experience.   # noqa: E501
+        Disconnect the device with jabber id `{jid}` from the current active experience.
 
         :param jid: Jabber id of peer to unexpand (required)
         :type jid: str
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["jid"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_beolink_unexpand_serialize(
+            jid=jid,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_beolink_unexpand" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def post_beolink_unexpand_without_preload_content(
+        self,
+        jid: Annotated[StrictStr, Field(description="Jabber id of peer to unexpand")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Unexpand (disconnect) a device from the multiroom session
+
+        Disconnect the device with jabber id `{jid}` from the current active experience.
+
+        :param jid: Jabber id of peer to unexpand (required)
+        :type jid: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_beolink_unexpand_serialize(
+            jid=jid,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+            "404": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_beolink_unexpand_serialize(
+        self,
+        jid,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-        if _params["jid"] is not None:
-            _path_params["jid"] = _params["jid"]
-
+        if jid is not None:
+            _path_params["jid"] = jid
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/beolink/unexpand/{jid}",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/beolink/unexpand/{jid}",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
-    async def post_clear_queue(self, **kwargs) -> None:  # noqa: E501
-        """Clear the queue  # noqa: E501
+    @validate_call
+    async def post_clear_queue(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Clear the queue
 
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_clear_queue_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_clear_queue_with_http_info(**kwargs)  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._post_clear_queue_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def post_clear_queue_with_http_info(
-        self, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Clear the queue  # noqa: E501
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Clear the queue
 
 
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_clear_queue_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_clear_queue" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def post_clear_queue_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Clear the queue
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_clear_queue_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_clear_queue_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/queue/clear",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/playback/queue/clear",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def post_overlay_play(
         self,
         overlay_play_request: Annotated[
-            OverlayPlayRequest,
-            Field(..., description="settings to use for the overlay"),
+            OverlayPlayRequest, Field(description="settings to use for the overlay")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Play overlay  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Play overlay
 
-        Play some audio as an overlay. This will duck currently playing music while the audio is playing. Currently 100 unique TTS messages can be generated a day and generated messages are cached for 24 hours.   # noqa: E501
+        Play some audio as an overlay. This will duck currently playing music while the audio is playing. Currently 100 unique TTS messages can be generated a day and generated messages are cached for 24 hours.
 
         :param overlay_play_request: settings to use for the overlay (required)
         :type overlay_play_request: OverlayPlayRequest
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_overlay_play_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_overlay_play_with_http_info(
-            overlay_play_request, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._post_overlay_play_serialize(
+            overlay_play_request=overlay_play_request,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def post_overlay_play_with_http_info(
         self,
         overlay_play_request: Annotated[
-            OverlayPlayRequest,
-            Field(..., description="settings to use for the overlay"),
+            OverlayPlayRequest, Field(description="settings to use for the overlay")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Play overlay  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Play overlay
 
-        Play some audio as an overlay. This will duck currently playing music while the audio is playing. Currently 100 unique TTS messages can be generated a day and generated messages are cached for 24 hours.   # noqa: E501
+        Play some audio as an overlay. This will duck currently playing music while the audio is playing. Currently 100 unique TTS messages can be generated a day and generated messages are cached for 24 hours.
 
         :param overlay_play_request: settings to use for the overlay (required)
         :type overlay_play_request: OverlayPlayRequest
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["overlay_play_request"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_overlay_play_serialize(
+            overlay_play_request=overlay_play_request,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_overlay_play" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def post_overlay_play_without_preload_content(
+        self,
+        overlay_play_request: Annotated[
+            OverlayPlayRequest, Field(description="settings to use for the overlay")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Play overlay
+
+        Play some audio as an overlay. This will duck currently playing music while the audio is playing. Currently 100 unique TTS messages can be generated a day and generated messages are cached for 24 hours.
+
+        :param overlay_play_request: settings to use for the overlay (required)
+        :type overlay_play_request: OverlayPlayRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_overlay_play_serialize(
+            overlay_play_request=overlay_play_request,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "202": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_overlay_play_serialize(
+        self,
+        overlay_play_request,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["overlay_play_request"] is not None:
-            _body_params = _params["overlay_play_request"]
+        if overlay_play_request is not None:
+            _body_params = overlay_play_request
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/overlay/play",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/overlay/play",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def post_playback_command(
         self,
         command: Annotated[
-            StrictStr, Field(..., description="the named command to execute")
+            StrictStr, Field(description="the named command to execute")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Send a specific playback command to the product  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Send a specific playback command to the product
 
 
         :param command: the named command to execute (required)
         :type command: str
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_playback_command_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_playback_command_with_http_info(
-            command, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._post_playback_command_serialize(
+            command=command,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def post_playback_command_with_http_info(
         self,
         command: Annotated[
-            StrictStr, Field(..., description="the named command to execute")
+            StrictStr, Field(description="the named command to execute")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Send a specific playback command to the product  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Send a specific playback command to the product
 
 
         :param command: the named command to execute (required)
         :type command: str
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["command"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_playback_command_serialize(
+            command=command,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_playback_command" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def post_playback_command_without_preload_content(
+        self,
+        command: Annotated[
+            StrictStr, Field(description="the named command to execute")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Send a specific playback command to the product
+
+
+        :param command: the named command to execute (required)
+        :type command: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_playback_command_serialize(
+            command=command,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_playback_command_serialize(
+        self,
+        command,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-        if _params["command"] is not None:
-            _path_params["command"] = _params["command"]
-
+        if command is not None:
+            _path_params["command"] = command
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/command/{command}",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/playback/command/{command}",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
+    async def post_remote_home_control_ixp(
+        self,
+        home_control_ixp: Annotated[HomeControlIxp, Field(description="The new IXP")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Change any active Immersive Experience (IXP)
+
+
+        :param home_control_ixp: The new IXP (required)
+        :type home_control_ixp: HomeControlIxp
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_remote_home_control_ixp_serialize(
+            home_control_ixp=home_control_ixp,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
+    async def post_remote_home_control_ixp_with_http_info(
+        self,
+        home_control_ixp: Annotated[HomeControlIxp, Field(description="The new IXP")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Change any active Immersive Experience (IXP)
+
+
+        :param home_control_ixp: The new IXP (required)
+        :type home_control_ixp: HomeControlIxp
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_remote_home_control_ixp_serialize(
+            home_control_ixp=home_control_ixp,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def post_remote_home_control_ixp_without_preload_content(
+        self,
+        home_control_ixp: Annotated[HomeControlIxp, Field(description="The new IXP")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Change any active Immersive Experience (IXP)
+
+
+        :param home_control_ixp: The new IXP (required)
+        :type home_control_ixp: HomeControlIxp
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_remote_home_control_ixp_serialize(
+            home_control_ixp=home_control_ixp,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_remote_home_control_ixp_serialize(
+        self,
+        home_control_ixp,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+        if home_control_ixp is not None:
+            _body_params = home_control_ixp
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )
+
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
+
+        # authentication setting
+        _auth_settings: List[str] = []
+
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/setup/remote/home-control-ixp",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
     async def post_remote_key_trigger(
         self,
-        id: Annotated[StrictStr, Field(..., description="Key identifier")],
+        id: Annotated[StrictStr, Field(description="Key identifier")],
         remote_ui_key_state: RemoteUIKeyState,
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Remote input key press  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Remote input key press
 
 
         :param id: Key identifier (required)
         :type id: str
         :param remote_ui_key_state: (required)
         :type remote_ui_key_state: RemoteUIKeyState
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_remote_key_trigger_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_remote_key_trigger_with_http_info(
-            id, remote_ui_key_state, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._post_remote_key_trigger_serialize(
+            id=id,
+            remote_ui_key_state=remote_ui_key_state,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def post_remote_key_trigger_with_http_info(
         self,
-        id: Annotated[StrictStr, Field(..., description="Key identifier")],
+        id: Annotated[StrictStr, Field(description="Key identifier")],
         remote_ui_key_state: RemoteUIKeyState,
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Remote input key press  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Remote input key press
 
 
         :param id: Key identifier (required)
         :type id: str
         :param remote_ui_key_state: (required)
         :type remote_ui_key_state: RemoteUIKeyState
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["id", "remote_ui_key_state"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_remote_key_trigger_serialize(
+            id=id,
+            remote_ui_key_state=remote_ui_key_state,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_remote_key_trigger" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def post_remote_key_trigger_without_preload_content(
+        self,
+        id: Annotated[StrictStr, Field(description="Key identifier")],
+        remote_ui_key_state: RemoteUIKeyState,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Remote input key press
+
+
+        :param id: Key identifier (required)
+        :type id: str
+        :param remote_ui_key_state: (required)
+        :type remote_ui_key_state: RemoteUIKeyState
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_remote_key_trigger_serialize(
+            id=id,
+            remote_ui_key_state=remote_ui_key_state,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_remote_key_trigger_serialize(
+        self,
+        id,
+        remote_ui_key_state,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-        if _params["id"] is not None:
-            _path_params["id"] = _params["id"]
-
+        if id is not None:
+            _path_params["id"] = id
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["remote_ui_key_state"] is not None:
-            _body_params = _params["remote_ui_key_state"]
+        if remote_ui_key_state is not None:
+            _body_params = remote_ui_key_state
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/remote/key/{id}/trigger",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/remote/key/{id}/trigger",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def post_remote_trigger(
         self,
-        id: Annotated[StrictStr, Field(..., description="Remote menu item ID")],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Trigger a remote menu item  # noqa: E501
+        id: Annotated[StrictStr, Field(description="Remote menu item ID")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Trigger a remote menu item
 
 
         :param id: Remote menu item ID (required)
         :type id: str
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_remote_trigger_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_remote_trigger_with_http_info(id, **kwargs)  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._post_remote_trigger_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def post_remote_trigger_with_http_info(
         self,
-        id: Annotated[StrictStr, Field(..., description="Remote menu item ID")],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Trigger a remote menu item  # noqa: E501
+        id: Annotated[StrictStr, Field(description="Remote menu item ID")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Trigger a remote menu item
 
 
         :param id: Remote menu item ID (required)
         :type id: str
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["id"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_remote_trigger_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_remote_trigger" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def post_remote_trigger_without_preload_content(
+        self,
+        id: Annotated[StrictStr, Field(description="Remote menu item ID")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Trigger a remote menu item
+
+
+        :param id: Remote menu item ID (required)
+        :type id: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_remote_trigger_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_remote_trigger_serialize(
+        self,
+        id,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-        if _params["id"] is not None:
-            _path_params["id"] = _params["id"]
-
+        if id is not None:
+            _path_params["id"] = id
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/remote/{id}/trigger",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/remote/{id}/trigger",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def post_scene_match_trigger(
-        self, scene_match: SceneMatch, **kwargs
-    ) -> None:  # noqa: E501
-        """Trigger the first scene with same non null objects provided in the SceneMatch object  # noqa: E501
+        self,
+        scene_match: SceneMatch,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Trigger the first scene with same non null objects provided in the SceneMatch object
 
 
         :param scene_match: (required)
         :type scene_match: SceneMatch
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_scene_match_trigger_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_scene_match_trigger_with_http_info(
-            scene_match, **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def post_scene_match_trigger_with_http_info(
-        self, scene_match: SceneMatch, **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Trigger the first scene with same non null objects provided in the SceneMatch object  # noqa: E501
-
-
-        :param scene_match: (required)
-        :type scene_match: SceneMatch
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["scene_match"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_scene_match_trigger_serialize(
+            scene_match=scene_match,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_scene_match_trigger" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-        _collection_formats = {}
+    @validate_call
+    async def post_scene_match_trigger_with_http_info(
+        self,
+        scene_match: SceneMatch,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Trigger the first scene with same non null objects provided in the SceneMatch object
+
+
+        :param scene_match: (required)
+        :type scene_match: SceneMatch
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_scene_match_trigger_serialize(
+            scene_match=scene_match,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def post_scene_match_trigger_without_preload_content(
+        self,
+        scene_match: SceneMatch,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Trigger the first scene with same non null objects provided in the SceneMatch object
+
+
+        :param scene_match: (required)
+        :type scene_match: SceneMatch
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_scene_match_trigger_serialize(
+            scene_match=scene_match,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_scene_match_trigger_serialize(
+        self,
+        scene_match,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["scene_match"] is not None:
-            _body_params = _params["scene_match"]
+        if scene_match is not None:
+            _body_params = scene_match
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/scene/match-trigger",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/scene/match-trigger",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def post_scene_trigger(
         self,
-        id: Annotated[StrictStr, Field(..., description="ID of the scene")],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Trigger a specific scene  # noqa: E501
+        id: Annotated[StrictStr, Field(description="ID of the scene")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Trigger a specific scene
 
 
         :param id: ID of the scene (required)
         :type id: str
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_scene_trigger_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_scene_trigger_with_http_info(id, **kwargs)  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._post_scene_trigger_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def post_scene_trigger_with_http_info(
         self,
-        id: Annotated[StrictStr, Field(..., description="ID of the scene")],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Trigger a specific scene  # noqa: E501
+        id: Annotated[StrictStr, Field(description="ID of the scene")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Trigger a specific scene
 
 
         :param id: ID of the scene (required)
         :type id: str
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["id"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_scene_trigger_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_scene_trigger" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
-
-        _collection_formats = {}
-
-        # process the path parameters
-        _path_params = {}
-        if _params["id"] is not None:
-            _path_params["id"] = _params["id"]
-
-        # process the query parameters
-        _query_params = []
-        # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
-        # process the form parameters
-        _form_params = []
-        _files = {}
-        # process the body parameter
-        _body_params = None
-        # set the HTTP header `Accept`
-        _header_params["Accept"] = self.api_client.select_header_accept(
-            ["application/json"]
-        )  # noqa: E501
-
-        # authentication setting
-        _auth_settings = []  # noqa: E501
-
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/scene/{id}/trigger",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
             response_types_map=_response_types_map,
-            auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
-            collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
         )
 
-    @validate_arguments
-    async def post_standby(self, **kwargs) -> None:  # noqa: E501
-        """Put the device in standby  # noqa: E501
+    @validate_call
+    async def post_scene_trigger_without_preload_content(
+        self,
+        id: Annotated[StrictStr, Field(description="ID of the scene")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Trigger a specific scene
 
 
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_standby_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_standby_with_http_info(**kwargs)  # noqa: E501
-
-    @validate_arguments
-    async def post_standby_with_http_info(self, **kwargs) -> ApiResponse:  # noqa: E501
-        """Put the device in standby  # noqa: E501
-
-
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
+        :param id: ID of the scene (required)
+        :type id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = []
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_scene_trigger_serialize(
+            id=id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_standby" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+            "404": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
 
-        _collection_formats = {}
+    def _post_scene_trigger_serialize(
+        self,
+        id,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
+        if id is not None:
+            _path_params["id"] = id
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/state/standby",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/scene/{id}/trigger",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
+    async def post_standby(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Put the device in standby
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_standby_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
+    async def post_standby_with_http_info(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Put the device in standby
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_standby_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def post_standby_without_preload_content(
+        self,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Put the device in standby
+
+
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_standby_serialize(
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_standby_serialize(
+        self,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )
+
+        # authentication setting
+        _auth_settings: List[str] = []
+
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/state/standby",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
     async def post_uri_source(
         self,
         uri: Annotated[
-            Uri, Field(..., description="the desired uri from which to stream data")
+            Uri, Field(description="the desired uri from which to stream data")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Set the URI from which sound is streamed  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Set the URI from which sound is streamed
 
 
         :param uri: the desired uri from which to stream data (required)
         :type uri: Uri
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the post_uri_source_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.post_uri_source_with_http_info(uri, **kwargs)  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._post_uri_source_serialize(
+            uri=uri,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def post_uri_source_with_http_info(
         self,
         uri: Annotated[
-            Uri, Field(..., description="the desired uri from which to stream data")
+            Uri, Field(description="the desired uri from which to stream data")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Set the URI from which sound is streamed  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Set the URI from which sound is streamed
 
 
         :param uri: the desired uri from which to stream data (required)
         :type uri: Uri
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["uri"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._post_uri_source_serialize(
+            uri=uri,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method post_uri_source" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def post_uri_source_without_preload_content(
+        self,
+        uri: Annotated[
+            Uri, Field(description="the desired uri from which to stream data")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Set the URI from which sound is streamed
+
+
+        :param uri: the desired uri from which to stream data (required)
+        :type uri: Uri
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._post_uri_source_serialize(
+            uri=uri,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _post_uri_source_serialize(
+        self,
+        uri,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["uri"] is not None:
-            _body_params = _params["uri"]
+        if uri is not None:
+            _body_params = uri
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/uri",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/playback/uri",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def run_provided_scene(
         self,
         scene_properties: Annotated[
-            SceneProperties, Field(..., description="The scene you want to run")
+            SceneProperties, Field(description="The scene you want to run")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Run provided scene  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Run provided scene
 
 
         :param scene_properties: The scene you want to run (required)
         :type scene_properties: SceneProperties
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the run_provided_scene_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.run_provided_scene_with_http_info(
-            scene_properties, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._run_provided_scene_serialize(
+            scene_properties=scene_properties,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def run_provided_scene_with_http_info(
         self,
         scene_properties: Annotated[
-            SceneProperties, Field(..., description="The scene you want to run")
+            SceneProperties, Field(description="The scene you want to run")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Run provided scene  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Run provided scene
 
 
         :param scene_properties: The scene you want to run (required)
         :type scene_properties: SceneProperties
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["scene_properties"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._run_provided_scene_serialize(
+            scene_properties=scene_properties,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method run_provided_scene" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def run_provided_scene_without_preload_content(
+        self,
+        scene_properties: Annotated[
+            SceneProperties, Field(description="The scene you want to run")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Run provided scene
+
+
+        :param scene_properties: The scene you want to run (required)
+        :type scene_properties: SceneProperties
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._run_provided_scene_serialize(
+            scene_properties=scene_properties,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _run_provided_scene_serialize(
+        self,
+        scene_properties,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["scene_properties"] is not None:
-            _body_params = _params["scene_properties"]
+        if scene_properties is not None:
+            _body_params = scene_properties
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/scene/run",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/scene/run",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def seek_to_position(
         self,
         position_ms: Annotated[
-            StrictInt, Field(..., description="position in milliseconds")
+            StrictInt, Field(description="position in milliseconds")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Seek to position in stream  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Seek to position in stream
 
 
         :param position_ms: position in milliseconds (required)
         :type position_ms: int
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the seek_to_position_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.seek_to_position_with_http_info(
-            position_ms, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._seek_to_position_serialize(
+            position_ms=position_ms,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def seek_to_position_with_http_info(
         self,
         position_ms: Annotated[
-            StrictInt, Field(..., description="position in milliseconds")
+            StrictInt, Field(description="position in milliseconds")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Seek to position in stream  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Seek to position in stream
 
 
         :param position_ms: position in milliseconds (required)
         :type position_ms: int
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["position_ms"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._seek_to_position_serialize(
+            position_ms=position_ms,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method seek_to_position" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def seek_to_position_without_preload_content(
+        self,
+        position_ms: Annotated[
+            StrictInt, Field(description="position in milliseconds")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Seek to position in stream
+
+
+        :param position_ms: position in milliseconds (required)
+        :type position_ms: int
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._seek_to_position_serialize(
+            position_ms=position_ms,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _seek_to_position_serialize(
+        self,
+        position_ms,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
-        if _params.get("position_ms") is not None:  # noqa: E501
-            _query_params.append(("position_ms", _params["position_ms"]))
+        if position_ms is not None:
+
+            _query_params.append(("position_ms", position_ms))
 
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/seek",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/playback/seek",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def set_active_source(
         self,
         source_id: Annotated[
-            StrictStr, Field(..., description="the id of the source to activate")
+            StrictStr, Field(description="the id of the source to activate")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Set the active source  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Set the active source
 
 
         :param source_id: the id of the source to activate (required)
         :type source_id: str
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_active_source_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_active_source_with_http_info(
-            source_id, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._set_active_source_serialize(
+            source_id=source_id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def set_active_source_with_http_info(
         self,
         source_id: Annotated[
-            StrictStr, Field(..., description="the id of the source to activate")
+            StrictStr, Field(description="the id of the source to activate")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Set the active source  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Set the active source
 
 
         :param source_id: the id of the source to activate (required)
         :type source_id: str
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["source_id"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_active_source_serialize(
+            source_id=source_id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_active_source" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def set_active_source_without_preload_content(
+        self,
+        source_id: Annotated[
+            StrictStr, Field(description="the id of the source to activate")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Set the active source
+
+
+        :param source_id: the id of the source to activate (required)
+        :type source_id: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_active_source_serialize(
+            source_id=source_id,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_active_source_serialize(
+        self,
+        source_id,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-        if _params["source_id"] is not None:
-            _path_params["sourceId"] = _params["source_id"]
-
+        if source_id is not None:
+            _path_params["sourceId"] = source_id
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
+
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/sources/active/{sourceId}",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/playback/sources/active/{sourceId}",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def set_current_volume_level(
         self,
         volume_level: Annotated[
-            VolumeLevel, Field(..., description="The volume level to apply")
+            VolumeLevel, Field(description="The volume level to apply")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Set the current volume level  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Set the current volume level
 
 
         :param volume_level: The volume level to apply (required)
         :type volume_level: VolumeLevel
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_current_volume_level_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_current_volume_level_with_http_info(
-            volume_level, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._set_current_volume_level_serialize(
+            volume_level=volume_level,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def set_current_volume_level_with_http_info(
         self,
         volume_level: Annotated[
-            VolumeLevel, Field(..., description="The volume level to apply")
+            VolumeLevel, Field(description="The volume level to apply")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Set the current volume level  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Set the current volume level
 
 
         :param volume_level: The volume level to apply (required)
         :type volume_level: VolumeLevel
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["volume_level"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_current_volume_level_serialize(
+            volume_level=volume_level,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_current_volume_level" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def set_current_volume_level_without_preload_content(
+        self,
+        volume_level: Annotated[
+            VolumeLevel, Field(description="The volume level to apply")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Set the current volume level
+
+
+        :param volume_level: The volume level to apply (required)
+        :type volume_level: VolumeLevel
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_current_volume_level_serialize(
+            volume_level=volume_level,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_current_volume_level_serialize(
+        self,
+        volume_level,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["volume_level"] is not None:
-            _body_params = _params["volume_level"]
+        if volume_level is not None:
+            _body_params = volume_level
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/volume/level",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/sound/volume/level",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def set_product_friendly_name(
         self,
         product_friendly_name: Annotated[
-            ProductFriendlyName,
-            Field(..., description="the friendly name for the product"),
+            ProductFriendlyName, Field(description="the friendly name for the product")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Set the friendly name  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Set the friendly name
 
 
         :param product_friendly_name: the friendly name for the product (required)
         :type product_friendly_name: ProductFriendlyName
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_product_friendly_name_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_product_friendly_name_with_http_info(
-            product_friendly_name, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._set_product_friendly_name_serialize(
+            product_friendly_name=product_friendly_name,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def set_product_friendly_name_with_http_info(
         self,
         product_friendly_name: Annotated[
-            ProductFriendlyName,
-            Field(..., description="the friendly name for the product"),
+            ProductFriendlyName, Field(description="the friendly name for the product")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Set the friendly name  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Set the friendly name
 
 
         :param product_friendly_name: the friendly name for the product (required)
         :type product_friendly_name: ProductFriendlyName
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["product_friendly_name"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_product_friendly_name_serialize(
+            product_friendly_name=product_friendly_name,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_product_friendly_name" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def set_product_friendly_name_without_preload_content(
+        self,
+        product_friendly_name: Annotated[
+            ProductFriendlyName, Field(description="the friendly name for the product")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Set the friendly name
+
+
+        :param product_friendly_name: the friendly name for the product (required)
+        :type product_friendly_name: ProductFriendlyName
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_product_friendly_name_serialize(
+            product_friendly_name=product_friendly_name,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_product_friendly_name_serialize(
+        self,
+        product_friendly_name,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["product_friendly_name"] is not None:
-            _body_params = _params["product_friendly_name"]
+        if product_friendly_name is not None:
+            _body_params = product_friendly_name
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/product/info/friendlyname",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/product/info/friendlyname",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def set_remote_home_control_uri(
         self,
         home_control_uri: Annotated[
-            HomeControlUri, Field(..., description="the new HomeControl dashboard uri")
+            HomeControlUri,
+            Field(
+                description="The new uri for HomeControl dashboard and IXP start page"
+            ),
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Set the HomeControl dashboard URI  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Set the uri for HomeControl dashboard and Immersive Experience (IXP) start page
 
 
-        :param home_control_uri: the new HomeControl dashboard uri (required)
+        :param home_control_uri: The new uri for HomeControl dashboard and IXP start page (required)
         :type home_control_uri: HomeControlUri
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_remote_home_control_uri_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_remote_home_control_uri_with_http_info(
-            home_control_uri, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._set_remote_home_control_uri_serialize(
+            home_control_uri=home_control_uri,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def set_remote_home_control_uri_with_http_info(
         self,
         home_control_uri: Annotated[
-            HomeControlUri, Field(..., description="the new HomeControl dashboard uri")
+            HomeControlUri,
+            Field(
+                description="The new uri for HomeControl dashboard and IXP start page"
+            ),
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Set the HomeControl dashboard URI  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Set the uri for HomeControl dashboard and Immersive Experience (IXP) start page
 
 
-        :param home_control_uri: the new HomeControl dashboard uri (required)
+        :param home_control_uri: The new uri for HomeControl dashboard and IXP start page (required)
         :type home_control_uri: HomeControlUri
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["home_control_uri"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_remote_home_control_uri_serialize(
+            home_control_uri=home_control_uri,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_remote_home_control_uri" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def set_remote_home_control_uri_without_preload_content(
+        self,
+        home_control_uri: Annotated[
+            HomeControlUri,
+            Field(
+                description="The new uri for HomeControl dashboard and IXP start page"
+            ),
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Set the uri for HomeControl dashboard and Immersive Experience (IXP) start page
+
+
+        :param home_control_uri: The new uri for HomeControl dashboard and IXP start page (required)
+        :type home_control_uri: HomeControlUri
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_remote_home_control_uri_serialize(
+            home_control_uri=home_control_uri,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "200": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_remote_home_control_uri_serialize(
+        self,
+        home_control_uri,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["home_control_uri"] is not None:
-            _body_params = _params["home_control_uri"]
+        if home_control_uri is not None:
+            _body_params = home_control_uri
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/setup/remote/home-control-uri",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/setup/remote/home-control-uri",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def set_settings_queue(
         self,
         play_queue_settings: Annotated[
-            PlayQueueSettings, Field(..., description="the desired settings")
+            PlayQueueSettings, Field(description="the desired settings")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Set queue settings  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Set queue settings
 
 
         :param play_queue_settings: the desired settings (required)
         :type play_queue_settings: PlayQueueSettings
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_settings_queue_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_settings_queue_with_http_info(
-            play_queue_settings, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._set_settings_queue_serialize(
+            play_queue_settings=play_queue_settings,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def set_settings_queue_with_http_info(
         self,
         play_queue_settings: Annotated[
-            PlayQueueSettings, Field(..., description="the desired settings")
+            PlayQueueSettings, Field(description="the desired settings")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Set queue settings  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Set queue settings
 
 
         :param play_queue_settings: the desired settings (required)
         :type play_queue_settings: PlayQueueSettings
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["play_queue_settings"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_settings_queue_serialize(
+            play_queue_settings=play_queue_settings,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_settings_queue" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def set_settings_queue_without_preload_content(
+        self,
+        play_queue_settings: Annotated[
+            PlayQueueSettings, Field(description="the desired settings")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Set queue settings
+
+
+        :param play_queue_settings: the desired settings (required)
+        :type play_queue_settings: PlayQueueSettings
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_settings_queue_serialize(
+            play_queue_settings=play_queue_settings,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_settings_queue_serialize(
+        self,
+        play_queue_settings,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["play_queue_settings"] is not None:
-            _body_params = _params["play_queue_settings"]
+        if play_queue_settings is not None:
+            _body_params = play_queue_settings
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/queue/settings",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/playback/queue/settings",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def set_sound_settings_adjustments_bass(
-        self, bass: Annotated[Bass, Field(..., description="the bass level")], **kwargs
-    ) -> None:  # noqa: E501
-        """Update the sound settings adjustments for bass  # noqa: E501
+        self,
+        bass: Annotated[Bass, Field(description="the bass level")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Update the sound settings adjustments for bass
 
 
         :param bass: the bass level (required)
         :type bass: Bass
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_sound_settings_adjustments_bass_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_sound_settings_adjustments_bass_with_http_info(
-            bass, **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def set_sound_settings_adjustments_bass_with_http_info(
-        self, bass: Annotated[Bass, Field(..., description="the bass level")], **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Update the sound settings adjustments for bass  # noqa: E501
-
-
-        :param bass: the bass level (required)
-        :type bass: Bass
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["bass"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_sound_settings_adjustments_bass_serialize(
+            bass=bass,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_sound_settings_adjustments_bass" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-        _collection_formats = {}
+    @validate_call
+    async def set_sound_settings_adjustments_bass_with_http_info(
+        self,
+        bass: Annotated[Bass, Field(description="the bass level")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Update the sound settings adjustments for bass
+
+
+        :param bass: the bass level (required)
+        :type bass: Bass
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_sound_settings_adjustments_bass_serialize(
+            bass=bass,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def set_sound_settings_adjustments_bass_without_preload_content(
+        self,
+        bass: Annotated[Bass, Field(description="the bass level")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Update the sound settings adjustments for bass
+
+
+        :param bass: the bass level (required)
+        :type bass: Bass
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_sound_settings_adjustments_bass_serialize(
+            bass=bass,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_sound_settings_adjustments_bass_serialize(
+        self,
+        bass,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["bass"] is not None:
-            _body_params = _params["bass"]
+        if bass is not None:
+            _body_params = bass
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/settings/adjustments/bass",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/sound/settings/adjustments/bass",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def set_sound_settings_adjustments_directivity(
         self,
-        directivity: Annotated[Directivity, Field(..., description="the directivity")],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Update the sound settings adjustments for directivity  # noqa: E501
+        directivity: Annotated[Directivity, Field(description="the directivity")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Update the sound settings adjustments for directivity
 
 
         :param directivity: the directivity (required)
         :type directivity: Directivity
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_sound_settings_adjustments_directivity_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_sound_settings_adjustments_directivity_with_http_info(
-            directivity, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._set_sound_settings_adjustments_directivity_serialize(
+            directivity=directivity,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def set_sound_settings_adjustments_directivity_with_http_info(
         self,
-        directivity: Annotated[Directivity, Field(..., description="the directivity")],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Update the sound settings adjustments for directivity  # noqa: E501
+        directivity: Annotated[Directivity, Field(description="the directivity")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Update the sound settings adjustments for directivity
 
 
         :param directivity: the directivity (required)
         :type directivity: Directivity
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["directivity"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_sound_settings_adjustments_directivity_serialize(
+            directivity=directivity,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_sound_settings_adjustments_directivity" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def set_sound_settings_adjustments_directivity_without_preload_content(
+        self,
+        directivity: Annotated[Directivity, Field(description="the directivity")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Update the sound settings adjustments for directivity
+
+
+        :param directivity: the directivity (required)
+        :type directivity: Directivity
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_sound_settings_adjustments_directivity_serialize(
+            directivity=directivity,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_sound_settings_adjustments_directivity_serialize(
+        self,
+        directivity,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["directivity"] is not None:
-            _body_params = _params["directivity"]
+        if directivity is not None:
+            _body_params = directivity
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/settings/adjustments/directivity",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/sound/settings/adjustments/directivity",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def set_sound_settings_adjustments_loudness(
         self,
-        loudness: Annotated[Loudness, Field(..., description="the loudness mode")],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Update the sound settings adjustments for loudness  # noqa: E501
+        loudness: Annotated[Loudness, Field(description="the loudness mode")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Update the sound settings adjustments for loudness
 
 
         :param loudness: the loudness mode (required)
         :type loudness: Loudness
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_sound_settings_adjustments_loudness_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_sound_settings_adjustments_loudness_with_http_info(
-            loudness, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._set_sound_settings_adjustments_loudness_serialize(
+            loudness=loudness,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def set_sound_settings_adjustments_loudness_with_http_info(
         self,
-        loudness: Annotated[Loudness, Field(..., description="the loudness mode")],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Update the sound settings adjustments for loudness  # noqa: E501
+        loudness: Annotated[Loudness, Field(description="the loudness mode")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Update the sound settings adjustments for loudness
 
 
         :param loudness: the loudness mode (required)
         :type loudness: Loudness
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["loudness"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_sound_settings_adjustments_loudness_serialize(
+            loudness=loudness,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_sound_settings_adjustments_loudness" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def set_sound_settings_adjustments_loudness_without_preload_content(
+        self,
+        loudness: Annotated[Loudness, Field(description="the loudness mode")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Update the sound settings adjustments for loudness
+
+
+        :param loudness: the loudness mode (required)
+        :type loudness: Loudness
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_sound_settings_adjustments_loudness_serialize(
+            loudness=loudness,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_sound_settings_adjustments_loudness_serialize(
+        self,
+        loudness,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["loudness"] is not None:
-            _body_params = _params["loudness"]
+        if loudness is not None:
+            _body_params = loudness
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/settings/adjustments/loudness",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/sound/settings/adjustments/loudness",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def set_sound_settings_adjustments_treble(
         self,
-        treble: Annotated[Treble, Field(..., description="the treble level")],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Update the sound settings adjustments for treble  # noqa: E501
+        treble: Annotated[Treble, Field(description="the treble level")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Update the sound settings adjustments for treble
 
 
         :param treble: the treble level (required)
         :type treble: Treble
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_sound_settings_adjustments_treble_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_sound_settings_adjustments_treble_with_http_info(
-            treble, **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def set_sound_settings_adjustments_treble_with_http_info(
-        self,
-        treble: Annotated[Treble, Field(..., description="the treble level")],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Update the sound settings adjustments for treble  # noqa: E501
-
-
-        :param treble: the treble level (required)
-        :type treble: Treble
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["treble"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_sound_settings_adjustments_treble_serialize(
+            treble=treble,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_sound_settings_adjustments_treble" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-        _collection_formats = {}
+    @validate_call
+    async def set_sound_settings_adjustments_treble_with_http_info(
+        self,
+        treble: Annotated[Treble, Field(description="the treble level")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Update the sound settings adjustments for treble
+
+
+        :param treble: the treble level (required)
+        :type treble: Treble
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_sound_settings_adjustments_treble_serialize(
+            treble=treble,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def set_sound_settings_adjustments_treble_without_preload_content(
+        self,
+        treble: Annotated[Treble, Field(description="the treble level")],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Update the sound settings adjustments for treble
+
+
+        :param treble: the treble level (required)
+        :type treble: Treble
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_sound_settings_adjustments_treble_serialize(
+            treble=treble,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_sound_settings_adjustments_treble_serialize(
+        self,
+        treble,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["treble"] is not None:
-            _body_params = _params["treble"]
+        if treble is not None:
+            _body_params = treble
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/settings/adjustments/treble",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/sound/settings/adjustments/treble",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
+    async def set_stand_movement(
+        self,
+        stand_movement: Annotated[StandMovement, Field(description="Stand Movement")],
+        slow_speed: Annotated[
+            Optional[StrictBool],
+            Field(description="Use slow speed on continuous movement"),
+        ] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Set stand movement with either an angle or a movement type
+
+
+        :param stand_movement: Stand Movement (required)
+        :type stand_movement: StandMovement
+        :param slow_speed: Use slow speed on continuous movement
+        :type slow_speed: bool
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_stand_movement_serialize(
+            stand_movement=stand_movement,
+            slow_speed=slow_speed,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
+    async def set_stand_movement_with_http_info(
+        self,
+        stand_movement: Annotated[StandMovement, Field(description="Stand Movement")],
+        slow_speed: Annotated[
+            Optional[StrictBool],
+            Field(description="Use slow speed on continuous movement"),
+        ] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Set stand movement with either an angle or a movement type
+
+
+        :param stand_movement: Stand Movement (required)
+        :type stand_movement: StandMovement
+        :param slow_speed: Use slow speed on continuous movement
+        :type slow_speed: bool
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_stand_movement_serialize(
+            stand_movement=stand_movement,
+            slow_speed=slow_speed,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def set_stand_movement_without_preload_content(
+        self,
+        stand_movement: Annotated[StandMovement, Field(description="Stand Movement")],
+        slow_speed: Annotated[
+            Optional[StrictBool],
+            Field(description="Use slow speed on continuous movement"),
+        ] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Set stand movement with either an angle or a movement type
+
+
+        :param stand_movement: Stand Movement (required)
+        :type stand_movement: StandMovement
+        :param slow_speed: Use slow speed on continuous movement
+        :type slow_speed: bool
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_stand_movement_serialize(
+            stand_movement=stand_movement,
+            slow_speed=slow_speed,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "204": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_stand_movement_serialize(
+        self,
+        stand_movement,
+        slow_speed,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        # process the query parameters
+        if slow_speed is not None:
+
+            _query_params.append(("slow-speed", slow_speed))
+
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+        if stand_movement is not None:
+            _body_params = stand_movement
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )
+
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
+
+        # authentication setting
+        _auth_settings: List[str] = []
+
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/stand/move",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth,
+        )
+
+    @validate_call
     async def set_volume_mute(
         self,
         volume_mute: Annotated[
-            VolumeMute, Field(..., description="The mute state to apply")
+            VolumeMute, Field(description="The mute state to apply")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Set the volume mute state  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Set the volume mute state
 
 
         :param volume_mute: The mute state to apply (required)
         :type volume_mute: VolumeMute
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_volume_mute_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_volume_mute_with_http_info(
-            volume_mute, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._set_volume_mute_serialize(
+            volume_mute=volume_mute,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def set_volume_mute_with_http_info(
         self,
         volume_mute: Annotated[
-            VolumeMute, Field(..., description="The mute state to apply")
+            VolumeMute, Field(description="The mute state to apply")
         ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Set the volume mute state  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Set the volume mute state
 
 
         :param volume_mute: The mute state to apply (required)
         :type volume_mute: VolumeMute
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["volume_mute"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_volume_mute_serialize(
+            volume_mute=volume_mute,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_volume_mute" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def set_volume_mute_without_preload_content(
+        self,
+        volume_mute: Annotated[
+            VolumeMute, Field(description="The mute state to apply")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Set the volume mute state
+
+
+        :param volume_mute: The mute state to apply (required)
+        :type volume_mute: VolumeMute
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_volume_mute_serialize(
+            volume_mute=volume_mute,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": None,
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_volume_mute_serialize(
+        self,
+        volume_mute,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["volume_mute"] is not None:
-            _body_params = _params["volume_mute"]
+        if volume_mute is not None:
+            _body_params = volume_mute
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/volume/mute",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/sound/volume/mute",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def set_volume_settings(
         self,
         volume_settings: Annotated[
-            VolumeSettings, Field(..., description="The settings to apply")
+            VolumeSettings, Field(description="The settings to apply")
         ],
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Set the current volume settings for default and maximum volume level  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Set the current volume settings for default and maximum volume level
 
 
         :param volume_settings: The settings to apply (required)
         :type volume_settings: VolumeSettings
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
-        :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the set_volume_settings_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.set_volume_settings_with_http_info(
-            volume_settings, **kwargs
-        )  # noqa: E501
-
-    @validate_arguments
-    async def set_volume_settings_with_http_info(
-        self,
-        volume_settings: Annotated[
-            VolumeSettings, Field(..., description="The settings to apply")
-        ],
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Set the current volume settings for default and maximum volume level  # noqa: E501
-
-
-        :param volume_settings: The settings to apply (required)
-        :type volume_settings: VolumeSettings
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["volume_settings"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._set_volume_settings_serialize(
+            volume_settings=volume_settings,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method set_volume_settings" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
 
-        _collection_formats = {}
+    @validate_call
+    async def set_volume_settings_with_http_info(
+        self,
+        volume_settings: Annotated[
+            VolumeSettings, Field(description="The settings to apply")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Set the current volume settings for default and maximum volume level
+
+
+        :param volume_settings: The settings to apply (required)
+        :type volume_settings: VolumeSettings
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_volume_settings_serialize(
+            volume_settings=volume_settings,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+    @validate_call
+    async def set_volume_settings_without_preload_content(
+        self,
+        volume_settings: Annotated[
+            VolumeSettings, Field(description="The settings to apply")
+        ],
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Set the current volume settings for default and maximum volume level
+
+
+        :param volume_settings: The settings to apply (required)
+        :type volume_settings: VolumeSettings
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._set_volume_settings_serialize(
+            volume_settings=volume_settings,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _set_volume_settings_serialize(
+        self,
+        volume_settings,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["volume_settings"] is not None:
-            _body_params = _params["volume_settings"]
+        if volume_settings is not None:
+            _body_params = volume_settings
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/sound/volume/settings",
-            "PUT",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="PUT",
+            resource_path="/api/v1/sound/volume/settings",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )
 
-    @validate_arguments
+    @validate_call
     async def start_deezer_flow(
         self,
         user_flow: Annotated[
             Optional[UserFlow], Field(description="Select user")
         ] = None,
-        **kwargs
-    ) -> None:  # noqa: E501
-        """Play users flow. If no provided user id it will play the flow connected to the active account  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> None:
+        """Play users flow. If no provided user id it will play the flow connected to the active account
 
 
         :param user_flow: Select user
         :type user_flow: UserFlow
-        :param _request_timeout: timeout setting for this request.
-               If one number provided, it will be total request
-               timeout. It can also be a pair (tuple) of
-               (connection, read) timeouts.
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
-        kwargs["_return_http_data_only"] = True
-        if "_preload_content" in kwargs:
-            message = "Error! Please call the start_deezer_flow_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
-            raise ValueError(message)
-        return await self.start_deezer_flow_with_http_info(
-            user_flow, **kwargs
-        )  # noqa: E501
+        """  # noqa: E501
 
-    @validate_arguments
+        _param = self._start_deezer_flow_serialize(
+            user_flow=user_flow,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+    @validate_call
     async def start_deezer_flow_with_http_info(
         self,
         user_flow: Annotated[
             Optional[UserFlow], Field(description="Select user")
         ] = None,
-        **kwargs
-    ) -> ApiResponse:  # noqa: E501
-        """Play users flow. If no provided user id it will play the flow connected to the active account  # noqa: E501
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[None]:
+        """Play users flow. If no provided user id it will play the flow connected to the active account
 
 
         :param user_flow: Select user
         :type user_flow: UserFlow
-        :param _preload_content: if False, the ApiResponse.data will
-                                 be set to none and raw_data will store the
-                                 HTTP response body without reading/decoding.
-                                 Default is True.
-        :type _preload_content: bool, optional
-        :param _return_http_data_only: response data instead of ApiResponse
-                                       object with status code, headers, etc
-        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the authentication
-                              in the spec for a single request.
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
         :type _request_auth: dict, optional
-        :type _content_type: string, optional: force content-type for the request
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
         :return: Returns the result object.
-                 If the method is called asynchronously,
-                 returns the request thread.
-        :rtype: None
-        """
+        """  # noqa: E501
 
-        _params = locals()
-
-        _all_params = ["user_flow"]
-        _all_params.extend(
-            [
-                "_return_http_data_only",
-                "_preload_content",
-                "_request_timeout",
-                "_request_auth",
-                "_content_type",
-                "_headers",
-            ]
+        _param = self._start_deezer_flow_serialize(
+            user_flow=user_flow,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
         )
 
-        # validate the arguments
-        for _key, _val in _params["kwargs"].items():
-            if _key not in _all_params:
-                raise ApiTypeError(
-                    "Got an unexpected keyword argument '%s'"
-                    " to method start_deezer_flow" % _key
-                )
-            _params[_key] = _val
-        del _params["kwargs"]
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        await response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
 
-        _collection_formats = {}
+    @validate_call
+    async def start_deezer_flow_without_preload_content(
+        self,
+        user_flow: Annotated[
+            Optional[UserFlow], Field(description="Select user")
+        ] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
+            ],
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Play users flow. If no provided user id it will play the flow connected to the active account
+
+
+        :param user_flow: Select user
+        :type user_flow: UserFlow
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """  # noqa: E501
+
+        _param = self._start_deezer_flow_serialize(
+            user_flow=user_flow,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index,
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            "201": None,
+            "400": "ErrorModel",
+        }
+        response_data = await self.api_client.call_api(
+            *_param, _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+    def _start_deezer_flow_serialize(
+        self,
+        user_flow,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {}
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[str, str] = {}
+        _body_params: Optional[bytes] = None
 
         # process the path parameters
-        _path_params = {}
-
         # process the query parameters
-        _query_params = []
         # process the header parameters
-        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
-        _form_params = []
-        _files = {}
         # process the body parameter
-        _body_params = None
-        if _params["user_flow"] is not None:
-            _body_params = _params["user_flow"]
+        if user_flow is not None:
+            _body_params = user_flow
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )  # noqa: E501
+        )
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get(
-            "_content_type",
-            self.api_client.select_header_content_type(["application/json"]),
-        )
-        if _content_types_list:
-            _header_params["Content-Type"] = _content_types_list
+        if _content_type:
+            _header_params["Content-Type"] = _content_type
+        else:
+            _default_content_type = self.api_client.select_header_content_type(
+                ["application/json"]
+            )
+            if _default_content_type is not None:
+                _header_params["Content-Type"] = _default_content_type
 
         # authentication setting
-        _auth_settings = []  # noqa: E501
+        _auth_settings: List[str] = []
 
-        _response_types_map = {}
-
-        return await self.api_client.call_api(
-            "/api/v1/playback/deezer/flow",
-            "POST",
-            _path_params,
-            _query_params,
-            _header_params,
+        return self.api_client.param_serialize(
+            method="POST",
+            resource_path="/api/v1/playback/deezer/flow",
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
-            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
-            _preload_content=_params.get("_preload_content", True),
-            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get("_request_auth"),
+            _host=_host,
+            _request_auth=_request_auth,
         )

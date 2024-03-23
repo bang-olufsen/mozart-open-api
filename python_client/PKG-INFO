@@ -1,31 +1,30 @@
 Metadata-Version: 2.1
 Name: mozart_api
-Version: 3.2.1.150.6
+Version: 3.4.1.8.2
 Summary: Mozart platform API
 Home-page: https://pypi.org/project/mozart-api/
 License: MIT
 Keywords: OpenAPI,OpenAPI-Generator,Mozart platform API
 Author: BangOlufsen
 Author-email: support@bang-olufsen.dk
-Requires-Python: >=3.8
+Requires-Python: >=3.11
 Classifier: Intended Audience :: Developers
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python
 Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3.8
-Classifier: Programming Language :: Python :: 3.9
-Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
 Classifier: Programming Language :: Python :: 3 :: Only
 Classifier: Topic :: Multimedia
-Requires-Dist: aenum (>=3.1.11)
 Requires-Dist: aioconsole (>=0.4.1)
 Requires-Dist: aiohttp (>=3.8.3)
+Requires-Dist: aiohttp-retry (>=2.8.3)
 Requires-Dist: inflection (>=0.5.1)
-Requires-Dist: pydantic (>=1.10.5,<2.0.0)
+Requires-Dist: pydantic (>=2)
 Requires-Dist: python-dateutil (>=2.8.2)
 Requires-Dist: typing-extensions (>=4.7.1)
 Requires-Dist: urllib3 (>=1.25.3)
+Requires-Dist: websockets (>=12.0)
 Requires-Dist: zeroconf (>=0.25.1)
 Project-URL: Bug Tracker, https://github.com/bang-olufsen/mozart-open-api/issues
 Project-URL: Documentation, https://bang-olufsen.github.io/mozart-open-api/
@@ -44,7 +43,7 @@ Description-Content-Type: text/markdown
 The Mozart API is an async REST API with WebSocket notification channel for immediate state information from Mozart devices. Currently the API is distributed as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI document that can be found in the [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).
 
 Supported by:
-
+- [Beoconnect Core](https://www.bang-olufsen.com/en/dk/accessories/beoconnect-core)
 - [Beolab 8](https://www.bang-olufsen.com/en/dk/speakers/beolab-8)
 - [Beolab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)
 - [Beosound 2 3rd gen](https://www.bang-olufsen.com/en/dk/speakers/beosound-2)

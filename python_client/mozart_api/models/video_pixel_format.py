@@ -18,109 +18,139 @@ import pprint
 import re  # noqa: F401
 import json
 
-
-from typing import Optional
-from pydantic import BaseModel, Field, StrictBool, StrictStr, validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StrictBool,
+    StrictStr,
+    field_validator,
+)
+from typing import Any, ClassVar, Dict, List, Optional
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class VideoPixelFormat(BaseModel):
     """
     VideoPixelFormat
-    """
+    """  # noqa: E501
 
     bitdepth: Optional[StrictStr] = None
-    chroma_subsample: Optional[StrictStr] = Field(None, alias="chromaSubsample")
+    chroma_subsample: Optional[StrictStr] = Field(default=None, alias="chromaSubsample")
     colorimetry: Optional[StrictStr] = None
-    full_range: Optional[StrictBool] = Field(None, alias="fullRange")
-    __properties = ["bitdepth", "chromaSubsample", "colorimetry", "fullRange"]
+    full_range: Optional[StrictBool] = Field(default=None, alias="fullRange")
+    __properties: ClassVar[List[str]] = [
+        "bitdepth",
+        "chromaSubsample",
+        "colorimetry",
+        "fullRange",
+    ]
 
-    @validator("bitdepth")
+    @field_validator("bitdepth")
     def bitdepth_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in ("bit8", "bit10", "bit12"):
+        if value not in set(["bit8", "bit10", "bit12"]):
             raise ValueError("must be one of enum values ('bit8', 'bit10', 'bit12')")
         return value
 
-    @validator("chroma_subsample")
+    @field_validator("chroma_subsample")
     def chroma_subsample_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in ("yCbCr444RGB", "yCbCr422", "yCbCr420"):
+        if value not in set(["yCbCr444RGB", "yCbCr422", "yCbCr420"]):
             raise ValueError(
                 "must be one of enum values ('yCbCr444RGB', 'yCbCr422', 'yCbCr420')"
             )
         return value
 
-    @validator("colorimetry")
+    @field_validator("colorimetry")
     def colorimetry_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in (
-            "rGB",
-            "opRGB",
-            "rGBP3D65",
-            "rGBP3DCI",
-            "rGB2020",
-            "yCC601",
-            "yCC709",
-            "xvYCC601",
-            "xvYCC709",
-            "sYCC601",
-            "opYCC601",
-            "yCC2020NCL",
-            "yCC2020NL",
+        if value not in set(
+            [
+                "rGB",
+                "opRGB",
+                "rGBP3D65",
+                "rGBP3DCI",
+                "rGB2020",
+                "yCC601",
+                "yCC709",
+                "xvYCC601",
+                "xvYCC709",
+                "sYCC601",
+                "opYCC601",
+                "yCC2020NCL",
+                "yCC2020NL",
+            ]
         ):
             raise ValueError(
                 "must be one of enum values ('rGB', 'opRGB', 'rGBP3D65', 'rGBP3DCI', 'rGB2020', 'yCC601', 'yCC709', 'xvYCC601', 'xvYCC709', 'sYCC601', 'opYCC601', 'yCC2020NCL', 'yCC2020NL')"
             )
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> VideoPixelFormat:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of VideoPixelFormat from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> VideoPixelFormat:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of VideoPixelFormat from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return VideoPixelFormat.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = VideoPixelFormat.parse_obj(
+        _obj = cls.model_validate(
             {
                 "bitdepth": obj.get("bitdepth"),
-                "chroma_subsample": obj.get("chromaSubsample"),
+                "chromaSubsample": obj.get("chromaSubsample"),
                 "colorimetry": obj.get("colorimetry"),
-                "full_range": obj.get("fullRange"),
+                "fullRange": obj.get("fullRange"),
             }
         )
         return _obj

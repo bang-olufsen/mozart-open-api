@@ -1,4 +1,5 @@
 """Main Mozart CLI document."""
+
 # pylint: disable= too-few-public-methods too-many-instance-attributes
 
 import argparse
@@ -14,7 +15,7 @@ from aioconsole import ainput  # type: ignore
 from mozart_api import __version__ as MOZART_API_VERSION
 from mozart_api.models import VolumeLevel, VolumeMute
 from mozart_api.mozart_client import MozartClient
-from zeroconf import ServiceBrowser, ServiceInfo, ServiceListener, Zeroconf
+from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
 
 MOZART_MDNS_TYPE: Final[str] = "_bangolufsen._tcp.local."
 MDNS_TIMEOUT: Final[int] = 10
@@ -69,7 +70,13 @@ class MozartListener(ServiceListener):
 
     def add_service(self, zc: Zeroconf, type_: str, name: str) -> None:
         """Add discovered Mozart device."""
-        info = cast(ServiceInfo, zc.get_service_info(type_, name))
+
+        info = zc.get_service_info(type_, name)
+
+        # Sometimes service info is None.
+        if not info:
+            print(f"Error getting {name}")
+            return
 
         # Create MozartDevice object from MDNS discovered information.
         ip_address = info.parsed_addresses()[0]
@@ -181,12 +188,12 @@ class MozartApiCli:
 
     def __init__(self) -> None:
         """Init the Mozart CLI."""
-        self.timeout: int = MDNS_TIMEOUT
-        self.verbose: bool = False
-        self.websocket: bool = False
-        self.mode: str = ""
-        self.command: str = ""
-        self.host: str = ""
+        self.timeout = MDNS_TIMEOUT
+        self.verbose = False
+        self.websocket = False
+        self.mode = ""
+        self.command = ""
+        self.host = ""
         self.command_args: list[str] = []
         self.mozart_devices: list[MozartDevice] = []
 

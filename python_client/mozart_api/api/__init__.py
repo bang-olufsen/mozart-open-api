@@ -15,4 +15,5 @@ from mozart_api.api.settings_api import SettingsApi
 from mozart_api.api.software_update_api import SoftwareUpdateApi
 from mozart_api.api.sound_api import SoundApi
 from mozart_api.api.speaker_group_api import SpeakerGroupApi
+from mozart_api.api.stand_api import StandApi
 from mozart_api.api.mozart_api import MozartApi

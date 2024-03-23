@@ -18,48 +18,64 @@ import pprint
 import re  # noqa: F401
 import json
 
-
-from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Any, ClassVar, Dict, List, Optional
 from mozart_api.models.room_compensation_info import RoomCompensationInfo
 from mozart_api.models.sound_adjustments import SoundAdjustments
 from mozart_api.models.sound_tone_touch import SoundToneTouch
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class SoundSettings(BaseModel):
     """
     SoundSettings
-    """
+    """  # noqa: E501
 
     adjustments: Optional[SoundAdjustments] = None
     room_compensation: Optional[RoomCompensationInfo] = Field(
-        None, alias="roomCompensation"
+        default=None, alias="roomCompensation"
     )
-    tone_touch: Optional[SoundToneTouch] = Field(None, alias="toneTouch")
-    __properties = ["adjustments", "roomCompensation", "toneTouch"]
+    tone_touch: Optional[SoundToneTouch] = Field(default=None, alias="toneTouch")
+    __properties: ClassVar[List[str]] = ["adjustments", "roomCompensation", "toneTouch"]
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> SoundSettings:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of SoundSettings from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of adjustments
         if self.adjustments:
             _dict["adjustments"] = self.adjustments.to_dict()
@@ -72,27 +88,31 @@ class SoundSettings(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> SoundSettings:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of SoundSettings from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return SoundSettings.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = SoundSettings.parse_obj(
+        _obj = cls.model_validate(
             {
-                "adjustments": SoundAdjustments.from_dict(obj.get("adjustments"))
-                if obj.get("adjustments") is not None
-                else None,
-                "room_compensation": RoomCompensationInfo.from_dict(
-                    obj.get("roomCompensation")
-                )
-                if obj.get("roomCompensation") is not None
-                else None,
-                "tone_touch": SoundToneTouch.from_dict(obj.get("toneTouch"))
-                if obj.get("toneTouch") is not None
-                else None,
+                "adjustments": (
+                    SoundAdjustments.from_dict(obj["adjustments"])
+                    if obj.get("adjustments") is not None
+                    else None
+                ),
+                "roomCompensation": (
+                    RoomCompensationInfo.from_dict(obj["roomCompensation"])
+                    if obj.get("roomCompensation") is not None
+                    else None
+                ),
+                "toneTouch": (
+                    SoundToneTouch.from_dict(obj["toneTouch"])
+                    if obj.get("toneTouch") is not None
+                    else None
+                ),
             }
         )
         return _obj

@@ -19,35 +19,44 @@ import re  # noqa: F401
 import json
 
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, Field, StrictBool, StrictStr, validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StrictBool,
+    StrictStr,
+    field_validator,
+)
+from typing import Any, ClassVar, Dict, List, Optional
 from mozart_api.models.room_compensation_error_details import (
     RoomCompensationErrorDetails,
 )
 from mozart_api.models.room_compensation_properties import RoomCompensationProperties
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class RoomCompensationState(BaseModel):
     """
     RoomCompensationState
-    """
+    """  # noqa: E501
 
     state: Optional[StrictStr] = None
     error: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="microphoneMuted:   The microphone is muted (soft-off, using touch button). microphoneSwitchOff:   The microphone switch is set in its off position. microphoneSignalMissing:   No signal was detected. Is the microphone blocked? externalMicrophoneMissing:   The external microphone is not connected.   Is only relevant for advanced room compensation. externalMicrophoneInvalidPosition:   The external microphone is placed in an invalid position,   e.g. placed too close or in an extreme angle to the internal speakers.   Is only relevant for advanced room compensation. noisyEnvironment:   Too much environment noise to get a valid measurement. speakerMeasurementFailed:   A measurement failed, related to one of the individual speakers.   See the errorDetails property for details about the error and which speaker measurement failed.   Is only relevant for advanced room compensation. invalidSpeakerList:   The speaker list contains invalid speakers.   Valid speakers are: all external speakers and non-virtual internal speakers.   Is only relevant for advanced room compensation. invalidAction:   Could not start with given action.   Eg. can't run from last failed speaker if there isn't any failed run.   Is only relevant for advanced room compensation. internalError:   Internal product error. ",
     )
     error_details: Optional[RoomCompensationErrorDetails] = Field(
-        None, alias="errorDetails"
+        default=None, alias="errorDetails"
     )
     last_run_available: Optional[StrictBool] = Field(
-        None,
-        alias="lastRunAvailable",
+        default=None,
         description='When true, measurements have been cached due to manual interrupt or failure, making it possible to use the action "continue" where the system will continue from the speaker where interrupted. The cached measurements are only temporary and will be cleared after some time (default 15min), in which case lastRunAvailable becomes false. ',
+        alias="lastRunAvailable",
     )
     properties: Optional[RoomCompensationProperties] = None
-    time_stamp: Optional[datetime] = Field(None, alias="timeStamp")
-    __properties = [
+    time_stamp: Optional[datetime] = Field(default=None, alias="timeStamp")
+    __properties: ClassVar[List[str]] = [
         "state",
         "error",
         "errorDetails",
@@ -56,64 +65,81 @@ class RoomCompensationState(BaseModel):
         "timeStamp",
     ]
 
-    @validator("state")
+    @field_validator("state")
     def state_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in ("notStarted", "running", "done", "error", "stopped"):
+        if value not in set(["notStarted", "running", "done", "error", "stopped"]):
             raise ValueError(
                 "must be one of enum values ('notStarted', 'running', 'done', 'error', 'stopped')"
             )
         return value
 
-    @validator("error")
+    @field_validator("error")
     def error_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in (
-            "noError",
-            "microphoneMuted",
-            "microphoneSwitchOff",
-            "microphoneSignalMissing",
-            "externalMicrophoneMissing",
-            "externalMicrophoneInvalidPosition",
-            "noisyEnvironment",
-            "speakerMeasurementFailed",
-            "invalidSpeakerList",
-            "invalidAction",
-            "internalError",
+        if value not in set(
+            [
+                "noError",
+                "microphoneMuted",
+                "microphoneSwitchOff",
+                "microphoneSignalMissing",
+                "externalMicrophoneMissing",
+                "externalMicrophoneInvalidPosition",
+                "noisyEnvironment",
+                "speakerMeasurementFailed",
+                "invalidSpeakerList",
+                "invalidAction",
+                "internalError",
+            ]
         ):
             raise ValueError(
                 "must be one of enum values ('noError', 'microphoneMuted', 'microphoneSwitchOff', 'microphoneSignalMissing', 'externalMicrophoneMissing', 'externalMicrophoneInvalidPosition', 'noisyEnvironment', 'speakerMeasurementFailed', 'invalidSpeakerList', 'invalidAction', 'internalError')"
             )
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> RoomCompensationState:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of RoomCompensationState from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of error_details
         if self.error_details:
             _dict["errorDetails"] = self.error_details.to_dict()
@@ -123,30 +149,30 @@ class RoomCompensationState(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> RoomCompensationState:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of RoomCompensationState from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return RoomCompensationState.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = RoomCompensationState.parse_obj(
+        _obj = cls.model_validate(
             {
                 "state": obj.get("state"),
                 "error": obj.get("error"),
-                "error_details": RoomCompensationErrorDetails.from_dict(
-                    obj.get("errorDetails")
-                )
-                if obj.get("errorDetails") is not None
-                else None,
-                "last_run_available": obj.get("lastRunAvailable"),
-                "properties": RoomCompensationProperties.from_dict(
-                    obj.get("properties")
-                )
-                if obj.get("properties") is not None
-                else None,
-                "time_stamp": obj.get("timeStamp"),
+                "errorDetails": (
+                    RoomCompensationErrorDetails.from_dict(obj["errorDetails"])
+                    if obj.get("errorDetails") is not None
+                    else None
+                ),
+                "lastRunAvailable": obj.get("lastRunAvailable"),
+                "properties": (
+                    RoomCompensationProperties.from_dict(obj["properties"])
+                    if obj.get("properties") is not None
+                    else None
+                ),
+                "timeStamp": obj.get("timeStamp"),
             }
         )
         return _obj

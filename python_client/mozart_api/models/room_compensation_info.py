@@ -18,52 +18,77 @@ import pprint
 import re  # noqa: F401
 import json
 
-
-from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Any, ClassVar, Dict, List, Optional
 from mozart_api.models.room_compensation_debug import RoomCompensationDebug
 from mozart_api.models.room_compensation_enabled import RoomCompensationEnabled
 from mozart_api.models.room_compensation_result import RoomCompensationResult
 from mozart_api.models.room_compensation_state import RoomCompensationState
 from mozart_api.models.room_compensation_type import RoomCompensationType
 from mozart_api.models.room_compensation_version import RoomCompensationVersion
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class RoomCompensationInfo(BaseModel):
     """
     RoomCompensationInfo
-    """
+    """  # noqa: E501
 
     debug: Optional[RoomCompensationDebug] = None
     enabled: Optional[RoomCompensationEnabled] = None
-    last_result: Optional[RoomCompensationResult] = Field(None, alias="lastResult")
-    last_run: Optional[RoomCompensationState] = Field(None, alias="lastRun")
+    last_result: Optional[RoomCompensationResult] = Field(
+        default=None, alias="lastResult"
+    )
+    last_run: Optional[RoomCompensationState] = Field(default=None, alias="lastRun")
     type: Optional[RoomCompensationType] = None
     version: Optional[RoomCompensationVersion] = None
-    __properties = ["debug", "enabled", "lastResult", "lastRun", "type", "version"]
+    __properties: ClassVar[List[str]] = [
+        "debug",
+        "enabled",
+        "lastResult",
+        "lastRun",
+        "type",
+        "version",
+    ]
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> RoomCompensationInfo:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of RoomCompensationInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of debug
         if self.debug:
             _dict["debug"] = self.debug.to_dict()
@@ -85,34 +110,46 @@ class RoomCompensationInfo(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> RoomCompensationInfo:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of RoomCompensationInfo from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return RoomCompensationInfo.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = RoomCompensationInfo.parse_obj(
+        _obj = cls.model_validate(
             {
-                "debug": RoomCompensationDebug.from_dict(obj.get("debug"))
-                if obj.get("debug") is not None
-                else None,
-                "enabled": RoomCompensationEnabled.from_dict(obj.get("enabled"))
-                if obj.get("enabled") is not None
-                else None,
-                "last_result": RoomCompensationResult.from_dict(obj.get("lastResult"))
-                if obj.get("lastResult") is not None
-                else None,
-                "last_run": RoomCompensationState.from_dict(obj.get("lastRun"))
-                if obj.get("lastRun") is not None
-                else None,
-                "type": RoomCompensationType.from_dict(obj.get("type"))
-                if obj.get("type") is not None
-                else None,
-                "version": RoomCompensationVersion.from_dict(obj.get("version"))
-                if obj.get("version") is not None
-                else None,
+                "debug": (
+                    RoomCompensationDebug.from_dict(obj["debug"])
+                    if obj.get("debug") is not None
+                    else None
+                ),
+                "enabled": (
+                    RoomCompensationEnabled.from_dict(obj["enabled"])
+                    if obj.get("enabled") is not None
+                    else None
+                ),
+                "lastResult": (
+                    RoomCompensationResult.from_dict(obj["lastResult"])
+                    if obj.get("lastResult") is not None
+                    else None
+                ),
+                "lastRun": (
+                    RoomCompensationState.from_dict(obj["lastRun"])
+                    if obj.get("lastRun") is not None
+                    else None
+                ),
+                "type": (
+                    RoomCompensationType.from_dict(obj["type"])
+                    if obj.get("type") is not None
+                    else None
+                ),
+                "version": (
+                    RoomCompensationVersion.from_dict(obj["version"])
+                    if obj.get("version") is not None
+                    else None
+                ),
             }
         )
         return _obj

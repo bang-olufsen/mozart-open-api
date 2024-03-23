@@ -18,43 +18,59 @@ import pprint
 import re  # noqa: F401
 import json
 
-
-from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from typing import Any, ClassVar, Dict, List, Optional
 from mozart_api.models.volume_level import VolumeLevel
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class VolumeSettings(BaseModel):
     """
     VolumeSettings
-    """
+    """  # noqa: E501
 
     default: Optional[VolumeLevel] = None
     maximum: Optional[VolumeLevel] = None
-    __properties = ["default", "maximum"]
+    __properties: ClassVar[List[str]] = ["default", "maximum"]
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> VolumeSettings:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of VolumeSettings from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of default
         if self.default:
             _dict["default"] = self.default.to_dict()
@@ -64,22 +80,26 @@ class VolumeSettings(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> VolumeSettings:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of VolumeSettings from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return VolumeSettings.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = VolumeSettings.parse_obj(
+        _obj = cls.model_validate(
             {
-                "default": VolumeLevel.from_dict(obj.get("default"))
-                if obj.get("default") is not None
-                else None,
-                "maximum": VolumeLevel.from_dict(obj.get("maximum"))
-                if obj.get("maximum") is not None
-                else None,
+                "default": (
+                    VolumeLevel.from_dict(obj["default"])
+                    if obj.get("default") is not None
+                    else None
+                ),
+                "maximum": (
+                    VolumeLevel.from_dict(obj["maximum"])
+                    if obj.get("maximum") is not None
+                    else None
+                ),
             }
         )
         return _obj

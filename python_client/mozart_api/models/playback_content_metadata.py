@@ -18,64 +18,67 @@ import pprint
 import re  # noqa: F401
 import json
 
-
-from typing import List, Optional
-from pydantic import BaseModel, Field, StrictInt, StrictStr, conlist, validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Optional
 from mozart_api.models.art import Art
 from mozart_api.models.beolink_leader import BeolinkLeader
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class PlaybackContentMetadata(BaseModel):
     """
     PlaybackContentMetadata
-    """
+    """  # noqa: E501
 
-    album_name: Optional[StrictStr] = Field(None, alias="albumName")
-    art: Optional[conlist(Art)] = None
-    artist_name: Optional[StrictStr] = Field(None, alias="artistName")
+    album_name: Optional[StrictStr] = Field(default=None, alias="albumName")
+    art: Optional[List[Art]] = None
+    artist_name: Optional[StrictStr] = Field(default=None, alias="artistName")
     bitdepth: Optional[StrictInt] = None
     bitrate: Optional[StrictInt] = None
-    container_name: Optional[StrictStr] = Field(None, alias="containerName")
+    container_name: Optional[StrictStr] = Field(default=None, alias="containerName")
     encoding: Optional[StrictStr] = None
     genre: Optional[StrictStr] = None
     id: Optional[StrictInt] = None
     input_channel_processing: Optional[StrictStr] = Field(
-        None,
-        alias="inputChannelProcessing",
+        default=None,
         description="Input processing/decoding on top of the base codec indicated in encoding. E.g. Dolby Atmos on top of Dolby TrueHD or Dolby Surround on top of PCM. For Dolby, this value has priority over encoding, meaning that if inputChannelProcessing has a value, it must be indicated in the app, and optionally the encoding value can be indicated as well. If inputChannelProcessing does not have value the encoding value must be indicated. ",
+        alias="inputChannelProcessing",
     )
     input_channels: Optional[StrictStr] = Field(
-        None, alias="inputChannels", description="e.g. 5.1"
+        default=None, description="e.g. 5.1", alias="inputChannels"
     )
     organization: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description='This can be filled by gstreamer\'s GST_TAG_ORGANIZATION. Mozart can also fill this with netradio station name like "P3" and TV content like "Netflix". This is needed so it\'s possible to show who the provider is for the playing audio track/content. ',
     )
     output_channel_processing: Optional[StrictStr] = Field(
-        None, alias="outputChannelProcessing", description="e.g. downmix"
+        default=None, description="e.g. downmix", alias="outputChannelProcessing"
     )
     output_channels: Optional[StrictStr] = Field(
-        None, alias="outputChannels", description="e.g. 7.1"
+        default=None, description="e.g. 7.1", alias="outputChannels"
     )
-    queue_id: Optional[StrictStr] = Field(None, alias="queueId")
-    remote_leader: Optional[BeolinkLeader] = Field(None, alias="remoteLeader")
-    remote_source: Optional[StrictStr] = Field(None, alias="remoteSource")
+    queue_id: Optional[StrictStr] = Field(default=None, alias="queueId")
+    remote_leader: Optional[BeolinkLeader] = Field(default=None, alias="remoteLeader")
+    remote_source: Optional[StrictStr] = Field(default=None, alias="remoteSource")
     samplerate: Optional[StrictInt] = None
     source: Optional[StrictStr] = None
-    source_internal_id: Optional[StrictStr] = Field(None, alias="sourceInternalId")
+    source_internal_id: Optional[StrictStr] = Field(
+        default=None, alias="sourceInternalId"
+    )
     title: Optional[StrictStr] = None
     total_duration: Optional[StrictInt] = Field(
-        None,
-        alias="totalDuration",
+        default=None,
         description="to be removed once all devices and apps are updated",
+        alias="totalDuration",
     )
     total_duration_seconds: Optional[StrictInt] = Field(
-        None, alias="totalDurationSeconds"
+        default=None, alias="totalDurationSeconds"
     )
     track: Optional[StrictInt] = None
-    track_count: Optional[StrictInt] = Field(None, alias="trackCount")
+    track_count: Optional[StrictInt] = Field(default=None, alias="trackCount")
     uri: Optional[StrictStr] = None
-    __properties = [
+    __properties: ClassVar[List[str]] = [
         "albumName",
         "art",
         "artistName",
@@ -104,78 +107,95 @@ class PlaybackContentMetadata(BaseModel):
         "uri",
     ]
 
-    @validator("encoding")
+    @field_validator("encoding")
     def encoding_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in (
-            "pcm",
-            "wav",
-            "mp3",
-            "oggvorbis",
-            "aac",
-            "flac",
-            "sbc",
-            "alac",
-            "opus",
-            "DolbyDigital",
-            "DolbyDigitalPlus",
-            "DolbyTrueHD",
-            "unknown",
+        if value not in set(
+            [
+                "pcm",
+                "wav",
+                "mp3",
+                "oggvorbis",
+                "aac",
+                "flac",
+                "sbc",
+                "alac",
+                "opus",
+                "DolbyDigital",
+                "DolbyDigitalPlus",
+                "DolbyTrueHD",
+                "unknown",
+            ]
         ):
             raise ValueError(
                 "must be one of enum values ('pcm', 'wav', 'mp3', 'oggvorbis', 'aac', 'flac', 'sbc', 'alac', 'opus', 'DolbyDigital', 'DolbyDigitalPlus', 'DolbyTrueHD', 'unknown')"
             )
         return value
 
-    @validator("input_channel_processing")
+    @field_validator("input_channel_processing")
     def input_channel_processing_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in ("dolbySurround", "dolbyAtmos"):
+        if value not in set(["dolbySurround", "dolbyAtmos"]):
             raise ValueError(
                 "must be one of enum values ('dolbySurround', 'dolbyAtmos')"
             )
         return value
 
-    @validator("output_channel_processing")
+    @field_validator("output_channel_processing")
     def output_channel_processing_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in ("Direct", "Downmix", "TrueImage"):
+        if value not in set(["Direct", "Downmix", "TrueImage"]):
             raise ValueError(
                 "must be one of enum values ('Direct', 'Downmix', 'TrueImage')"
             )
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> PlaybackContentMetadata:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of PlaybackContentMetadata from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of each item in art (list)
         _items = []
         if self.art:
@@ -187,91 +207,95 @@ class PlaybackContentMetadata(BaseModel):
         if self.remote_leader:
             _dict["remoteLeader"] = self.remote_leader.to_dict()
         # set to None if input_channel_processing (nullable) is None
-        # and __fields_set__ contains the field
+        # and model_fields_set contains the field
         if (
             self.input_channel_processing is None
-            and "input_channel_processing" in self.__fields_set__
+            and "input_channel_processing" in self.model_fields_set
         ):
             _dict["inputChannelProcessing"] = None
 
         # set to None if input_channels (nullable) is None
-        # and __fields_set__ contains the field
-        if self.input_channels is None and "input_channels" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.input_channels is None and "input_channels" in self.model_fields_set:
             _dict["inputChannels"] = None
 
         # set to None if output_channel_processing (nullable) is None
-        # and __fields_set__ contains the field
+        # and model_fields_set contains the field
         if (
             self.output_channel_processing is None
-            and "output_channel_processing" in self.__fields_set__
+            and "output_channel_processing" in self.model_fields_set
         ):
             _dict["outputChannelProcessing"] = None
 
         # set to None if output_channels (nullable) is None
-        # and __fields_set__ contains the field
-        if self.output_channels is None and "output_channels" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.output_channels is None and "output_channels" in self.model_fields_set:
             _dict["outputChannels"] = None
 
         # set to None if remote_source (nullable) is None
-        # and __fields_set__ contains the field
-        if self.remote_source is None and "remote_source" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.remote_source is None and "remote_source" in self.model_fields_set:
             _dict["remoteSource"] = None
 
         # set to None if total_duration (nullable) is None
-        # and __fields_set__ contains the field
-        if self.total_duration is None and "total_duration" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.total_duration is None and "total_duration" in self.model_fields_set:
             _dict["totalDuration"] = None
 
         # set to None if total_duration_seconds (nullable) is None
-        # and __fields_set__ contains the field
+        # and model_fields_set contains the field
         if (
             self.total_duration_seconds is None
-            and "total_duration_seconds" in self.__fields_set__
+            and "total_duration_seconds" in self.model_fields_set
         ):
             _dict["totalDurationSeconds"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> PlaybackContentMetadata:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of PlaybackContentMetadata from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return PlaybackContentMetadata.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = PlaybackContentMetadata.parse_obj(
+        _obj = cls.model_validate(
             {
-                "album_name": obj.get("albumName"),
-                "art": [Art.from_dict(_item) for _item in obj.get("art")]
-                if obj.get("art") is not None
-                else None,
-                "artist_name": obj.get("artistName"),
+                "albumName": obj.get("albumName"),
+                "art": (
+                    [Art.from_dict(_item) for _item in obj["art"]]
+                    if obj.get("art") is not None
+                    else None
+                ),
+                "artistName": obj.get("artistName"),
                 "bitdepth": obj.get("bitdepth"),
                 "bitrate": obj.get("bitrate"),
-                "container_name": obj.get("containerName"),
+                "containerName": obj.get("containerName"),
                 "encoding": obj.get("encoding"),
                 "genre": obj.get("genre"),
                 "id": obj.get("id"),
-                "input_channel_processing": obj.get("inputChannelProcessing"),
-                "input_channels": obj.get("inputChannels"),
+                "inputChannelProcessing": obj.get("inputChannelProcessing"),
+                "inputChannels": obj.get("inputChannels"),
                 "organization": obj.get("organization"),
-                "output_channel_processing": obj.get("outputChannelProcessing"),
-                "output_channels": obj.get("outputChannels"),
-                "queue_id": obj.get("queueId"),
-                "remote_leader": BeolinkLeader.from_dict(obj.get("remoteLeader"))
-                if obj.get("remoteLeader") is not None
-                else None,
-                "remote_source": obj.get("remoteSource"),
+                "outputChannelProcessing": obj.get("outputChannelProcessing"),
+                "outputChannels": obj.get("outputChannels"),
+                "queueId": obj.get("queueId"),
+                "remoteLeader": (
+                    BeolinkLeader.from_dict(obj["remoteLeader"])
+                    if obj.get("remoteLeader") is not None
+                    else None
+                ),
+                "remoteSource": obj.get("remoteSource"),
                 "samplerate": obj.get("samplerate"),
                 "source": obj.get("source"),
-                "source_internal_id": obj.get("sourceInternalId"),
+                "sourceInternalId": obj.get("sourceInternalId"),
                 "title": obj.get("title"),
-                "total_duration": obj.get("totalDuration"),
-                "total_duration_seconds": obj.get("totalDurationSeconds"),
+                "totalDuration": obj.get("totalDuration"),
+                "totalDurationSeconds": obj.get("totalDurationSeconds"),
                 "track": obj.get("track"),
-                "track_count": obj.get("trackCount"),
+                "trackCount": obj.get("trackCount"),
                 "uri": obj.get("uri"),
             }
         )

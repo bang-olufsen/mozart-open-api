@@ -18,56 +18,64 @@ import pprint
 import re  # noqa: F401
 import json
 
-
-from typing import List, Optional
-from pydantic import BaseModel, Field, StrictBool, StrictStr, conlist, validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StrictBool,
+    StrictStr,
+    field_validator,
+)
+from typing import Any, ClassVar, Dict, List, Optional
 from mozart_api.models.action import Action
 from mozart_api.models.content_item import ContentItem
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class RemoteMenuItem(BaseModel):
     """
     RemoteMenuItem
-    """
+    """  # noqa: E501
 
-    action_list: Optional[conlist(Action)] = Field(
-        None,
-        alias="actionList",
+    action_list: Optional[List[Action]] = Field(
+        default=None,
         description="An ordered list of Actions to run on the product",
+        alias="actionList",
     )
-    scene_list: Optional[conlist(StrictStr)] = Field(
-        None, alias="sceneList", description="A list of scenes"
+    scene_list: Optional[List[StrictStr]] = Field(
+        default=None, description="A list of scenes", alias="sceneList"
     )
     disabled: Optional[StrictBool] = None
     dynamic_list: Optional[StrictStr] = Field(
-        None,
-        alias="dynamicList",
+        default=None,
         description="Let mozart create a dynamic list. This list will be attached as children to the menu item. If dynamicList is set it's not possible to change or manipulate any of the children because mozart can alter them at any given time ",
+        alias="dynamicList",
     )
     first_child_menu_item_id: Optional[StrictStr] = Field(
-        None,
-        alias="firstChildMenuItemId",
+        default=None,
         description="ID of the first child menu item",
+        alias="firstChildMenuItemId",
     )
     label: Optional[StrictStr] = Field(
-        None, description="Alternative label, if omitted mozart will try its best"
+        default=None,
+        description="Alternative label, if omitted mozart will try its best",
     )
     next_sibling_menu_item_id: Optional[StrictStr] = Field(
-        None,
-        alias="nextSiblingMenuItemId",
+        default=None,
         description="ID of the next sibling menu item",
+        alias="nextSiblingMenuItemId",
     )
     parent_menu_item_id: Optional[StrictStr] = Field(
-        None, alias="parentMenuItemId", description="ID of the parent menu item"
+        default=None, description="ID of the parent menu item", alias="parentMenuItemId"
     )
     available: Optional[StrictBool] = None
     content: Optional[ContentItem] = None
     fixed: StrictBool = Field(
-        ...,
-        description="True if this is a fixed menu item. A fixed item can't be deleted or moved",
+        description="True if this is a fixed menu item. A fixed item can't be deleted or moved"
     )
-    id: StrictStr = Field(..., description="Unique ID for this menu item")
-    __properties = [
+    id: StrictStr = Field(description="Unique ID for this menu item")
+    __properties: ClassVar[List[str]] = [
         "actionList",
         "sceneList",
         "disabled",
@@ -82,38 +90,53 @@ class RemoteMenuItem(BaseModel):
         "id",
     ]
 
-    @validator("dynamic_list")
+    @field_validator("dynamic_list")
     def dynamic_list_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in ("none", "radioFavorites"):
+        if value not in set(["none", "radioFavorites"]):
             raise ValueError("must be one of enum values ('none', 'radioFavorites')")
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> RemoteMenuItem:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of RemoteMenuItem from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of each item in action_list (list)
         _items = []
         if self.action_list:
@@ -125,78 +148,80 @@ class RemoteMenuItem(BaseModel):
         if self.content:
             _dict["content"] = self.content.to_dict()
         # set to None if disabled (nullable) is None
-        # and __fields_set__ contains the field
-        if self.disabled is None and "disabled" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.disabled is None and "disabled" in self.model_fields_set:
             _dict["disabled"] = None
 
         # set to None if dynamic_list (nullable) is None
-        # and __fields_set__ contains the field
-        if self.dynamic_list is None and "dynamic_list" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.dynamic_list is None and "dynamic_list" in self.model_fields_set:
             _dict["dynamicList"] = None
 
         # set to None if first_child_menu_item_id (nullable) is None
-        # and __fields_set__ contains the field
+        # and model_fields_set contains the field
         if (
             self.first_child_menu_item_id is None
-            and "first_child_menu_item_id" in self.__fields_set__
+            and "first_child_menu_item_id" in self.model_fields_set
         ):
             _dict["firstChildMenuItemId"] = None
 
         # set to None if label (nullable) is None
-        # and __fields_set__ contains the field
-        if self.label is None and "label" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.label is None and "label" in self.model_fields_set:
             _dict["label"] = None
 
         # set to None if next_sibling_menu_item_id (nullable) is None
-        # and __fields_set__ contains the field
+        # and model_fields_set contains the field
         if (
             self.next_sibling_menu_item_id is None
-            and "next_sibling_menu_item_id" in self.__fields_set__
+            and "next_sibling_menu_item_id" in self.model_fields_set
         ):
             _dict["nextSiblingMenuItemId"] = None
 
         # set to None if parent_menu_item_id (nullable) is None
-        # and __fields_set__ contains the field
+        # and model_fields_set contains the field
         if (
             self.parent_menu_item_id is None
-            and "parent_menu_item_id" in self.__fields_set__
+            and "parent_menu_item_id" in self.model_fields_set
         ):
             _dict["parentMenuItemId"] = None
 
         # set to None if available (nullable) is None
-        # and __fields_set__ contains the field
-        if self.available is None and "available" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.available is None and "available" in self.model_fields_set:
             _dict["available"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> RemoteMenuItem:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of RemoteMenuItem from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return RemoteMenuItem.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = RemoteMenuItem.parse_obj(
+        _obj = cls.model_validate(
             {
-                "action_list": [
-                    Action.from_dict(_item) for _item in obj.get("actionList")
-                ]
-                if obj.get("actionList") is not None
-                else None,
-                "scene_list": obj.get("sceneList"),
+                "actionList": (
+                    [Action.from_dict(_item) for _item in obj["actionList"]]
+                    if obj.get("actionList") is not None
+                    else None
+                ),
+                "sceneList": obj.get("sceneList"),
                 "disabled": obj.get("disabled"),
-                "dynamic_list": obj.get("dynamicList"),
-                "first_child_menu_item_id": obj.get("firstChildMenuItemId"),
+                "dynamicList": obj.get("dynamicList"),
+                "firstChildMenuItemId": obj.get("firstChildMenuItemId"),
                 "label": obj.get("label"),
-                "next_sibling_menu_item_id": obj.get("nextSiblingMenuItemId"),
-                "parent_menu_item_id": obj.get("parentMenuItemId"),
+                "nextSiblingMenuItemId": obj.get("nextSiblingMenuItemId"),
+                "parentMenuItemId": obj.get("parentMenuItemId"),
                 "available": obj.get("available"),
-                "content": ContentItem.from_dict(obj.get("content"))
-                if obj.get("content") is not None
-                else None,
+                "content": (
+                    ContentItem.from_dict(obj["content"])
+                    if obj.get("content") is not None
+                    else None
+                ),
                 "fixed": obj.get("fixed"),
                 "id": obj.get("id"),
             }

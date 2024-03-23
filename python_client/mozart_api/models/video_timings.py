@@ -18,70 +18,88 @@ import pprint
 import re  # noqa: F401
 import json
 
-
-from typing import Optional, Union
-from pydantic import BaseModel, Field, StrictBool, StrictFloat, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt
+from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class VideoTimings(BaseModel):
     """
     VideoTimings
-    """
+    """  # noqa: E501
 
     horizontal_resolution: Optional[StrictInt] = Field(
-        None, alias="horizontalResolution"
+        default=None, alias="horizontalResolution"
     )
     interlaced: Optional[StrictBool] = None
     refresh_rate: Optional[Union[StrictFloat, StrictInt]] = Field(
-        None, alias="refreshRate"
+        default=None, alias="refreshRate"
     )
-    vertical_resolution: Optional[StrictInt] = Field(None, alias="verticalResolution")
-    __properties = [
+    vertical_resolution: Optional[StrictInt] = Field(
+        default=None, alias="verticalResolution"
+    )
+    __properties: ClassVar[List[str]] = [
         "horizontalResolution",
         "interlaced",
         "refreshRate",
         "verticalResolution",
     ]
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> VideoTimings:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of VideoTimings from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> VideoTimings:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of VideoTimings from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return VideoTimings.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = VideoTimings.parse_obj(
+        _obj = cls.model_validate(
             {
-                "horizontal_resolution": obj.get("horizontalResolution"),
+                "horizontalResolution": obj.get("horizontalResolution"),
                 "interlaced": obj.get("interlaced"),
-                "refresh_rate": obj.get("refreshRate"),
-                "vertical_resolution": obj.get("verticalResolution"),
+                "refreshRate": obj.get("refreshRate"),
+                "verticalResolution": obj.get("verticalResolution"),
             }
         )
         return _obj

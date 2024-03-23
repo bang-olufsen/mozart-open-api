@@ -18,45 +18,63 @@ import pprint
 import re  # noqa: F401
 import json
 
-
-from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Any, ClassVar, Dict, List, Optional
 from mozart_api.models.microphone_state import MicrophoneState
+from typing import Optional, Set
+from typing_extensions import Self
 
 
 class MicrophonesState(BaseModel):
     """
-    state of microphones, both physical switches and software state  # noqa: E501
-    """
+    state of microphones, both physical switches and software state
+    """  # noqa: E501
 
-    microphone_state: Optional[MicrophoneState] = Field(None, alias="microphoneState")
-    microphone_switch_state: Optional[MicrophoneState] = Field(
-        None, alias="microphoneSwitchState"
+    microphone_state: Optional[MicrophoneState] = Field(
+        default=None, alias="microphoneState"
     )
-    __properties = ["microphoneState", "microphoneSwitchState"]
+    microphone_switch_state: Optional[MicrophoneState] = Field(
+        default=None, alias="microphoneSwitchState"
+    )
+    __properties: ClassVar[List[str]] = ["microphoneState", "microphoneSwitchState"]
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> MicrophonesState:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of MicrophonesState from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of microphone_state
         if self.microphone_state:
             _dict["microphoneState"] = self.microphone_state.to_dict()
@@ -66,26 +84,26 @@ class MicrophonesState(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> MicrophonesState:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of MicrophonesState from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return MicrophonesState.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = MicrophonesState.parse_obj(
+        _obj = cls.model_validate(
             {
-                "microphone_state": MicrophoneState.from_dict(
-                    obj.get("microphoneState")
-                )
-                if obj.get("microphoneState") is not None
-                else None,
-                "microphone_switch_state": MicrophoneState.from_dict(
-                    obj.get("microphoneSwitchState")
-                )
-                if obj.get("microphoneSwitchState") is not None
-                else None,
+                "microphoneState": (
+                    MicrophoneState.from_dict(obj["microphoneState"])
+                    if obj.get("microphoneState") is not None
+                    else None
+                ),
+                "microphoneSwitchState": (
+                    MicrophoneState.from_dict(obj["microphoneSwitchState"])
+                    if obj.get("microphoneSwitchState") is not None
+                    else None
+                ),
             }
         )
         return _obj

@@ -1,0 +1,4371 @@
+components:
+    parameters:
+        ListeningModeID:
+            in: path
+            name: id
+            required: true
+            schema:
+                $ref: '#/components/schemas/ListeningModeID'
+    responses:
+        BeolinkJoinResponse:
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/BeolinkJoinRequest'
+            description: 'Join started
+
+
+                Joining always happens asynchronously, use the `requestID` field in
+
+                the response to match your request with a
+
+                `WebsocketEventBeolinkJoinResult` web socket event.
+
+                '
+        MissingListeningMode:
+            description: No such listening mode
+    schemas:
+        Action:
+            description: "An action object. Examples:\n\nRadioAction:\n```json\n{\n\
+                \  \"type\": \"radio\",\n  \"radioStationId\": \"8779112938791514\"\
+                \n}\n```\n\nToneAction:\n```json\n{\n  \"type\": \"tone\",\n  \"toneName\"\
+                : \"alarm_2\"\n}\n```\n\nSourcePresetAction:\n```json\n{\n  \"type\"\
+                : \"sourcePreset\",\n  \"source\": {\n    \"value\": \"spotify\"\n\
+                \  },\n  \"presetKey\": \"Preset3\"\n}\n```\n\nDeezerFlowAction:\n\
+                ```json\n{\n  \"type\": \"deezerFlow\",\n  \"deezerUserId\": \"1234\"\
+                \n}\n```\n\nActivateSourceAction:\n```json\n{\n  \"type\": \"activateSource\"\
+                ,\n  \"source\": {\n    \"value\": \"spotify\"\n  }\n}\n```\n\nPlayQueueAction:\n\
+                ```\n  {\n    \"type\": \"playQueue\",\n    \"queueItem\": {\n   \
+                \   \"provider\": {\n        \"value\": \"deezer\"\n      },\n   \
+                \   \"startNowFromPosition\": 0,\n      \"type\": \"playlist\",\n\
+                \      \"uri\": \"playlist:8074581462\"\n    },\n    \"queueSettings\"\
+                : {\n      \"consume\": false,\n      \"repeat\": \"none\",\n    \
+                \  \"shuffle\": false\n    }\n  }\n```\n\nStandbyAction:\n```json\n\
+                {\n  \"type\": \"standby\"\n}\n```\n\nAllStandbyAction:\n```json\n\
+                {\n  \"type\": \"allStandby\"\n}\n```\n\nTouchToJoinAction:\n```json\n\
+                {\n  \"type\": \"touchToJoin\"\n}\n```\n\nButtonShortPressAction:\n\
+                ```json\n{\n  \"type\": \"buttonShortPress\",\n  \"buttonName\": \"\
+                preset1\"\n}\n```\n\nFallbackAction:\n```json\n{\n  \"type\": \"fallback\"\
+                \n}\n```\n\nVolumeAction:\n```json\n{\n  \"type\": \"volume\",\n \
+                \ \"volumeLevel\": 25\n}\n```\n\nStopAction:\n```json\n{\n  \"type\"\
+                : \"stop\",\n  \"stopDuration\": 1300\n}\n```\n\nTriggerContentAction:\n\
+                ```json\n{\n  \"contentId\": \"tv://netflix\",\n  \"type\": \"triggerContent\"\
+                \n}\n```\n\nSpeakerGroupAction:\n```json\n{\n  \"type\": \"speakerGroup\"\
+                ,\n  \"speakerGroupId\": \"00112233-4455-6677-8899-aabbccddeeff\"\n\
+                }\n```\n\nListeningModeAction:\n```json\n{\n  \"type\": \"listeningMode\"\
+                ,\n  \"listeningModeId\": 1234\n}\n```\n\nStandAction:\n```json\n\
+                {\n  \"type\": \"stand\",\n  \"standPosition\": {\n    \"angle\":\
+                \ 7.5\n  }\n}\n```\n\nGainAction:\n```json\n{\n  \"type\": \"sourceGain\"\
+                ,\n  \"source\": {\n    \"value\": \"spotify\"\n  },\n  \"gainDb\"\
+                : 1.0\n}\n```\n"
+            properties:
+                buttonName:
+                    description: Name of the Button used for button-press types ('buttonShortPress')
+                    enum:
+                    - preset1
+                    - preset2
+                    - preset3
+                    - preset4
+                    nullable: true
+                    type: string
+                contentId:
+                    description: Id of content only used for 'type=triggerContent'
+                    nullable: true
+                    type: string
+                deezerUserId:
+                    description: Id of user only used for 'type=deezerFlow' and is
+                        optional
+                    format: '[0-9]+'
+                    nullable: true
+                    type: string
+                gainDb:
+                    description: Only usef for 'type=sourceGain'
+                    maximum: 12
+                    minimum: -12
+                    type: number
+                listeningModeId:
+                    $ref: '#/components/schemas/ListeningModeID'
+                    description: Only used for 'type=listeningMode'
+                    nullable: true
+                presetKey:
+                    description: Only used for 'type=sourcePreset'
+                    format: ^Preset[0-9]+$
+                    nullable: true
+                    type: string
+                queueItem:
+                    $ref: '#/components/schemas/PlayQueueItem'
+                    description: PlayQueue item only used for 'type=playQueue'
+                    nullable: true
+                queueSettings:
+                    $ref: '#/components/schemas/PlayQueueSettings'
+                    description: PlayQueue settings only used for 'type=playQueue'
+                        and is optional
+                    nullable: true
+                radioStationId:
+                    description: Id of RadioStation only used for 'type=radio'
+                    format: '[0-9]+'
+                    nullable: true
+                    type: string
+                source:
+                    $ref: '#/components/schemas/SourceTypeEnum'
+                    nullable: true
+                speakerGroupId:
+                    $ref: '#/components/schemas/SpeakerGroupId'
+                    description: Only used for 'type=speakerGroup'
+                    nullable: true
+                standPosition:
+                    $ref: '#/components/schemas/StandPosition'
+                    description: Only used for 'type=stand'
+                stopDuration:
+                    description: The duration to wait (seconds) until stopping only
+                        used for 'type=stop'
+                    format: int32
+                    minimum: 0
+                    nullable: true
+                    type: integer
+                toneName:
+                    description: Name of the tone only used for 'type=tone'
+                    enum:
+                    - alarm_1
+                    - alarm_2
+                    nullable: true
+                    type: string
+                type:
+                    description: The type of Action
+                    enum:
+                    - standby
+                    - tone
+                    - radio
+                    - sourcePreset
+                    - deezerFlow
+                    - activateSource
+                    - playQueue
+                    - buttonShortPress
+                    - allStandby
+                    - touchToJoin
+                    - fallback
+                    - volume
+                    - stop
+                    - triggerContent
+                    - speakerGroup
+                    - listeningMode
+                    - stand
+                    - sourceGain
+                    type: string
+                volumeLevel:
+                    description: The volume level to configure only used for 'type=volume'
+                    format: int32
+                    maximum: 100
+                    minimum: 0
+                    nullable: true
+                    type: integer
+            required:
+            - type
+            type: object
+        ActionList:
+            description: An ordered list of Actions to run on the product
+            example:
+            -   type: volume
+                volumeLevel: 35
+            -   radioStationId: '8779112938791514'
+                type: radio
+            -   stopDuration: 1300
+                type: stop
+            items:
+                $ref: '#/components/schemas/Action'
+            type: array
+        AlarmId:
+            format: uuid
+            type: string
+        AlarmLabel:
+            description: Label for an alarm
+            maxLength: 128
+            type: string
+        AlarmTimerEventData:
+            properties:
+                event:
+                    enum:
+                    - add
+                    - update
+                    - delete
+                    type: string
+                id:
+                    $ref: '#/components/schemas/AlarmId'
+                type:
+                    enum:
+                    - alarm
+                    - timer
+                    type: string
+            type: object
+        AlarmTriggeredInfo:
+            properties:
+                id:
+                    $ref: '#/components/schemas/AlarmId'
+                label:
+                    $ref: '#/components/schemas/AlarmLabel'
+            type: object
+        Ambience:
+            properties:
+                value:
+                    description: Selected ambience value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        AmbienceFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Ambience'
+            -   $ref: '#/components/schemas/AmbienceRange'
+        AmbienceRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Ambience'
+                    description: Product and role specific default ambience value
+                range:
+                    description: Product and role specific ambience range
+                    items:
+                        $ref: '#/components/schemas/Ambience'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        Art:
+            properties:
+                hasLocalImage:
+                    type: boolean
+                key:
+                    type: string
+                size:
+                    type: string
+                type:
+                    type: string
+                url:
+                    type: string
+            type: object
+        Balance:
+            properties:
+                value:
+                    description: Selected balance value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        BalanceFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Balance'
+            -   $ref: '#/components/schemas/BalanceRange'
+        BalanceRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Balance'
+                    description: Default balance value
+                range:
+                    description: balance range
+                    items:
+                        $ref: '#/components/schemas/Balance'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        Bass:
+            properties:
+                value:
+                    description: Selected bass value
+                    format: int32
+                    type: integer
+            required:
+            - value
+            type: object
+        BassFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Bass'
+            -   $ref: '#/components/schemas/BassRange'
+        BassManagement:
+            properties:
+                value:
+                    description: Selected bass-management value
+                    enum:
+                    - 'on'
+                    - 'off'
+                    type: string
+            required:
+            - value
+            type: object
+        BassManagementFeature:
+            allOf:
+            -   $ref: '#/components/schemas/BassManagement'
+            -   $ref: '#/components/schemas/BassManagementRange'
+        BassManagementRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/BassManagement'
+                    description: Default bass-management value
+                range:
+                    description: bass-management range
+                    items:
+                        $ref: '#/components/schemas/BassManagement'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        BassRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Bass'
+                    description: Product and role specific default bass value
+                range:
+                    description: Product and role specific bass range
+                    items:
+                        $ref: '#/components/schemas/Bass'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        BatteryState:
+            properties:
+                batteryLevel:
+                    description: 'Batterylevel in percent
+
+                        '
+                    type: integer
+                isCharging:
+                    type: boolean
+                remainingChargingTimeMinutes:
+                    description: Remaining charging time in minutes
+                    type: integer
+                remainingPlayingTimeMinutes:
+                    description: Remaining playing time in minutes
+                    type: integer
+            type: object
+        BeoRemoteButton:
+            properties:
+                Key:
+                    type: string
+                Type:
+                    enum:
+                    - KeyPress
+                    - KeyRelease
+            type: object
+        BeolinkAvailableListener:
+            properties:
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            type: object
+        BeolinkExperience:
+            properties:
+                category:
+                    description: Source category
+                    enum:
+                    - TV
+                    - RADIO
+                    - MUSIC
+                    - MEDIA
+                    - UNKNOWN
+                    type: string
+                id:
+                    description: experience id, e.g. "RADIO" or "toslink"
+                    type: string
+                linkable:
+                    description: Linkable means "Does pressing play on this source
+                        make sense"
+                    type: boolean
+                name:
+                    description: Experience name, e.g. "Bluetooth" or "B&O Radio"
+                    type: string
+                productFriendlyName:
+                    description: Optional product friendly name
+                    type: string
+                sourceFriendlyName:
+                    description: Optional friendly name for source
+                    type: string
+                type:
+                    description: Source type. This corresponds to the exhaustive list
+                        or sources provided by the control layer
+                    type: string
+                uniqueSourceId:
+                    description: The actual device jabber id that the experience comes
+                        from
+                    type: string
+            required:
+            - id
+            - name
+            - type
+            - category
+            - uniqueSourceId
+            - linkable
+            type: object
+        BeolinkExperiencesResult:
+            properties:
+                experiences:
+                    items:
+                        $ref: '#/components/schemas/BeolinkExperience'
+                    type: array
+                requestID:
+                    $ref: '#/components/schemas/BeolinkRequestID'
+                status:
+                    description: 'Current scan status.
+
+                        * busy: there is another scan in progress
+
+                        * timeout: the scan timed out. The results will be partial
+
+                        '
+                    enum:
+                    - ok
+                    - busy
+                    - timeout
+                    type: string
+            required:
+            - requestID
+            - status
+            - experiences
+            type: object
+        BeolinkJoinRequest:
+            properties:
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+                requestID:
+                    $ref: '#/components/schemas/BeolinkRequestID'
+                result:
+                    description: Relative URL of the join result
+                    format: uri
+                    type: string
+            required:
+            - requestID
+            - result
+            type: object
+        BeolinkJoinResult:
+            properties:
+                error:
+                    description: Join error
+                    enum:
+                    - ok
+                    - busy
+                    - leaderless
+                    - alone
+                    - silent
+                    - missing
+                    - rejected
+                    - timeout
+                    type: string
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+                requestID:
+                    $ref: '#/components/schemas/BeolinkRequestID'
+                status:
+                    description: Overall join status
+                    enum:
+                    - idle
+                    - joined
+                    - failed
+                    type: string
+                type:
+                    description: The type of join request this is a result of
+                    enum:
+                    - join
+                    - joinRequested
+                    - expand
+                    - expandRequested
+                    type: string
+            required:
+            - requestID
+            - status
+            - jid
+            - type
+            type: object
+        BeolinkLeader:
+            properties:
+                friendlyName:
+                    type: string
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            - friendlyName
+            type: object
+        BeolinkListener:
+            properties:
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            type: object
+        BeolinkPeer:
+            properties:
+                friendlyName:
+                    type: string
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            - friendlyName
+            type: object
+        BeolinkPeerID:
+            description: Beolink peer ID
+            example: 2714.1200304.26451293@products.bang-olufsen.com
+            type: string
+        BeolinkRequestID:
+            description: Beolink request ID
+            example: 48985a4f-a4de-4b44-9757-c9a7407b8882
+            format: uuid
+            type: string
+        BluetoothDevice:
+            properties:
+                address:
+                    type: string
+                connected:
+                    type: boolean
+                name:
+                    type: string
+            type: object
+        BluetoothDeviceList:
+            properties:
+                items:
+                    items:
+                        $ref: '#/components/schemas/BluetoothDevice'
+                    type: array
+            type: object
+        ButtonEvent:
+            properties:
+                button:
+                    description: identifies the button
+                    type: string
+                state:
+                    description: identifies the state change
+                    type: string
+            type: object
+        Compression:
+            properties:
+                value:
+                    description: Selected compression value
+                    enum:
+                    - 'off'
+                    - medium
+                    - maximum
+                    type: string
+            required:
+            - value
+            type: object
+        CompressionFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Compression'
+            -   $ref: '#/components/schemas/CompressionRange'
+        CompressionRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Compression'
+                    description: Default compression value
+                range:
+                    description: compression range
+                    items:
+                        $ref: '#/components/schemas/Compression'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        ContentCategoryList:
+            items:
+                enum:
+                - music
+                - movie
+                - tv
+                - hdmi
+                - app
+                type: string
+            type: array
+        ContentItem:
+            example:
+                contentUri: tv://netflix
+                label: Netflix
+            properties:
+                categories:
+                    $ref: '#/components/schemas/ContentCategoryList'
+                    nullable: true
+                contentUri:
+                    type: string
+                label:
+                    nullable: true
+                    type: string
+                source:
+                    $ref: '#/components/schemas/SourceTypeEnum'
+            required:
+            - contentUri
+            - source
+            type: object
+        ContentItemMap:
+            additionalProperties:
+                $ref: '#/components/schemas/ContentItem'
+            example:
+                475169e4-32bb-59ad-b88d-a6d53c289838:
+                    contentUri: tv://netflix
+                    label: Netflix
+            type: object
+        Directivity:
+            properties:
+                value:
+                    enum:
+                    - front
+                    - left
+                    - right
+                    - omni
+                    - narrow
+                    - wide
+                    - standalone
+                    type: string
+            required:
+            - value
+            type: object
+        DirectivityFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Directivity'
+            -   $ref: '#/components/schemas/DirectivityRange'
+        DirectivityRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Directivity'
+                    description: Product and role specific default directivity value
+                range:
+                    description: Product and role specific list of directivities
+                    items:
+                        $ref: '#/components/schemas/Directivity'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        ErrorModel:
+            description: the general error model
+            properties:
+                errorCode:
+                    description: 'A wellknown code that signal the error, can be used
+                        by callers
+
+                        '
+                    type: string
+                errorId:
+                    description: 'A unique identifier used to e.g. quick find in logs
+
+                        '
+                    type: string
+                errorMessage:
+                    description: 'A textual representation, human readable and suitable
+                        for logs
+
+                        '
+                    type: string
+            type: object
+        Fader:
+            properties:
+                value:
+                    description: Selected fader value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        FaderFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Fader'
+            -   $ref: '#/components/schemas/FaderRange'
+        FaderRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Fader'
+                    description: Default fader value
+                range:
+                    description: fader range
+                    items:
+                        $ref: '#/components/schemas/Fader'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        HdmiIdType:
+            type: string
+        HdmiInput:
+            properties:
+                contentUri:
+                    description: This points to the editable content trigger for this
+                        specific hdmi input
+                    type: string
+                input:
+                    $ref: '#/components/schemas/HdmiIdType'
+            type: object
+        HdmiVideoFormat:
+            properties:
+                pixelFormat:
+                    $ref: '#/components/schemas/VideoPixelFormat'
+                vIC:
+                    format: int32
+                    minimum: 0
+                    type: integer
+                videoTimings:
+                    $ref: '#/components/schemas/VideoTimings'
+            type: object
+        HomeControlIxp:
+            properties:
+                uri:
+                    type: string
+            type: object
+        HomeControlUri:
+            properties:
+                ixp:
+                    nullable: true
+                    type: string
+                uri:
+                    type: string
+            type: object
+        InstallRecordIdState:
+            properties:
+                value:
+                    enum:
+                    - idle
+                    - gettingUrl
+                    - urlInvalid
+                    - downloading
+                    - downloadFinished
+                    - downloadFailed
+                    type: string
+            type: object
+        LatencyProfile:
+            description: 'The latency profile of this speaker group.
+
+                Needed to handle Beolab''s with latency dependant audio quality.
+
+                Default is set to performance.
+
+                '
+            properties:
+                value:
+                    enum:
+                    - performance
+                    - quality
+                    type: string
+            type: object
+        LgeTvSoundSettings:
+            properties:
+                digitalOutput:
+                    enum:
+                    - auto
+                    - passThrough
+                    - pcm
+                    - unknown
+                    type: string
+                eArc:
+                    type: boolean
+                output:
+                    enum:
+                    - tvSpeaker
+                    - externalOptical
+                    - externalArc
+                    - bluetooth
+                    - wisaSpeakers
+                    - lineout
+                    - headphone
+                    - tvSpeakerAndExternalOptical
+                    - tvSpeakerAndHeadphone
+                    - tvSpeakerAndBluetooth
+                    - externalArcBno
+                    - unknown
+                    type: string
+            type: object
+        ListeningMode:
+            allOf:
+            -   $ref: '#/components/schemas/ListeningModeProps'
+            required:
+            - features
+            - id
+            - name
+            - triggers
+        ListeningModeFeatures:
+            description: Sound features to apply
+            properties:
+                ambience:
+                    $ref: '#/components/schemas/Ambience'
+                balance:
+                    $ref: '#/components/schemas/Balance'
+                bassManagement:
+                    $ref: '#/components/schemas/BassManagement'
+                compression:
+                    $ref: '#/components/schemas/Compression'
+                directivity:
+                    $ref: '#/components/schemas/Directivity'
+                fader:
+                    $ref: '#/components/schemas/Fader'
+                roomCompensation:
+                    $ref: '#/components/schemas/RoomCompensation'
+                spatialEnvelopment:
+                    $ref: '#/components/schemas/SpatialEnvelopment'
+                spatialHeight:
+                    $ref: '#/components/schemas/SpatialHeight'
+                spatialProcessing:
+                    $ref: '#/components/schemas/SpatialProcessing'
+                spatialSurround:
+                    $ref: '#/components/schemas/SpatialSurround'
+                spatialWidth:
+                    $ref: '#/components/schemas/SpatialWidth'
+                speechEnhance:
+                    $ref: '#/components/schemas/SpeechEnhance'
+                toneTouch:
+                    $ref: '#/components/schemas/ToneTouch'
+            type: object
+        ListeningModeID:
+            format: int32
+            minimum: 0
+            type: integer
+        ListeningModeProps:
+            properties:
+                clientCtx:
+                    description: 'An optional generic string property supplied from
+                        the client. If
+
+                        provided, it will be stored without changes.
+
+                        If not supplied, any current clientCtx will remain unchanged.
+
+                        '
+                    maxLength: 4096
+                    nullable: true
+                    type: string
+                features:
+                    $ref: '#/components/schemas/ListeningModeFeatures'
+                id:
+                    $ref: '#/components/schemas/ListeningModeID'
+                name:
+                    description: Friendly name
+                    type: string
+                origin:
+                    description: User created, default or an edited default listening
+                        mode
+                    enum:
+                    - user
+                    - default
+                    - edited
+                    type: string
+                role:
+                    description: Role a listening mode applies to
+                    enum:
+                    - standalone
+                    - multichannel
+                    - all
+                    nullable: true
+                    type: string
+                triggers:
+                    items:
+                        $ref: '#/components/schemas/ListeningModeTrigger'
+                    type: array
+            type: object
+        ListeningModeRef:
+            description: Reference to a listening mode
+            properties:
+                href:
+                    description: 'Host relative URI of the listening mode or `null`
+                        if there is no
+
+                        active listening mode.
+
+                        '
+                    format: uri
+                    nullable: true
+                    type: string
+                id:
+                    description: 'ID of the active listening mode or `null` if there
+                        is no active
+
+                        listening mode.
+
+                        '
+                    format: int32
+                    minimum: 0
+                    nullable: true
+                    type: integer
+            required:
+            - id
+            - href
+            type: object
+        ListeningModeSet:
+            items:
+                allOf:
+                -   $ref: '#/components/schemas/ListeningMode'
+            type: array
+        ListeningModeTrigger:
+            oneOf:
+            -   $ref: '#/components/schemas/PowerLinkTrigger'
+        Loudness:
+            properties:
+                value:
+                    type: boolean
+            type: object
+        MicrophoneState:
+            properties:
+                value:
+                    enum:
+                    - 'on'
+                    - 'off'
+                    type: string
+            type: object
+        MicrophonesState:
+            description: state of microphones, both physical switches and software
+                state
+            properties:
+                microphoneState:
+                    $ref: '#/components/schemas/MicrophoneState'
+                microphoneSwitchState:
+                    $ref: '#/components/schemas/MicrophoneState'
+            type: object
+        OptionalIpAddress:
+            description: IP address
+            example: fe80::209:a7ff:fe78:f605
+            nullable: true
+            type: string
+        OverlayPlayRequest:
+            allOf:
+            -   $ref: '#/components/schemas/OverlayPlayRequestCommon'
+            -   $ref: '#/components/schemas/OverlayPlayRequestUri'
+            -   $ref: '#/components/schemas/OverlayPlayRequestTextToSpeech'
+            -   $ref: '#/components/schemas/OverlayPlayRequestFromUsb'
+        OverlayPlayRequestCommon:
+            properties:
+                volumeAbsolute:
+                    description: 'An optional absolute volume level at which to play
+                        the URI. If not provided, the URI will play at the currently
+                        configured volume level on the product. The level should be
+                        provided in volume steps [0, 100]
+
+                        '
+                    format: int32
+                    maximum: 100
+                    minimum: 0
+                    nullable: true
+                    type: integer
+            type: object
+        OverlayPlayRequestFromUsb:
+            nullable: true
+            properties:
+                fromUsb:
+                    properties:
+                        fileLocation:
+                            description: 'Required field containing the relative path
+                                (i.e. from the USB drive root) and file name with
+                                extension (if one exists) that will be played. A maximum
+                                length of 1024 characters is allowed.
+
+                                '
+                            maxLength: 1024
+                            type: string
+                    required:
+                    - fileLocation
+                    type: object
+            type: object
+        OverlayPlayRequestTextToSpeech:
+            nullable: true
+            properties:
+                textToSpeech:
+                    description: 'Object used for performing a text-to-speech operation
+                        on the product.
+
+                        '
+                    properties:
+                        lang:
+                            description: 'An optional specification of the language
+                                to use. The default value is ultimately decided by
+                                the BeoCloud API, but currently it defaults to `en-us`.
+
+                                '
+                            example: en-us
+                            nullable: true
+                            type: string
+                        text:
+                            description: 'Required field containing the actual text
+                                that will be converted to speech (audio). A maximum
+                                length of 2048 characters is allowed.
+
+                                '
+                            maxLength: 2048
+                            type: string
+                    required:
+                    - text
+                    type: object
+            type: object
+        OverlayPlayRequestUri:
+            nullable: true
+            properties:
+                uri:
+                    $ref: '#/components/schemas/Uri'
+            type: object
+        PairedRemote:
+            properties:
+                address:
+                    type: string
+                appVersion:
+                    type: string
+                batteryLevel:
+                    maximum: 100
+                    minimum: 0
+                    type: integer
+                dbVersion:
+                    type: string
+                name:
+                    type: string
+                serialNumber:
+                    type: string
+                updated:
+                    items:
+                        enum:
+                        - app
+                        - db
+                        type: string
+                    type: array
+            required:
+            - address
+            - name
+            type: object
+        PairedRemoteList:
+            items:
+                $ref: '#/components/schemas/PairedRemote'
+            type: array
+        PairedRemoteResponse:
+            properties:
+                items:
+                    $ref: '#/components/schemas/PairedRemoteList'
+            type: object
+        PlayQueueIdType:
+            format: uuid
+            type: string
+        PlayQueueItem:
+            properties:
+                index:
+                    format: int32
+                    type: integer
+                metadata:
+                    $ref: '#/components/schemas/PlaybackContentMetadata'
+                    nullable: true
+                provider:
+                    $ref: '#/components/schemas/PlayQueueItemType'
+                startNowFromPosition:
+                    description: Start playing specified track as soon as possible.
+                        This works for any type, for `track` set to 0 and for `playlist`
+                        specify the wanted track from position 0
+                    format: int32
+                    nullable: true
+                    type: integer
+                type:
+                    enum:
+                    - track
+                    - playlist
+                    type: string
+                uri:
+                    description: This can be url, track id, playlist id, radio id
+                        and suchlike
+                    type: string
+            required:
+            - provider
+            - type
+            - uri
+            type: object
+        PlayQueueItemType:
+            properties:
+                value:
+                    enum:
+                    - uri
+                    - dlna
+                    - radio
+                    - deezer
+                    - beoCloud
+                    - tidal
+                    type: string
+            required:
+            - value
+            type: object
+        PlayQueueSettings:
+            properties:
+                consume:
+                    type: boolean
+                gapless:
+                    type: boolean
+                repeat:
+                    enum:
+                    - all
+                    - track
+                    - none
+                    type: string
+                shuffle:
+                    type: boolean
+            type: object
+        PlaybackContentMetadata:
+            properties:
+                albumName:
+                    type: string
+                art:
+                    items:
+                        $ref: '#/components/schemas/Art'
+                    type: array
+                artistName:
+                    type: string
+                bitdepth:
+                    format: int32
+                    type: integer
+                bitrate:
+                    format: int32
+                    type: integer
+                containerName:
+                    type: string
+                encoding:
+                    enum:
+                    - pcm
+                    - wav
+                    - mp3
+                    - oggvorbis
+                    - aac
+                    - flac
+                    - sbc
+                    - alac
+                    - opus
+                    - DolbyDigital
+                    - DolbyDigitalPlus
+                    - DolbyTrueHD
+                    - unknown
+                    type: string
+                genre:
+                    type: string
+                id:
+                    type: integer
+                inputChannelProcessing:
+                    description: 'Input processing/decoding on top of the base codec
+                        indicated in encoding. E.g. Dolby Atmos on top of Dolby TrueHD
+                        or Dolby Surround on top of PCM. For Dolby, this value has
+                        priority over encoding, meaning that if inputChannelProcessing
+                        has a value, it must be indicated in the app, and optionally
+                        the encoding value can be indicated as well. If inputChannelProcessing
+                        does not have value the encoding value must be indicated.
+
+                        '
+                    enum:
+                    - dolbySurround
+                    - dolbyAtmos
+                    nullable: true
+                    type: string
+                inputChannels:
+                    description: e.g. 5.1
+                    nullable: true
+                    type: string
+                organization:
+                    description: 'This can be filled by gstreamer''s GST_TAG_ORGANIZATION.
+                        Mozart can also fill this with netradio station name like
+                        "P3" and TV content like "Netflix". This is needed so it''s
+                        possible to show who the provider is for the playing audio
+                        track/content.
+
+                        '
+                    type: string
+                outputChannelProcessing:
+                    description: e.g. downmix
+                    enum:
+                    - Direct
+                    - Downmix
+                    - TrueImage
+                    nullable: true
+                    type: string
+                outputChannels:
+                    description: e.g. 7.1
+                    nullable: true
+                    type: string
+                queueId:
+                    $ref: '#/components/schemas/PlayQueueIdType'
+                remoteLeader:
+                    $ref: '#/components/schemas/BeolinkLeader'
+                remoteSource:
+                    nullable: true
+                    type: string
+                samplerate:
+                    format: int32
+                    type: integer
+                source:
+                    type: string
+                sourceInternalId:
+                    type: string
+                title:
+                    type: string
+                totalDuration:
+                    description: to be removed once all devices and apps are updated
+                    format: int32
+                    nullable: true
+                    type: integer
+                totalDurationSeconds:
+                    format: int32
+                    nullable: true
+                    type: integer
+                track:
+                    format: int32
+                    type: integer
+                trackCount:
+                    format: int32
+                    type: integer
+                uri:
+                    type: string
+            type: object
+        PlaybackError:
+            properties:
+                error:
+                    type: string
+                item:
+                    $ref: '#/components/schemas/PlaybackContentMetadata'
+            type: object
+        PlaybackProgress:
+            properties:
+                id:
+                    type: string
+                progress:
+                    format: int32
+                    type: integer
+                totalDuration:
+                    format: int32
+                    nullable: true
+                    type: integer
+            type: object
+        PlaybackState:
+            properties:
+                metadata:
+                    $ref: '#/components/schemas/PlaybackContentMetadata'
+                progress:
+                    $ref: '#/components/schemas/PlaybackProgress'
+                source:
+                    $ref: '#/components/schemas/Source'
+                state:
+                    $ref: '#/components/schemas/RenderingState'
+            type: object
+        PowerLinkTrigger:
+            properties:
+                powerLinkPreset:
+                    description: 'Despite the name, this preset is used anytime a
+                        speaker is used as a
+
+                        secondary as a way for the primary to indicate which directivity
+
+                        (and possibly other caracteristics in the future) should be
+                        used on
+
+                        a speaker by speaker basis. It is used when a speaker is a
+                        powerlink
+
+                        speaker (hence the name), WISA speaker or a speakerlink secondary
+                        in multichannel.
+
+                        '
+                    type: integer
+            type: object
+        PowerStateEnum:
+            properties:
+                value:
+                    enum:
+                    - networkStandby
+                    - 'on'
+                    - standby
+                    - shutdown
+                    - storage
+                    type: string
+            type: object
+        Preset:
+            allOf:
+            -   $ref: '#/components/schemas/SceneTriggerBaseProperties'
+            -   properties:
+                    content:
+                        $ref: '#/components/schemas/ContentItem'
+                        nullable: true
+                    id:
+                        type: string
+                    name:
+                        nullable: true
+                        type: string
+                    source:
+                        $ref: '#/components/schemas/SourceTypeEnum'
+                        nullable: true
+                    title:
+                        type: string
+                type: object
+        PresetMap:
+            additionalProperties:
+                $ref: '#/components/schemas/Preset'
+            type: object
+        ProductCurtainStatus:
+            properties:
+                moving:
+                    type: boolean
+                position:
+                    enum:
+                    - unknown
+                    - closed
+                    - narrow
+                    - wide
+                    type: string
+            type: object
+        ProductFriendlyName:
+            properties:
+                friendlyName:
+                    description: 'The friendly name of the product, assignable by
+                        the end user, e.g. ''Kitchen speaker
+
+                        '
+                    type: string
+            type: object
+        ProductState:
+            properties:
+                microphones:
+                    $ref: '#/components/schemas/MicrophonesState'
+                playback:
+                    $ref: '#/components/schemas/PlaybackState'
+                powerState:
+                    $ref: '#/components/schemas/PowerStateEnum'
+                softwareUpdateState:
+                    $ref: '#/components/schemas/SoftwareUpdateState'
+                soundSettings:
+                    $ref: '#/components/schemas/SoundSettings'
+                source:
+                    $ref: '#/components/schemas/Source'
+                tv:
+                    $ref: '#/components/schemas/TvState'
+                volume:
+                    $ref: '#/components/schemas/VolumeState'
+            type: object
+        RemoteMenuItem:
+            allOf:
+            -   $ref: '#/components/schemas/RemoteMenuItemProperties'
+            -   properties:
+                    available:
+                        nullable: true
+                        type: boolean
+                    content:
+                        $ref: '#/components/schemas/ContentItem'
+                    fixed:
+                        description: True if this is a fixed menu item. A fixed item
+                            can't be deleted or moved
+                        type: boolean
+                    id:
+                        description: Unique ID for this menu item
+                        format: uuid
+                        type: string
+                required:
+                - id
+                - fixed
+                type: object
+        RemoteMenuItemMap:
+            additionalProperties:
+                $ref: '#/components/schemas/RemoteMenuItem'
+            example:
+                6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0:
+                    content:
+                        contentUri: netRadio://123456
+                        source: netRadio
+                    label: P3
+                ee5196ce-65c4-4c56-9a48-1943c4afef9c:
+                    content:
+                        contentUri: tv://netflix
+                        source: netRadio
+                    label: Netflix
+            type: object
+        RemoteMenuItemProperties:
+            allOf:
+            -   $ref: '#/components/schemas/SceneTriggerBaseProperties'
+            -   properties:
+                    disabled:
+                        nullable: true
+                        type: boolean
+                    dynamicList:
+                        description: 'Let mozart create a dynamic list. This list
+                            will be attached as children to the menu item. If dynamicList
+                            is set it''s not possible to change or manipulate any
+                            of the children because mozart can alter them at any given
+                            time
+
+                            '
+                        enum:
+                        - none
+                        - radioFavorites
+                        nullable: true
+                        type: string
+                    firstChildMenuItemId:
+                        description: ID of the first child menu item
+                        format: uuid
+                        nullable: true
+                        type: string
+                    label:
+                        description: Alternative label, if omitted mozart will try
+                            its best
+                        nullable: true
+                        type: string
+                    nextSiblingMenuItemId:
+                        description: ID of the next sibling menu item
+                        format: uuid
+                        nullable: true
+                        type: string
+                    parentMenuItemId:
+                        description: ID of the parent menu item
+                        format: uuid
+                        nullable: true
+                        type: string
+                type: object
+        RemoteUIKeyState:
+            properties:
+                state:
+                    description: 'The state of the pressed key. ShortPress and LongPress''s
+                        duration are determined by the remote. Whereas Down, Continue,
+                        and Release reflect the state of the key and press duration
+                        is the time between a Down and a Release state. Continue indicates
+                        that a button is pressed and the key event should be handled
+                        multiple times until a release is received.
+
+                        '
+                    enum:
+                    - ShortPress
+                    - LongPress
+                    - Down
+                    - Continue
+                    - Release
+                    type: string
+            type: object
+        RenderingState:
+            properties:
+                value:
+                    enum:
+                    - idle
+                    - buffering
+                    - started
+                    - paused
+                    - stopped
+                    - ended
+                    - error
+                    - unknown
+                    type: string
+            type: object
+        RoomCompensation:
+            properties:
+                value:
+                    $ref: '#/components/schemas/RoomCompensationValue'
+            required:
+            - value
+            type: object
+        RoomCompensationCurrentMeasurement:
+            description: 'State and speaker ID of the currently running measurement.
+
+                Is only relevant for advanced room compensation.
+
+                '
+            properties:
+                speakerId:
+                    $ref: '#/components/schemas/SpeakerId'
+                    description: Speaker ID of the speaker being measured.
+                state:
+                    description: "State of the measurement for the speaker.\nstarted:\n\
+                        \  The measurement has started.\ndone:\n  The measurement\
+                        \ has ended successfully.\nlastDone:\n  The last measurement\
+                        \ in the run has ended successfully.\nerror:\n  An error occurred\
+                        \ during measurement.\n"
+                    enum:
+                    - started
+                    - done
+                    - lastDone
+                    - error
+                    type: string
+            type: object
+        RoomCompensationDebug:
+            properties:
+                value:
+                    type: boolean
+            type: object
+        RoomCompensationEnabled:
+            properties:
+                value:
+                    type: boolean
+            type: object
+        RoomCompensationErrorDetails:
+            properties:
+                errorList:
+                    description: List of the speakers where measurement failed, including
+                        error type.
+                    items:
+                        $ref: '#/components/schemas/RoomCompensationMeasurementError'
+                    type: array
+            type: object
+        RoomCompensationFeature:
+            allOf:
+            -   $ref: '#/components/schemas/RoomCompensation'
+            -   $ref: '#/components/schemas/RoomCompensationRange'
+        RoomCompensationInfo:
+            properties:
+                debug:
+                    $ref: '#/components/schemas/RoomCompensationDebug'
+                enabled:
+                    $ref: '#/components/schemas/RoomCompensationEnabled'
+                lastResult:
+                    $ref: '#/components/schemas/RoomCompensationResult'
+                lastRun:
+                    $ref: '#/components/schemas/RoomCompensationState'
+                type:
+                    $ref: '#/components/schemas/RoomCompensationType'
+                version:
+                    $ref: '#/components/schemas/RoomCompensationVersion'
+            type: object
+        RoomCompensationMeasurementError:
+            properties:
+                error:
+                    description: "noError:\n  The measurement went OK.\nlowSignal:\n\
+                        \  When there is too low signal in the recording, e.g. due\
+                        \ to a loudspeaker being placed at\n  too great a distance\
+                        \ from the microphone.\nspeakerSilent:\n  No signal could\
+                        \ be measured.\n  Could be because:\n    - The speaker is\
+                        \ powered off or not connected.\n    - The left/right switch\
+                        \ on a wired powerlink speaker is set in the wrong position.\n\
+                        \    - The speaker is placed in another room behind closed\
+                        \ doors.\nnoisy<Left/Right/External>Microphone:\n  When the\
+                        \ recording of the given microphone is too noisy.\n  Could\
+                        \ be because:\n    - Something is blocking the microphone\n\
+                        externalMicrophoneLocation:\n  When the location of the external\
+                        \ microphone is invalid.\nexternalMicrophoneMissing:\n  If\
+                        \ the external microphone was missing/disconnected during\
+                        \ a measurement.\nmicrophonesDisabled:\n  If the microphones\
+                        \ are either muted or disabled.\nnoisyMeasurement:\n  When\
+                        \ too much background noise has been detected during the measurement\n\
+                        internalError:\n  Something went wrong internally - can not\
+                        \ be fixed by the user. Try again.\n"
+                    enum:
+                    - noError
+                    - lowSignal
+                    - speakerSilent
+                    - noisyLeftMicrophone
+                    - noisyRightMicrophone
+                    - noisyExternalMicrophone
+                    - externalMicrophoneLocation
+                    - externalMicrophoneMissing
+                    - microphonesDisabled
+                    - noisyMeasurement
+                    - internalError
+                    type: string
+                speakerId:
+                    $ref: '#/components/schemas/SpeakerId'
+                    description: 'Speaker ID of the speaker with measurement error.
+
+                        Is only relevant for advanced room compensation.
+
+                        '
+            type: object
+        RoomCompensationProperties:
+            allOf:
+            -   $ref: '#/components/schemas/RoomCompensationType'
+            -   properties:
+                    action:
+                        description: "Must be set if room compensation type is advanced.\n\
+                            runAll:\n  Do measurements on all connected speakers.\n\
+                            continue:\n  Continue from and including the speaker where\
+                            \ last interrupted (stopped or failed).\nuseSpeakerList:\n\
+                            \  Do measurements on the speakers in the list property.\n"
+                        enum:
+                        - runAll
+                        - continue
+                        - useSpeakerList
+                        nullable: true
+                        type: string
+                    continueOnError:
+                        description: 'On failing measurement on a speaker, default
+                            behavior is to stop measurement and skip the remaining
+                            speakers.
+
+                            Setting continueOnError to true will make the measurement
+                            process continue and finish measurement on all speakers,
+
+                            even though an error ocurred on one of the speakers.
+
+                            '
+                        nullable: true
+                        type: boolean
+                    latencyProfile:
+                        $ref: '#/components/schemas/LatencyProfile'
+                        nullable: true
+                    skipAutomaticRoleAssignment:
+                        description: Skip calculation of automatic role assignment.
+                        nullable: true
+                        type: boolean
+                    speakerList:
+                        description: 'List of speaker IDs to include in room compensation
+                            / automatic role assignment measurement.
+
+                            Relevant e.g. if you want to create a speaker group without
+                            the external speakers included.
+
+                            This can not be used for doing measurements on a partial
+                            speaker group, only on all
+
+                            speakers in an existing group or for all speakers in a
+                            new group.
+
+                            '
+                        items:
+                            $ref: '#/components/schemas/SpeakerId'
+                        nullable: true
+                        type: array
+                    speakerPreset:
+                        description: The Powerlink preset to use for the external
+                            PL/WPL speakers.
+                        format: int32
+                        maximum: 255
+                        minimum: 0
+                        nullable: true
+                        type: integer
+                type: object
+        RoomCompensationRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/RoomCompensationValue'
+                    description: Product and role specific default room compensation
+                        value
+                maxItems:
+                    description: Maximum number of items in the `value` field
+                    maximum: 20
+                    minimum: 1
+                    type: integer
+                range:
+                    description: Possible values for the `value` field
+                    example:
+                    - internal
+                    - external
+                    items:
+                        type: string
+                    type: array
+            required:
+            - default
+            - range
+            type: object
+        RoomCompensationResponse:
+            properties:
+                frequency:
+                    format: int32
+                    type: integer
+                gain:
+                    format: double
+                    type: number
+            type: object
+        RoomCompensationResult:
+            properties:
+                compensation:
+                    items:
+                        $ref: '#/components/schemas/RoomCompensationResponse'
+                    type: array
+                measuredResponse:
+                    items:
+                        $ref: '#/components/schemas/RoomCompensationResponse'
+                    type: array
+                placement:
+                    enum:
+                    - free
+                    - nearWall
+                    - unknown
+                    type: string
+                referenceResponse:
+                    items:
+                        $ref: '#/components/schemas/RoomCompensationResponse'
+                    type: array
+                speakerGroupSuggestion:
+                    $ref: '#/components/schemas/SpeakerGroup'
+                    description: 'Result from automatic speaker role assignment and
+                        room compensation measurements.
+
+                        Is only relevant for advanced room compensation.
+
+                        Includes id, type, role, gain, distance and location for requested
+                        speakers,
+
+                        together with the ID of the room compensation result.
+
+                        This is not persisted on Mozart side, but can be used by the
+                        client,
+
+                        e.g. as basis for a new speaker group.
+
+                        '
+                timeStamp:
+                    format: date-time
+                    type: string
+            type: object
+        RoomCompensationState:
+            allOf:
+            -   $ref: '#/components/schemas/RoomCompensationStateValue'
+            -   properties:
+                    error:
+                        description: "microphoneMuted:\n  The microphone is muted\
+                            \ (soft-off, using touch button).\nmicrophoneSwitchOff:\n\
+                            \  The microphone switch is set in its off position.\n\
+                            microphoneSignalMissing:\n  No signal was detected. Is\
+                            \ the microphone blocked?\nexternalMicrophoneMissing:\n\
+                            \  The external microphone is not connected.\n  Is only\
+                            \ relevant for advanced room compensation.\nexternalMicrophoneInvalidPosition:\n\
+                            \  The external microphone is placed in an invalid position,\n\
+                            \  e.g. placed too close or in an extreme angle to the\
+                            \ internal speakers.\n  Is only relevant for advanced\
+                            \ room compensation.\nnoisyEnvironment:\n  Too much environment\
+                            \ noise to get a valid measurement.\nspeakerMeasurementFailed:\n\
+                            \  A measurement failed, related to one of the individual\
+                            \ speakers.\n  See the errorDetails property for details\
+                            \ about the error and which speaker measurement failed.\n\
+                            \  Is only relevant for advanced room compensation.\n\
+                            invalidSpeakerList:\n  The speaker list contains invalid\
+                            \ speakers.\n  Valid speakers are: all external speakers\
+                            \ and non-virtual internal speakers.\n  Is only relevant\
+                            \ for advanced room compensation.\ninvalidAction:\n  Could\
+                            \ not start with given action.\n  Eg. can't run from last\
+                            \ failed speaker if there isn't any failed run.\n  Is\
+                            \ only relevant for advanced room compensation.\ninternalError:\n\
+                            \  Internal product error.\n"
+                        enum:
+                        - noError
+                        - microphoneMuted
+                        - microphoneSwitchOff
+                        - microphoneSignalMissing
+                        - externalMicrophoneMissing
+                        - externalMicrophoneInvalidPosition
+                        - noisyEnvironment
+                        - speakerMeasurementFailed
+                        - invalidSpeakerList
+                        - invalidAction
+                        - internalError
+                        type: string
+                    errorDetails:
+                        $ref: '#/components/schemas/RoomCompensationErrorDetails'
+                    lastRunAvailable:
+                        description: 'When true, measurements have been cached due
+                            to manual interrupt or failure,
+
+                            making it possible to use the action "continue" where
+                            the system will continue from the speaker where interrupted.
+
+                            The cached measurements are only temporary and will be
+                            cleared after some time (default 15min),
+
+                            in which case lastRunAvailable becomes false.
+
+                            '
+                        type: boolean
+                    properties:
+                        $ref: '#/components/schemas/RoomCompensationProperties'
+                    timeStamp:
+                        format: date-time
+                        type: string
+                type: object
+        RoomCompensationStateValue:
+            properties:
+                state:
+                    enum:
+                    - notStarted
+                    - running
+                    - done
+                    - error
+                    - stopped
+                    type: string
+            type: object
+        RoomCompensationType:
+            properties:
+                value:
+                    description: "The type of roomcompensation used / to use.\nsimple:\n\
+                        \  For speakers without external speakers.\nadvanced:\n  For\
+                        \ products with external speakers or other advanced multichannel\
+                        \ capabilities.\n  This requires that at least action in the\
+                        \ other properties of RoomCompensationProperties is set.\n"
+                    enum:
+                    - simple
+                    - advanced
+                    type: string
+            type: object
+        RoomCompensationValue:
+            description: 'List of room compensation sweeps to combine. No room compensation
+                is done
+
+                if this list is empty. The maximum length of this list is product
+
+                specific.
+
+                '
+            items:
+                type: string
+            type: array
+        RoomCompensationVersion:
+            properties:
+                algorithm:
+                    format: int32
+                    minimum: 0
+                    type: integer
+                coefficients:
+                    format: int32
+                    minimum: 0
+                    type: integer
+            type: object
+        Scene:
+            allOf:
+            -   $ref: '#/components/schemas/SceneProperties'
+            -   $ref: '#/components/schemas/SceneClassification'
+        SceneClassification:
+            properties:
+                classification:
+                    description: The classification of Scene
+                    enum:
+                    - system
+                    - userDefined
+                    nullable: true
+                    type: string
+            type: object
+        SceneList:
+            description: A list of scenes
+            items:
+                format: uuid
+                type: string
+            type: array
+        SceneMap:
+            additionalProperties:
+                $ref: '#/components/schemas/Scene'
+            example:
+                fdecf968-3ab9-46dc-a71d-e4204ef47fdb:
+                    actionList:
+                    -   type: volume
+                        volumeLevel: 35
+                    -   radioStationId: '8779112938791514'
+                        type: radio
+                    -   stopDuration: 20
+                        type: stop
+                    label: New label
+            type: object
+        SceneMatch:
+            properties:
+                label:
+                    nullable: true
+                    type: string
+                tags:
+                    $ref: '#/components/schemas/SceneTags'
+                    nullable: true
+            type: object
+        SceneProperties:
+            properties:
+                actionList:
+                    $ref: '#/components/schemas/ActionList'
+                clientContext:
+                    description: 'An optional generic string property supplied from
+                        the client. If
+
+                        supplied it will overwrite any currently stored clientContext.
+                        If
+
+                        not supplied any stored clientContext will be left unchanged.
+
+                        '
+                    maxLength: 4096
+                    nullable: true
+                    type: string
+                label:
+                    nullable: true
+                    type: string
+                tags:
+                    $ref: '#/components/schemas/SceneTags'
+                    nullable: true
+            required:
+            - actionList
+            type: object
+        SceneTags:
+            description: A list of user defined tags. This allows a client to create
+                virtual lists
+            items:
+                type: string
+            type: array
+        SceneTriggerBaseProperties:
+            description: Base properties for a scene trigger
+            properties:
+                actionList:
+                    $ref: '#/components/schemas/ActionList'
+                    nullable: true
+                sceneList:
+                    $ref: '#/components/schemas/SceneList'
+                    description: 'Actions will be extracted from all scenes in this
+                        list and will be merged together with (`actionList`).
+
+                        On colliding actions the priority will be: (N represent last
+                        index in `sceneList`)
+
+                        1. `actionList`
+
+                        2. scene N in `sceneList`
+
+                        ...
+
+                        3. scene 0 in `sceneList`
+
+                        '
+                    nullable: true
+            type: object
+        SerialNumber:
+            description: Speaker serial number
+            example: '12345678'
+            pattern: ^\d{8}
+            type: string
+        SoftwareUpdateState:
+            properties:
+                secondsRemaining:
+                    format: int32
+                    type: integer
+                value:
+                    enum:
+                    - idle
+                    - checking
+                    - updateCheckFailed
+                    - noUpdatesAvailable
+                    - updateAvailable
+                    - downloadingUpdate
+                    - updateDownloaded
+                    - downloadFailed
+                    - installingUpdate
+                    - installingAutomaticUpdate
+                    - installationFailed
+                    - installationDonePendingReboot
+                    - schedulerFailed
+                    - rebooting
+                    type: string
+            type: object
+        SoftwareUpdateStatus:
+            properties:
+                availableUpdate:
+                    $ref: '#/components/schemas/SoftwareVersion'
+                lastCheck:
+                    format: date-time
+                    type: string
+                lastUpdate:
+                    format: date-time
+                    type: string
+                softwareVersion:
+                    $ref: '#/components/schemas/SoftwareVersion'
+                state:
+                    $ref: '#/components/schemas/SoftwareUpdateState'
+                updateProgress:
+                    format: int32
+                    type: integer
+                updateType:
+                    enum:
+                    - none
+                    - normal
+                    - critical
+                    - forced
+                    type: string
+            required:
+            - softwareVersion
+            - state
+            type: object
+        SoftwareVersion:
+            type: string
+        SoundAdjustments:
+            properties:
+                ambience:
+                    format: double
+                    type: number
+                bass:
+                    format: int32
+                    type: integer
+                directivity:
+                    type: string
+                ecoMode:
+                    type: boolean
+                fadein:
+                    type: boolean
+                loudness:
+                    type: boolean
+                treble:
+                    format: int32
+                    type: integer
+            type: object
+        SoundFeatureSet:
+            properties:
+                ambience:
+                    $ref: '#/components/schemas/AmbienceFeature'
+                balance:
+                    $ref: '#/components/schemas/BalanceFeature'
+                bass:
+                    $ref: '#/components/schemas/BassFeature'
+                bass-management:
+                    $ref: '#/components/schemas/BassManagementFeature'
+                compression:
+                    $ref: '#/components/schemas/CompressionFeature'
+                directivity:
+                    $ref: '#/components/schemas/DirectivityFeature'
+                fader:
+                    $ref: '#/components/schemas/FaderFeature'
+                roomCompensation:
+                    $ref: '#/components/schemas/RoomCompensationFeature'
+                spatial-envelopment:
+                    $ref: '#/components/schemas/SpatialEnvelopmentFeature'
+                spatial-height:
+                    $ref: '#/components/schemas/SpatialHeightFeature'
+                spatial-processing:
+                    $ref: '#/components/schemas/SpatialProcessingFeature'
+                spatial-surround:
+                    $ref: '#/components/schemas/SpatialSurroundFeature'
+                spatial-width:
+                    $ref: '#/components/schemas/SpatialWidthFeature'
+                speech-enhance:
+                    $ref: '#/components/schemas/SpeechEnhanceFeature'
+                toneTouchX:
+                    $ref: '#/components/schemas/ToneTouchXFeature'
+                toneTouchY:
+                    $ref: '#/components/schemas/ToneTouchYFeature'
+                treble:
+                    $ref: '#/components/schemas/TrebleFeature'
+            type: object
+        SoundSettings:
+            properties:
+                adjustments:
+                    $ref: '#/components/schemas/SoundAdjustments'
+                roomCompensation:
+                    $ref: '#/components/schemas/RoomCompensationInfo'
+                toneTouch:
+                    $ref: '#/components/schemas/SoundToneTouch'
+            type: object
+        SoundToneTouch:
+            properties:
+                x:
+                    format: double
+                    type: number
+                y:
+                    format: double
+                    type: number
+                z:
+                    format: double
+                    type: number
+            type: object
+        Source:
+            properties:
+                id:
+                    type: string
+                isEnabled:
+                    description: some sources require an explicit activation or accept
+                        of terms before being enabled
+                    type: boolean
+                isMultiroomAvailable:
+                    type: boolean
+                isPlayable:
+                    type: boolean
+                name:
+                    type: string
+                type:
+                    $ref: '#/components/schemas/SourceTypeEnum'
+            type: object
+        SourceArray:
+            properties:
+                items:
+                    items:
+                        $ref: '#/components/schemas/Source'
+                    type: array
+            type: object
+        SourceTypeEnum:
+            properties:
+                value:
+                    description: '- beolink
+
+                        - bluetooth
+
+                        - dlna
+
+                        - qplay
+
+                        - airPlay
+
+                        - lineIn
+
+                        - chromeCast
+
+                        - uriStreamer
+
+                        - netRadio
+
+                        - local
+
+                        - generator
+
+                        - spotify
+
+                        - spdif
+
+                        - pl
+
+                        - wpl
+
+                        - tv
+
+                        - deezer
+
+                        - usbIn
+
+                        - tidal
+
+                        - tidalConnect
+
+                        - unknown'
+                    example: netRadio
+                    type: string
+            type: object
+        SpatialEnvelopment:
+            properties:
+                value:
+                    description: Selected spatial-envelopment value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        SpatialEnvelopmentFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpatialEnvelopment'
+            -   $ref: '#/components/schemas/SpatialEnvelopmentRange'
+        SpatialEnvelopmentRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpatialEnvelopment'
+                    description: Default spatial-envelopment value
+                range:
+                    description: spatial-envelopment range
+                    items:
+                        $ref: '#/components/schemas/SpatialEnvelopment'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        SpatialHeight:
+            properties:
+                value:
+                    description: Selected spatial-height value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        SpatialHeightFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpatialHeight'
+            -   $ref: '#/components/schemas/SpatialHeightRange'
+        SpatialHeightRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpatialHeight'
+                    description: Default spatial-height value
+                range:
+                    description: spatial-height range
+                    items:
+                        $ref: '#/components/schemas/SpatialHeight'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        SpatialProcessing:
+            properties:
+                value:
+                    description: Selected spatial-processing value
+                    enum:
+                    - direct
+                    - trueimage
+                    - downmix
+                    type: string
+            required:
+            - value
+            type: object
+        SpatialProcessingFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpatialProcessing'
+            -   $ref: '#/components/schemas/SpatialProcessingRange'
+        SpatialProcessingRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpatialProcessing'
+                    description: Default spatial-processing value
+                range:
+                    description: spatial-processing range
+                    items:
+                        $ref: '#/components/schemas/SpatialProcessing'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        SpatialSurround:
+            properties:
+                value:
+                    description: Selected spatial-surround value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        SpatialSurroundFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpatialSurround'
+            -   $ref: '#/components/schemas/SpatialSurroundRange'
+        SpatialSurroundRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpatialSurround'
+                    description: Default spatial-surround value
+                range:
+                    description: spatial-surround range
+                    items:
+                        $ref: '#/components/schemas/SpatialSurround'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        SpatialWidth:
+            properties:
+                value:
+                    description: Selected spatial-width value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        SpatialWidthFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpatialWidth'
+            -   $ref: '#/components/schemas/SpatialWidthRange'
+        SpatialWidthRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpatialWidth'
+                    description: Default spatial-width value
+                range:
+                    description: spatial-width range
+                    items:
+                        $ref: '#/components/schemas/SpatialWidth'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        SpeakerGroup:
+            properties:
+                crossoverFrequency:
+                    description: Crossover frequency for bass management in Hz
+                    format: int32
+                    maximum: 300
+                    minimum: 20
+                    nullable: true
+                    type: integer
+                enablePhaseCompensation:
+                    description: Enable phase compensation in bass management.
+                    nullable: true
+                    type: boolean
+                friendlyName:
+                    description: 'Friendly name of the SpeakerGroup.
+
+                        Required when creating a new group
+
+                        '
+                    nullable: true
+                    type: string
+                id:
+                    $ref: '#/components/schemas/SpeakerGroupId'
+                    nullable: true
+                isDeleteable:
+                    nullable: true
+                    type: boolean
+                items:
+                    items:
+                        $ref: '#/components/schemas/SpeakerGroupMember'
+                    nullable: true
+                    type: array
+                latencyProfile:
+                    $ref: '#/components/schemas/LatencyProfile'
+                    nullable: true
+                roomCompensationId:
+                    description: 'ID of the calculated coefficents for this group,
+                        made during advanced room compensation.
+
+                        When updating an existing group, an empty string will clear
+                        roomCompensationId.
+
+                        '
+                    format: uuid
+                    nullable: true
+                    type: string
+                speakerPreset:
+                    description: Speaker preset / listening mode eg. BL28 curtain
+                        position etc.
+                    format: int32
+                    maximum: 99
+                    minimum: 0
+                    nullable: true
+                    type: integer
+            type: object
+        SpeakerGroupId:
+            format: uuid
+            type: string
+        SpeakerGroupMember:
+            properties:
+                distance:
+                    description: Distance from listening position in cm
+                    format: int32
+                    maximum: 1500
+                    minimum: 0
+                    nullable: true
+                    type: integer
+                friendlyName:
+                    nullable: true
+                    type: string
+                gain:
+                    description: Level in dB
+                    format: float
+                    maximum: 6
+                    minimum: -24
+                    nullable: true
+                    type: number
+                id:
+                    type: string
+                location:
+                    description: "Coordinates of the speaker position in cm.\nLocation\
+                        \ is only relevant when the group is based on the automatic\
+                        \ role assignment of advanced room compensation.\nThe location\
+                        \ is relative to the external microphone used during advanced\
+                        \ room compensation measurements:\n  x=0, y=0, z=0: The location\
+                        \ of the external microphone used during measurement.\n  x<0:\
+                        \ To the left of the external microphone.\n  x>0: To the right\
+                        \ of the external microphone.\n  y<0: Behind the external\
+                        \ microphone.\n  y>0: In front of the external microphone.\n\
+                        \  z<0: Above the external microphone (may not be reliable).\n\
+                        \  z>0: Below the external microphone (may not be reliable).\n"
+                    nullable: true
+                    properties:
+                        x:
+                            format: int32
+                            type: integer
+                        y:
+                            format: int32
+                            type: integer
+                        z:
+                            format: int32
+                            type: integer
+                    required:
+                    - x
+                    - y
+                    - z
+                    type: object
+                redirectionLevel:
+                    description: Redirection level for bass management in dB
+                    format: int32
+                    maximum: 6
+                    minimum: -100
+                    nullable: true
+                    type: integer
+                role:
+                    $ref: '#/components/schemas/SpeakerRole'
+                type:
+                    nullable: true
+                    type: string
+            required:
+            - id
+            type: object
+        SpeakerGroupOverview:
+            properties:
+                friendlyName:
+                    type: string
+                id:
+                    $ref: '#/components/schemas/SpeakerGroupId'
+                isDeleteable:
+                    type: boolean
+            required:
+            - friendlyName
+            - id
+            - isDeleteable
+            type: object
+        SpeakerId:
+            example: FrontLeft
+            type: string
+        SpeakerLinkMemberStatus:
+            properties:
+                baseUrl:
+                    description: API prefix to use when talking to the secondary
+                    format: uri
+                    nullable: true
+                    type: string
+                health:
+                    enum:
+                    - unknown
+                    - good
+                    - warning
+                    - bad
+                    example: good
+                    type: string
+                ipAddress:
+                    $ref: '#/components/schemas/OptionalIpAddress'
+                networkType:
+                    enum:
+                    - none
+                    - wired
+                    - wireless
+                    type: string
+                productType:
+                    type: string
+                serialNumber:
+                    $ref: '#/components/schemas/SerialNumber'
+                updatedAt:
+                    $ref: '#/components/schemas/Timestamp'
+            required:
+            - health
+            - serialNumber
+            - updatedAt
+            - productName
+            - networkType
+            type: object
+        SpeakerLinkStatus:
+            properties:
+                speakers:
+                    items:
+                        $ref: '#/components/schemas/SpeakerLinkMemberStatus'
+                    type: array
+                type:
+                    enum:
+                    - standalone
+                    - stereo
+                    - surround
+                    type: string
+            required:
+            - type
+            - speakers
+            type: object
+        SpeakerRole:
+            nullable: true
+            type: string
+        SpeakerRoleEnum:
+            properties:
+                value:
+                    enum:
+                    - standalone
+                    - multichannel
+                    type: string
+            type: object
+        SpeechEnhance:
+            properties:
+                value:
+                    description: Selected speech-enhance value
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        SpeechEnhanceFeature:
+            allOf:
+            -   $ref: '#/components/schemas/SpeechEnhance'
+            -   $ref: '#/components/schemas/SpeechEnhanceRange'
+        SpeechEnhanceRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/SpeechEnhance'
+                    description: Default speech-enhance value
+                range:
+                    description: speech-enhance range
+                    items:
+                        $ref: '#/components/schemas/SpeechEnhance'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        StandConnected:
+            properties:
+                connected:
+                    type: boolean
+            type: object
+        StandMovement:
+            properties:
+                angle:
+                    format: float
+                    nullable: true
+                    type: number
+                ignoreEndstop:
+                    example: false
+                    type: boolean
+                standMotion:
+                    enum:
+                    - continuousCCW
+                    - stepCCW
+                    - stop
+                    - stepCW
+                    - continuousCW
+                    type: string
+            type: object
+        StandPosition:
+            properties:
+                angle:
+                    format: float
+                    type: number
+            type: object
+        SupportedSoundFeatures:
+            additionalProperties:
+                $ref: '#/components/schemas/SoundFeatureSet'
+            description: Supported sound features
+            type: object
+        Timestamp:
+            description: Timestamp in RFC3393 format
+            format: date-time
+            type: string
+        ToneTouch:
+            properties:
+                x:
+                    $ref: '#/components/schemas/ToneTouchType'
+                y:
+                    $ref: '#/components/schemas/ToneTouchType'
+            type: object
+        ToneTouchType:
+            properties:
+                value:
+                    format: double
+                    type: number
+            required:
+            - value
+            type: object
+        ToneTouchTypeRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/ToneTouchType'
+                    description: Product and role specific default ToneTouch X or
+                        Y
+                range:
+                    description: Product and role specific tone touch X or Y range
+                    items:
+                        $ref: '#/components/schemas/ToneTouchType'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        ToneTouchXFeature:
+            allOf:
+            -   $ref: '#/components/schemas/ToneTouchType'
+            -   $ref: '#/components/schemas/ToneTouchTypeRange'
+        ToneTouchYFeature:
+            allOf:
+            -   $ref: '#/components/schemas/ToneTouchType'
+            -   $ref: '#/components/schemas/ToneTouchTypeRange'
+        Treble:
+            properties:
+                value:
+                    description: Selected treble value
+                    format: int32
+                    type: integer
+            required:
+            - value
+            type: object
+        TrebleFeature:
+            allOf:
+            -   $ref: '#/components/schemas/Treble'
+            -   $ref: '#/components/schemas/TrebleRange'
+        TrebleRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/Treble'
+                    description: Product and role specific default treble value
+                range:
+                    description: Product and role specific treble range
+                    items:
+                        $ref: '#/components/schemas/Treble'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
+            type: object
+        TvInfoEventData:
+            properties:
+                integration:
+                    $ref: '#/components/schemas/TvIntegrationTypes'
+            type: object
+        TvIntegrationTypes:
+            properties:
+                value:
+                    enum:
+                    - ThirdParty
+                    - Lge
+                    type: string
+            type: object
+        TvProperties:
+            properties:
+                integrationSupported:
+                    $ref: '#/components/schemas/TvIntegrationTypes'
+                name:
+                    nullable: true
+                    type: string
+                year:
+                    nullable: true
+                    type: integer
+            type: object
+        TvSoundSettings:
+            properties:
+                lge:
+                    $ref: '#/components/schemas/LgeTvSoundSettings'
+            type: object
+        TvState:
+            properties:
+                integration:
+                    $ref: '#/components/schemas/TvIntegrationTypes'
+                soundSettings:
+                    $ref: '#/components/schemas/TvSoundSettings'
+                tvInfo:
+                    $ref: '#/components/schemas/TvProperties'
+            type: object
+        Uri:
+            properties:
+                location:
+                    type: string
+            type: object
+        UserFlow:
+            properties:
+                userId:
+                    format: int64
+                    type: string
+            type: object
+        VideoPixelFormat:
+            properties:
+                bitdepth:
+                    enum:
+                    - bit8
+                    - bit10
+                    - bit12
+                    type: string
+                chromaSubsample:
+                    enum:
+                    - yCbCr444RGB
+                    - yCbCr422
+                    - yCbCr420
+                    type: string
+                colorimetry:
+                    enum:
+                    - rGB
+                    - opRGB
+                    - rGBP3D65
+                    - rGBP3DCI
+                    - rGB2020
+                    - yCC601
+                    - yCC709
+                    - xvYCC601
+                    - xvYCC709
+                    - sYCC601
+                    - opYCC601
+                    - yCC2020NCL
+                    - yCC2020NL
+                    type: string
+                fullRange:
+                    type: boolean
+            type: object
+        VideoTimings:
+            properties:
+                horizontalResolution:
+                    type: integer
+                interlaced:
+                    type: boolean
+                refreshRate:
+                    format: double
+                    type: number
+                verticalResolution:
+                    type: integer
+            type: object
+        VolumeLevel:
+            properties:
+                level:
+                    format: int32
+                    type: integer
+            type: object
+        VolumeMute:
+            properties:
+                muted:
+                    type: boolean
+            type: object
+        VolumeSettings:
+            properties:
+                default:
+                    $ref: '#/components/schemas/VolumeLevel'
+                maximum:
+                    $ref: '#/components/schemas/VolumeLevel'
+            type: object
+        VolumeState:
+            properties:
+                default:
+                    $ref: '#/components/schemas/VolumeLevel'
+                level:
+                    $ref: '#/components/schemas/VolumeLevel'
+                maximum:
+                    $ref: '#/components/schemas/VolumeLevel'
+                muted:
+                    $ref: '#/components/schemas/VolumeMute'
+            type: object
+        WebSocketEventActiveHdmiInputSignal:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/HdmiInput'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventActiveListeningMode:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/ListeningModeProps'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventActiveSpeakerGroup:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SpeakerGroupOverview'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventAlarmTimer:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/AlarmTimerEventData'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventAlarmTriggered:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/AlarmTriggeredInfo'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventBattery:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/BatteryState'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventBeoRemoteButton:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/BeoRemoteButton'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventBeolinkExperiencesResult:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/BeolinkExperiencesResult'
+                eventType:
+                    type: string
+            required:
+            - eventType
+            - eventData
+            type: object
+        WebSocketEventBeolinkJoinResult:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/BeolinkJoinResult'
+                eventType:
+                    type: string
+            required:
+            - eventType
+            - eventData
+            type: object
+        WebSocketEventButton:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/ButtonEvent'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventCurtains:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/ProductCurtainStatus'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventHdmiVideoFormatSignal:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/HdmiVideoFormat'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventNotification:
+            description: This telegram is used to send a tagged notification.
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/WebsocketNotificationTag'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPlaybackError:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/PlaybackError'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPlaybackMetadata:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/PlaybackContentMetadata'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPlaybackProgress:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/PlaybackProgress'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPlaybackSource:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/Source'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPlaybackState:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/RenderingState'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPowerState:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/PowerStateEnum'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventPucInstallRemoteIdStatus:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/InstallRecordIdState'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventRole:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SpeakerRoleEnum'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventRoomCompensationCurrentMeasurementEvent:
+            description: 'Sent when a room compensation measurement is started/done.
+
+                Is only sent when room compensation type is advanced.
+
+                '
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/RoomCompensationCurrentMeasurement'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventRoomCompensationState:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/RoomCompensationStateValue'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventSoftwareUpdateState:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SoftwareUpdateState'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventSoundSettings:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SoundSettings'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventSourceChange:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/Source'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventSpeakerGroupChanged:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SpeakerGroupId'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventSpeakerLinkStatusChanged:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/SpeakerLinkStatus'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventStandConnected:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/StandConnected'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventStandPosition:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/StandPosition'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventTvInfo:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/TvInfoEventData'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventVolume:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/VolumeState'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventWisaOutState:
+            description: Speaker Discovery State changed
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/WisaOutState'
+                eventType:
+                    type: string
+            required:
+            - eventType
+            - eventData
+            type: object
+        WebsocketNotificationTag:
+            properties:
+                value:
+                    enum:
+                    - configuration
+                    - uri
+                    - generatorSettings
+                    - lineInSettings
+                    - bluetoothDevices
+                    - remoteControlDevices
+                    - secondariesList
+                    - queueHasBeenChanged
+                    - endOfQueueHasBeenReached
+                    - beolinkPeers
+                    - beolinkListeners
+                    - beolinkAvailableListeners
+                    - bluetoothPairingStateChanged
+                    - outputsChanged
+                    - speakerGroupOverviewChanged
+                    - remoteMenuChanged
+                    - proximityPresenceDetected
+                    - proximityPresenceNotDetected
+                    type: string
+            type: object
+        WisaOutState:
+            properties:
+                state:
+                    enum:
+                    - idle
+                    - discovering
+                    - deleting
+                    - updatingSpeakerFirmware
+                    type: string
+            type: object
+info:
+    contact:
+        email: support@bang-olufsen.dk
+        name: Bang & Olufsen
+    description: API for interacting with the Mozart platform.
+    license:
+        name: MIT
+        url: https://opensource.org/licenses/MIT
+    title: Mozart platform API
+    version: 0.2.0
+openapi: 3.0.0
+paths:
+    /api/v1/battery:
+        get:
+            operationId: get-battery-state
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BatteryState'
+                    description: The battery state of the product
+            summary: Get battery state of the product
+            tags:
+            - Power
+            - mozart
+    /api/v1/beolink/allstandby:
+        post:
+            operationId: post-beolink-allstandby
+            responses:
+                '202':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+            summary: Broadcast an all standby event to turn all Beolink devices off
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/available-listeners:
+        get:
+            description: 'Get a list of devices that can be listening to this device
+                active experience.
+
+                '
+            operationId: get-beolink-available-listeners
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: '#/components/schemas/BeolinkAvailableListener'
+                                type: array
+                    description: Success
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+            summary: Get available listeners
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/expand/{jid}:
+        parameters:
+        -   description: Jabber id of peer to expand the active experience to
+            in: path
+            name: jid
+            required: true
+            schema:
+                $ref: '#/components/schemas/BeolinkPeerID'
+        post:
+            description: 'Expand the current active experience to another device with
+                jabber id `{jid}`.
+
+                '
+            operationId: post-beolink-expand
+            responses:
+                '202':
+                    description: Success
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+                '403':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Not allowed to initiate join
+                '404':
+                    description: Remote device not found
+            summary: Expand the current active experience
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/join:
+        post:
+            operationId: join-latest-beolink-experience
+            responses:
+                '202':
+                    $ref: '#/components/responses/BeolinkJoinResponse'
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+                '403':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Not allowed to initiate join
+            summary: Trigger touch to join
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/join-result/{id}:
+        get:
+            description: 'Returns the result of a join request.
+
+
+                **WARNING:** This end-point is only for testing purposes. Only a limited
+
+                number of results are kept, so if there are multiple API clients using
+
+                the device at the same time, and you are polling this end-point, you
+                may
+
+                miss the result of your join request.
+
+                '
+            operationId: get-beolink-join-result
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BeolinkJoinResult'
+                    description: Join result available
+                '404':
+                    description: Join result unavailable
+            summary: Get Beolink join result, test-endpoint
+            tags:
+            - Beolink
+            - mozart
+        parameters:
+        -   description: Join request ID
+            in: path
+            name: id
+            required: true
+            schema:
+                $ref: '#/components/schemas/BeolinkRequestID'
+    /api/v1/beolink/join/{jid}:
+        parameters:
+        -   description: Jabber ID of peer to join
+            in: path
+            name: jid
+            required: true
+            schema:
+                $ref: '#/components/schemas/BeolinkPeerID'
+        -   description: Ask to join a specific source on peer
+            in: query
+            name: source
+            required: false
+            schema:
+                type: string
+        post:
+            description: 'Join the experience currently active on peer with Jabber
+                ID `{jid}`.
+
+                '
+            operationId: join-beolink-peer
+            responses:
+                '202':
+                    $ref: '#/components/responses/BeolinkJoinResponse'
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+                '403':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Not allowed to initiate join
+            summary: Join multi-room experience
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/leave:
+        post:
+            operationId: post-beolink-leave
+            responses:
+                '202':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+                '404':
+                    description: No active experience found
+            summary: Leave the ongoing experience (disconnect this device from remote)
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/listeners:
+        get:
+            description: 'Get a list of devices that are listening to this device
+                active experience (that have joined).
+
+                '
+            operationId: get-beolink-listeners
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: '#/components/schemas/BeolinkListener'
+                                type: array
+                    description: Success
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+            summary: Get joined peers
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/peers:
+        get:
+            description: 'Get information about the Beolink peers discovered by this
+                device.
+
+                '
+            operationId: get-beolink-peers
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: '#/components/schemas/BeolinkPeer'
+                                type: array
+                    description: Success
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+            summary: Get discovered peers
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/self:
+        get:
+            description: 'Returns Beolink information like about this device. This
+                can be useful if you want to expand _to_ this device.
+
+                '
+            operationId: get-beolink-self
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BeolinkPeer'
+                    description: successful operation
+            summary: Get information about this device
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/beolink/unexpand/{jid}:
+        parameters:
+        -   description: Jabber id of peer to unexpand
+            in: path
+            name: jid
+            required: true
+            schema:
+                $ref: '#/components/schemas/BeolinkPeerID'
+        post:
+            description: 'Disconnect the device with jabber id `{jid}` from the current
+                active experience.
+
+                '
+            operationId: post-beolink-unexpand
+            responses:
+                '202':
+                    description: Success
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Beolink not enabled on this device
+                '404':
+                    description: Remote device not found
+            summary: Unexpand (disconnect) a device from the multiroom session
+            tags:
+            - Beolink
+            - mozart
+    /api/v1/content:
+        get:
+            operationId: get-content
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContentItemMap'
+                    description: Successful request
+            summary: Get a list of available content
+            tags:
+            - Content
+            - mozart
+        parameters:
+        -   description: Filter result that start with x. It could be input source
+                "tv", "netradio" or content "tv://TV", "tv://netflix"
+            in: query
+            name: startWith
+            required: false
+            schema:
+                type: string
+    /api/v1/overlay/play:
+        post:
+            description: 'Play some audio as an overlay. This will duck currently
+                playing music while the audio is playing. Currently 100 unique TTS
+                messages can be generated a day and generated messages are cached
+                for 24 hours.
+
+                '
+            operationId: post-overlay-play
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/OverlayPlayRequest'
+                description: settings to use for the overlay
+                required: true
+            responses:
+                '202':
+                    description: successful request; will attempt to play overlay
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Bad request
+            summary: Play overlay
+            tags:
+            - Overlay
+            - mozart
+    /api/v1/playback/command/{command}:
+        post:
+            operationId: post-playback-command
+            parameters:
+            -   description: the named command to execute
+                in: path
+                name: command
+                required: true
+                schema:
+                    enum:
+                    - play
+                    - pause
+                    - stop
+                    - skip
+                    - prev
+                    type: string
+            responses:
+                '201':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Send a specific playback command to the product
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/deezer/flow:
+        post:
+            operationId: start-deezer-flow
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserFlow'
+                description: Select user
+            responses:
+                '201':
+                    description: successful request
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Play users flow. If no provided user id it will play the flow
+                connected to the active account
+            tags:
+            - Deezer
+            - Playback
+            - mozart
+    /api/v1/playback/preset/{id}/trigger:
+        post:
+            operationId: activate-preset
+            parameters:
+            -   description: the id of the preset you want to trigger
+                in: path
+                name: id
+                required: true
+                schema:
+                    type: integer
+            responses:
+                '204':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+                '412':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Pre-condition not met
+            summary: Trigger a preset
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/queue:
+        post:
+            operationId: add-to-queue
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PlayQueueItem'
+                description: the queue element you want to add
+                required: true
+            responses:
+                '204':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Add an element to the queue
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/queue/clear:
+        post:
+            operationId: post-clear-queue
+            responses:
+                '201':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Clear the queue
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/queue/settings:
+        get:
+            operationId: get-settings-queue
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PlayQueueSettings'
+                                type: object
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the current queue settings
+            tags:
+            - Playback
+            - mozart
+        put:
+            operationId: set-settings-queue
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PlayQueueSettings'
+                description: the desired settings
+                required: true
+            responses:
+                '204':
+                    description: the new settings were accepted
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set queue settings
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/seek:
+        put:
+            operationId: seek-to-position
+            parameters:
+            -   description: position in milliseconds
+                in: query
+                name: position_ms
+                required: true
+                schema:
+                    format: int32
+                    type: integer
+            responses:
+                '204':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Seek to position in stream
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/sources:
+        get:
+            operationId: get-available-sources
+            parameters:
+            -   description: filter sources for remote control
+                in: query
+                name: target-remote
+                required: false
+                schema:
+                    type: boolean
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SourceArray'
+                    description: Returns a list of available sources
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get all the available sources
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/sources/active/{sourceId}:
+        post:
+            operationId: set-active-source
+            parameters:
+            -   description: the id of the source to activate
+                in: path
+                name: sourceId
+                required: true
+                schema:
+                    type: string
+            responses:
+                '201':
+                    description: Successfully changed the active source
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the active source
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/state:
+        get:
+            operationId: get-playback-state
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PlaybackState'
+                    description: Model describing the current playback state and meta
+                        data
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the current playback state
+            tags:
+            - Playback
+            - mozart
+    /api/v1/playback/uri:
+        post:
+            operationId: post-uri-source
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Uri'
+                description: the desired uri from which to stream data
+                required: true
+            responses:
+                '201':
+                    description: successful operation
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the URI from which sound is streamed
+            tags:
+            - Playback
+            - mozart
+    /api/v1/product/info/friendlyname:
+        put:
+            operationId: set-product-friendly-name
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ProductFriendlyName'
+                description: the friendly name for the product
+                required: true
+            responses:
+                '204':
+                    description: product friendly name updated
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the friendly name
+            tags:
+            - Product
+            - mozart
+    /api/v1/remote:
+        get:
+            operationId: get-remote-menu
+            parameters:
+            -   description: Get all descendants to this item
+                in: query
+                name: descendantsTo
+                schema:
+                    format: uuid
+                    type: string
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            example:
+                                6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0:
+                                    content:
+                                        contentUri: tv
+                                        source: tv
+                                    firstChildMenuItemId: ee5196ce-65c4-4c56-9a48-1943c4afef9c
+                                    fixed: true
+                                    id: 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0
+                                    label: TV
+                                    parentMenuItemId: null
+                                dd5196ce-65c4-4c56-9a48-1943c4afef9c:
+                                    content:
+                                        contentUri: tv://HBO
+                                        source: tv
+                                    fixed: false
+                                    id: dd5196ce-65c4-4c56-9a48-1943c4afef9c
+                                    label: HBO
+                                    parentMenuItemId: 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0
+                                ee5196ce-65c4-4c56-9a48-1943c4afef9c:
+                                    content:
+                                        contentUri: tv://Netflix
+                                        source: tv
+                                    fixed: false
+                                    id: ee5196ce-65c4-4c56-9a48-1943c4afef9c
+                                    label: Netflix
+                                    nextSiblingMenuItemId: dd5196ce-65c4-4c56-9a48-1943c4afef9c
+                                    parentMenuItemId: 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0
+                            schema:
+                                $ref: '#/components/schemas/RemoteMenuItemMap'
+                    description: Successful request
+            summary: Get all remote menu items
+            tags:
+            - Remote
+            - mozart
+    /api/v1/remote/key/{id}/trigger:
+        post:
+            operationId: post-remote-key-trigger
+            parameters:
+            -   description: Key identifier
+                in: path
+                name: id
+                required: true
+                schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RemoteUIKeyState'
+                required: true
+            responses:
+                '204':
+                    description: Remote input key press registered successfully
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Failed to register key press
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Key not found
+            summary: Remote input key press
+            tags:
+            - Remote
+            - mozart
+    /api/v1/remote/{id}/trigger:
+        parameters:
+        -   description: Remote menu item ID
+            in: path
+            name: id
+            required: true
+            schema:
+                format: uuid
+                type: string
+        post:
+            operationId: post-remote-trigger
+            responses:
+                '204':
+                    description: Menu item successfully triggered
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Menu item not found
+            summary: Trigger a remote menu item
+            tags:
+            - Remote
+            - mozart
+    /api/v1/scene/match-trigger:
+        post:
+            operationId: post-scene-match-trigger
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SceneMatch'
+                required: true
+            responses:
+                '204':
+                    description: Successful request
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Bad request no match objects provided
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Could not find any matching scene
+            summary: Trigger the first scene with same non null objects provided in
+                the SceneMatch object
+            tags:
+            - Scenes
+            - mozart
+    /api/v1/scene/run:
+        post:
+            operationId: run-provided-scene
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SceneProperties'
+                description: The scene you want to run
+                required: true
+            responses:
+                '204':
+                    description: Successful request
+            summary: Run provided scene
+            tags:
+            - Scenes
+            - mozart
+    /api/v1/scene/{id}/trigger:
+        post:
+            operationId: post-scene-trigger
+            parameters:
+            -   description: ID of the scene
+                in: path
+                name: id
+                required: true
+                schema:
+                    format: uuid
+                    type: string
+            responses:
+                '204':
+                    description: Successful request
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Bad request can't convert id to UUID
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Could not find scene
+            summary: Trigger a specific scene
+            tags:
+            - Scenes
+            - mozart
+    /api/v1/scenes:
+        get:
+            operationId: get-all-scenes
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SceneMap'
+                    description: Successful request
+            summary: Get a list of configured scenes
+            tags:
+            - Scenes
+            - mozart
+    /api/v1/setup/bluetooth/devices:
+        get:
+            operationId: get-bluetooth-devices-status
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BluetoothDeviceList'
+                    description: returns the current bluetooth devices
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the bluetooth devices status
+            tags:
+            - Bluetooth
+            - mozart
+    /api/v1/setup/presets:
+        get:
+            operationId: get-presets
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PresetMap'
+                    description: The preset audio source mapping
+            summary: Get the preset configuration
+            tags:
+            - Settings
+            - mozart
+    /api/v1/setup/remote/home-control-ixp:
+        post:
+            operationId: post-remote-home-control-ixp
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HomeControlIxp'
+                description: The new IXP
+                required: true
+            responses:
+                '200':
+                    description: IXP updated
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Change any active Immersive Experience (IXP)
+            tags:
+            - Settings
+            - mozart
+    /api/v1/setup/remote/home-control-uri:
+        get:
+            operationId: get-remote-home-control-uri
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HomeControlUri'
+                    description: HomeControl dashboard and IXP uri
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get HomeControl dashboard uri and (optional) Immersive Experience
+                (IXP) start page
+            tags:
+            - Settings
+            - mozart
+        put:
+            operationId: set-remote-home-control-uri
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HomeControlUri'
+                description: The new uri for HomeControl dashboard and IXP start page
+                required: true
+            responses:
+                '200':
+                    description: Uri for HomeControl dashboard and IXP start page
+                        updated
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the uri for HomeControl dashboard and Immersive Experience
+                (IXP) start page
+            tags:
+            - Settings
+            - mozart
+    /api/v1/setup/remotes:
+        get:
+            operationId: get-bluetooth-remotes
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PairedRemoteResponse'
+                    description: List of paired remotes was obtained
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get a list of paired bluetooth remotes
+            tags:
+            - Settings
+            - mozart
+    /api/v1/softwareupdate:
+        get:
+            operationId: get-softwareupdate-status
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SoftwareUpdateStatus'
+                    description: the software update status
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the current software update status
+            tags:
+            - Software update
+            - mozart
+    /api/v1/sound/features:
+        get:
+            operationId: get-sound-features
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SupportedSoundFeatures'
+                    description: Supported sound features
+            summary: 'Get available sound features
+
+                that match the current role (standalone or multichannel).
+
+                '
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/listening-modes:
+        get:
+            operationId: get-listening-mode-set
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListeningModeSet'
+                    description: the list of listening modes
+            summary: 'Get available listening modes that match the current role
+
+                (standalone, multichannel or both(all)).
+
+                '
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/listening-modes/active:
+        get:
+            operationId: get-active-listening-mode
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListeningModeRef'
+                    description: the active listening mode
+            summary: Get the active listening mode
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/listening-modes/{id}/activate:
+        parameters:
+        -   $ref: '#/components/parameters/ListeningModeID'
+        post:
+            operationId: activate-listening-mode
+            responses:
+                '204':
+                    description: Listening mode active
+                '404':
+                    $ref: '#/components/responses/MissingListeningMode'
+            summary: Activate a listening mode
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/settings/adjustments/bass:
+        put:
+            operationId: set-sound-settings-adjustments-bass
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Bass'
+                description: the bass level
+                required: true
+            responses:
+                '201':
+                    description: accepted the bass sound settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Update the sound settings adjustments for bass
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/settings/adjustments/directivity:
+        put:
+            operationId: set-sound-settings-adjustments-directivity
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Directivity'
+                description: the directivity
+                required: true
+            responses:
+                '201':
+                    description: accepted the directivity sound settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Update the sound settings adjustments for directivity
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/settings/adjustments/loudness:
+        put:
+            operationId: set-sound-settings-adjustments-loudness
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Loudness'
+                description: the loudness mode
+                required: true
+            responses:
+                '201':
+                    description: accepted the loudness sound settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Update the sound settings adjustments for loudness
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/settings/adjustments/treble:
+        put:
+            operationId: set-sound-settings-adjustments-treble
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Treble'
+                description: the treble level
+                required: true
+            responses:
+                '201':
+                    description: accepted the treble sound settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Update the sound settings adjustments for treble
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/speakergroup/active:
+        get:
+            operationId: get-speakergroup-active
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SpeakerGroupOverview'
+                    description: The active speaker group, or empty if none
+            summary: Get the active speaker group
+            tags:
+            - SpeakerGroup
+            - mozart
+    /api/v1/sound/volume:
+        get:
+            operationId: get-current-volume
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/VolumeState'
+                    description: The currently active volume
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the current volume state
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/volume/level:
+        put:
+            operationId: set-current-volume-level
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VolumeLevel'
+                description: The volume level to apply
+                required: true
+            responses:
+                '201':
+                    description: volume level change accepted
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request (e.g. volume cannot be set)
+            summary: Set the current volume level
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/volume/mute:
+        put:
+            operationId: set-volume-mute
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VolumeMute'
+                description: The mute state to apply
+                required: true
+            responses:
+                '201':
+                    description: volume mute state accepted
+                '400':
+                    description: volume mute not accepted
+            summary: Set the volume mute state
+            tags:
+            - Sound
+            - mozart
+    /api/v1/sound/volume/settings:
+        get:
+            operationId: get-volume-settings
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/VolumeSettings'
+                    description: returns the volume settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the current volume settings for default and maximum volume
+                level
+            tags:
+            - Sound
+            - mozart
+        put:
+            operationId: set-volume-settings
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VolumeSettings'
+                description: The settings to apply
+                required: true
+            responses:
+                '201':
+                    description: volume settings accepted
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Set the current volume settings for default and maximum volume
+                level
+            tags:
+            - Sound
+            - mozart
+    /api/v1/stand/move:
+        post:
+            operationId: set-stand-movement
+            parameters:
+            -   description: Use slow speed on continuous movement
+                in: query
+                name: slow-speed
+                schema:
+                    type: boolean
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/StandMovement'
+                description: Stand Movement
+                required: true
+            responses:
+                '204':
+                    description: the movement were accepted
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Stand not connected ot stand capability is not available
+            summary: Set stand movement with either an angle or a movement type
+            tags:
+            - Stand
+            - mozart
+    /api/v1/state:
+        get:
+            operationId: get-product-state
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ProductState'
+                    description: A snapshot of the overall state of the product
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Get the overall state from the product
+            tags:
+            - Product
+            - mozart
+    /api/v1/state/power:
+        get:
+            operationId: get-power-state
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PowerStateEnum'
+                    description: The power state of the product
+            summary: Get power state of the product
+            tags:
+            - Power
+            - mozart
+    /api/v1/state/standby:
+        put:
+            operationId: post-standby
+            responses:
+                '200':
+                    description: The device is put in standby
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Put the device in standby
+            tags:
+            - Power
+            - mozart
+security: []

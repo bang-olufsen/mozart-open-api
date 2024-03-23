@@ -35,7 +35,6 @@ from mozart_api.models.battery_state import BatteryState
 from mozart_api.models.beo_remote_button import BeoRemoteButton
 from mozart_api.models.beolink_available_listener import BeolinkAvailableListener
 from mozart_api.models.beolink_experience import BeolinkExperience
-from mozart_api.models.beolink_experiences_request import BeolinkExperiencesRequest
 from mozart_api.models.beolink_experiences_result import BeolinkExperiencesResult
 from mozart_api.models.beolink_join_request import BeolinkJoinRequest
 from mozart_api.models.beolink_join_result import BeolinkJoinResult
@@ -58,6 +57,7 @@ from mozart_api.models.fader_feature import FaderFeature
 from mozart_api.models.fader_range import FaderRange
 from mozart_api.models.hdmi_input import HdmiInput
 from mozart_api.models.hdmi_video_format import HdmiVideoFormat
+from mozart_api.models.home_control_ixp import HomeControlIxp
 from mozart_api.models.home_control_uri import HomeControlUri
 from mozart_api.models.install_record_id_state import InstallRecordIdState
 from mozart_api.models.latency_profile import LatencyProfile
@@ -157,11 +157,14 @@ from mozart_api.models.speaker_group import SpeakerGroup
 from mozart_api.models.speaker_group_member import SpeakerGroupMember
 from mozart_api.models.speaker_group_member_location import SpeakerGroupMemberLocation
 from mozart_api.models.speaker_group_overview import SpeakerGroupOverview
+from mozart_api.models.speaker_link_member_status import SpeakerLinkMemberStatus
+from mozart_api.models.speaker_link_status import SpeakerLinkStatus
 from mozart_api.models.speaker_role_enum import SpeakerRoleEnum
 from mozart_api.models.speech_enhance import SpeechEnhance
 from mozart_api.models.speech_enhance_feature import SpeechEnhanceFeature
 from mozart_api.models.speech_enhance_range import SpeechEnhanceRange
 from mozart_api.models.stand_connected import StandConnected
+from mozart_api.models.stand_movement import StandMovement
 from mozart_api.models.stand_position import StandPosition
 from mozart_api.models.tone_touch import ToneTouch
 from mozart_api.models.tone_touch_type import ToneTouchType
@@ -248,6 +251,9 @@ from mozart_api.models.web_socket_event_sound_settings import (
 from mozart_api.models.web_socket_event_source_change import WebSocketEventSourceChange
 from mozart_api.models.web_socket_event_speaker_group_changed import (
     WebSocketEventSpeakerGroupChanged,
+)
+from mozart_api.models.web_socket_event_speaker_link_status_changed import (
+    WebSocketEventSpeakerLinkStatusChanged,
 )
 from mozart_api.models.web_socket_event_stand_connected import (
     WebSocketEventStandConnected,

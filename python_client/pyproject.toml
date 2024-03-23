@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mozart_api"
-version = "3.2.1.150.6"
+version = "3.4.1.8.2"
 description = "Mozart platform API"
 authors = [
     "BangOlufsen <support@bang-olufsen.dk>",
@@ -22,7 +22,6 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
     "Topic :: Multimedia",
     "Intended Audience :: Developers",
 ]
@@ -34,18 +33,21 @@ exclude = [
 urllib3 = ">= 1.25.3"
 python-dateutil = ">=2.8.2"
 aiohttp = ">=3.8.3"
-pydantic = "^1.10.5, <2"
-aenum = ">=3.1.11"
+aiohttp-retry = ">= 2.8.3"
+pydantic = ">=2"
+typing-extensions = ">=4.7.1"
 aioconsole = ">=0.4.1"
 inflection = ">=0.5.1"
-typing-extensions = ">=4.7.1"
 zeroconf = ">=0.25.1"
-python = ">=3.8"
+websockets = ">=12.0"
+python = ">=3.11"
 
 [tool.poetry.dev-dependencies]
 pytest = ">=7.2.1"
 tox = ">=3.9.0"
 flake8 = ">=4.0.0"
+types-python-dateutil = ">=2.8.19.14"
+mypy = "1.4.1"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/bang-olufsen/mozart-open-api/issues"
@@ -55,6 +57,21 @@ mozart_api = "mozart_api.mozart_cli:MozartApiCli"
 
 [tool.pylint."MESSAGES CONTROL"]
 extension-pkg-whitelist = "pydantic"
+
+[tool.mypy]
+files = [
+    "mozart_api",
+    "tests",
+]
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_equality = true
+strict_concatenate = true
+check_untyped_defs = true
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
 
 [build-system]
 requires = [
