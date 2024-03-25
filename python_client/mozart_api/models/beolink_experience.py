@@ -18,50 +18,42 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    StrictBool,
-    StrictStr,
-    field_validator,
-)
-from typing import Any, ClassVar, Dict, List, Optional
-from typing import Optional, Set
-from typing_extensions import Self
+
+from typing import Optional
+from pydantic import BaseModel, Field, StrictBool, StrictStr, validator
 
 
 class BeolinkExperience(BaseModel):
     """
     BeolinkExperience
-    """  # noqa: E501
+    """
 
-    category: StrictStr = Field(description="Source category")
-    id: StrictStr = Field(description='experience id, e.g. "RADIO" or "toslink"')
+    category: StrictStr = Field(..., description="Source category")
+    id: StrictStr = Field(..., description='experience id, e.g. "RADIO" or "toslink"')
     linkable: StrictBool = Field(
-        description='Linkable means "Does pressing play on this source make sense"'
+        ..., description='Linkable means "Does pressing play on this source make sense"'
     )
     name: StrictStr = Field(
-        description='Experience name, e.g. "Bluetooth" or "B&O Radio"'
+        ..., description='Experience name, e.g. "Bluetooth" or "B&O Radio"'
     )
     product_friendly_name: Optional[StrictStr] = Field(
-        default=None,
-        description="Optional product friendly name",
-        alias="productFriendlyName",
+        None, alias="productFriendlyName", description="Optional product friendly name"
     )
     source_friendly_name: Optional[StrictStr] = Field(
-        default=None,
-        description="Optional friendly name for source",
+        None,
         alias="sourceFriendlyName",
+        description="Optional friendly name for source",
     )
     type: StrictStr = Field(
-        description="Source type. This corresponds to the exhaustive list or sources provided by the control layer"
+        ...,
+        description="Source type. This corresponds to the exhaustive list or sources provided by the control layer",
     )
     unique_source_id: StrictStr = Field(
-        description="The actual device jabber id that the experience comes from",
+        ...,
         alias="uniqueSourceId",
+        description="The actual device jabber id that the experience comes from",
     )
-    __properties: ClassVar[List[str]] = [
+    __properties = [
         "category",
         "id",
         "linkable",
@@ -72,73 +64,58 @@ class BeolinkExperience(BaseModel):
         "uniqueSourceId",
     ]
 
-    @field_validator("category")
+    @validator("category")
     def category_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(["TV", "RADIO", "MUSIC", "MEDIA", "UNKNOWN"]):
+        if value not in ("TV", "RADIO", "MUSIC", "MEDIA", "UNKNOWN"):
             raise ValueError(
                 "must be one of enum values ('TV', 'RADIO', 'MUSIC', 'MEDIA', 'UNKNOWN')"
             )
         return value
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> BeolinkExperience:
         """Create an instance of BeolinkExperience from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> BeolinkExperience:
         """Create an instance of BeolinkExperience from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return BeolinkExperience.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = BeolinkExperience.parse_obj(
             {
                 "category": obj.get("category"),
                 "id": obj.get("id"),
                 "linkable": obj.get("linkable"),
                 "name": obj.get("name"),
-                "productFriendlyName": obj.get("productFriendlyName"),
-                "sourceFriendlyName": obj.get("sourceFriendlyName"),
+                "product_friendly_name": obj.get("productFriendlyName"),
+                "source_friendly_name": obj.get("sourceFriendlyName"),
                 "type": obj.get("type"),
-                "uniqueSourceId": obj.get("uniqueSourceId"),
+                "unique_source_id": obj.get("uniqueSourceId"),
             }
         )
         return _obj

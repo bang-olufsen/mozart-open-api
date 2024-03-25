@@ -12,19 +12,24 @@
     Do not edit the class manually.
 """  # noqa: E501
 
-import warnings
-from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
-from typing import Any, Dict, List, Optional, Tuple, Union
-from typing_extensions import Annotated
 
-from pydantic import Field, StrictBool
-from typing import Optional
+import re  # noqa: F401
+import io
+import warnings
+
+from pydantic import validate_arguments, ValidationError
+from typing import overload, Optional, Union, Awaitable
+
 from typing_extensions import Annotated
+from pydantic import Field, StrictBool
+
+from typing import Optional
+
 from mozart_api.models.stand_movement import StandMovement
 
-from mozart_api.api_client import ApiClient, RequestSerialized
+from mozart_api.api_client import ApiClient
 from mozart_api.api_response import ApiResponse
-from mozart_api.rest import RESTResponseType
+from mozart_api.exceptions import ApiTypeError, ApiValueError  # noqa: F401
 
 
 class StandApi:
@@ -39,277 +44,160 @@ class StandApi:
             api_client = ApiClient.get_default()
         self.api_client = api_client
 
-    @validate_call
+    @validate_arguments
     async def set_stand_movement(
         self,
-        stand_movement: Annotated[StandMovement, Field(description="Stand Movement")],
+        stand_movement: Annotated[
+            StandMovement, Field(..., description="Stand Movement")
+        ],
         slow_speed: Annotated[
             Optional[StrictBool],
             Field(description="Use slow speed on continuous movement"),
         ] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> None:
-        """Set stand movement with either an angle or a movement type
+        **kwargs
+    ) -> None:  # noqa: E501
+        """Set stand movement with either an angle or a movement type  # noqa: E501
 
 
         :param stand_movement: Stand Movement (required)
         :type stand_movement: StandMovement
         :param slow_speed: Use slow speed on continuous movement
         :type slow_speed: bool
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :param _request_timeout: timeout setting for this request.
+               If one number provided, it will be total request
+               timeout. It can also be a pair (tuple) of
+               (connection, read) timeouts.
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: None
+        """
+        kwargs["_return_http_data_only"] = True
+        if "_preload_content" in kwargs:
+            message = "Error! Please call the set_stand_movement_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
+            raise ValueError(message)
+        return await self.set_stand_movement_with_http_info(
+            stand_movement, slow_speed, **kwargs
+        )  # noqa: E501
 
-        _param = self._set_stand_movement_serialize(
-            stand_movement=stand_movement,
-            slow_speed=slow_speed,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "204": None,
-            "400": "ErrorModel",
-        }
-        response_data = await self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        await response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-    @validate_call
+    @validate_arguments
     async def set_stand_movement_with_http_info(
         self,
-        stand_movement: Annotated[StandMovement, Field(description="Stand Movement")],
+        stand_movement: Annotated[
+            StandMovement, Field(..., description="Stand Movement")
+        ],
         slow_speed: Annotated[
             Optional[StrictBool],
             Field(description="Use slow speed on continuous movement"),
         ] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[None]:
-        """Set stand movement with either an angle or a movement type
+        **kwargs
+    ) -> ApiResponse:  # noqa: E501
+        """Set stand movement with either an angle or a movement type  # noqa: E501
 
 
         :param stand_movement: Stand Movement (required)
         :type stand_movement: StandMovement
         :param slow_speed: Use slow speed on continuous movement
         :type slow_speed: bool
+        :param _preload_content: if False, the ApiResponse.data will
+                                 be set to none and raw_data will store the
+                                 HTTP response body without reading/decoding.
+                                 Default is True.
+        :type _preload_content: bool, optional
+        :param _return_http_data_only: response data instead of ApiResponse
+                                       object with status code, headers, etc
+        :type _return_http_data_only: bool, optional
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
                                  (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
         :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
+                              request; this effectively ignores the authentication
+                              in the spec for a single request.
         :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
+        :type _content_type: string, optional: force content-type for the request
         :return: Returns the result object.
-        """  # noqa: E501
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: None
+        """
 
-        _param = self._set_stand_movement_serialize(
-            stand_movement=stand_movement,
-            slow_speed=slow_speed,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
+        _params = locals()
+
+        _all_params = ["stand_movement", "slow_speed"]
+        _all_params.extend(
+            [
+                "_return_http_data_only",
+                "_preload_content",
+                "_request_timeout",
+                "_request_auth",
+                "_content_type",
+                "_headers",
+            ]
         )
 
-        _response_types_map: Dict[str, Optional[str]] = {
-            "204": None,
-            "400": "ErrorModel",
-        }
-        response_data = await self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        await response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
+        # validate the arguments
+        for _key, _val in _params["kwargs"].items():
+            if _key not in _all_params:
+                raise ApiTypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method set_stand_movement" % _key
+                )
+            _params[_key] = _val
+        del _params["kwargs"]
 
-    @validate_call
-    async def set_stand_movement_without_preload_content(
-        self,
-        stand_movement: Annotated[StandMovement, Field(description="Stand Movement")],
-        slow_speed: Annotated[
-            Optional[StrictBool],
-            Field(description="Use slow speed on continuous movement"),
-        ] = None,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)], Annotated[StrictFloat, Field(gt=0)]
-            ],
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Set stand movement with either an angle or a movement type
-
-
-        :param stand_movement: Stand Movement (required)
-        :type stand_movement: StandMovement
-        :param slow_speed: Use slow speed on continuous movement
-        :type slow_speed: bool
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """  # noqa: E501
-
-        _param = self._set_stand_movement_serialize(
-            stand_movement=stand_movement,
-            slow_speed=slow_speed,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index,
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            "204": None,
-            "400": "ErrorModel",
-        }
-        response_data = await self.api_client.call_api(
-            *_param, _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-    def _set_stand_movement_serialize(
-        self,
-        stand_movement,
-        slow_speed,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {}
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[str, str] = {}
-        _body_params: Optional[bytes] = None
+        _collection_formats = {}
 
         # process the path parameters
-        # process the query parameters
-        if slow_speed is not None:
+        _path_params = {}
 
-            _query_params.append(("slow-speed", slow_speed))
+        # process the query parameters
+        _query_params = []
+        if _params.get("slow_speed") is not None:  # noqa: E501
+            _query_params.append(("slow-speed", _params["slow_speed"]))
 
         # process the header parameters
+        _header_params = dict(_params.get("_headers", {}))
         # process the form parameters
+        _form_params = []
+        _files = {}
         # process the body parameter
-        if stand_movement is not None:
-            _body_params = stand_movement
+        _body_params = None
+        if _params["stand_movement"] is not None:
+            _body_params = _params["stand_movement"]
 
         # set the HTTP header `Accept`
         _header_params["Accept"] = self.api_client.select_header_accept(
             ["application/json"]
-        )
+        )  # noqa: E501
 
         # set the HTTP header `Content-Type`
-        if _content_type:
-            _header_params["Content-Type"] = _content_type
-        else:
-            _default_content_type = self.api_client.select_header_content_type(
-                ["application/json"]
-            )
-            if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+        _content_types_list = _params.get(
+            "_content_type",
+            self.api_client.select_header_content_type(["application/json"]),
+        )
+        if _content_types_list:
+            _header_params["Content-Type"] = _content_types_list
 
         # authentication setting
-        _auth_settings: List[str] = []
+        _auth_settings = []  # noqa: E501
 
-        return self.api_client.param_serialize(
-            method="POST",
-            resource_path="/api/v1/stand/move",
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
+        _response_types_map = {}
+
+        return await self.api_client.call_api(
+            "/api/v1/stand/move",
+            "POST",
+            _path_params,
+            _query_params,
+            _header_params,
             body=_body_params,
             post_params=_form_params,
             files=_files,
+            response_types_map=_response_types_map,
             auth_settings=_auth_settings,
+            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
+            _preload_content=_params.get("_preload_content", True),
+            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth,
+            _request_auth=_params.get("_request_auth"),
         )

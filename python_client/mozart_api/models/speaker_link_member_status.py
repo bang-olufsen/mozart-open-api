@@ -19,36 +19,33 @@ import re  # noqa: F401
 import json
 
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
-from typing_extensions import Annotated
-from typing import Optional, Set
-from typing_extensions import Self
+from typing import Optional
+from pydantic import BaseModel, Field, StrictStr, constr, validator
 
 
 class SpeakerLinkMemberStatus(BaseModel):
     """
     SpeakerLinkMemberStatus
-    """  # noqa: E501
+    """
 
     base_url: Optional[StrictStr] = Field(
-        default=None,
-        description="API prefix to use when talking to the secondary",
+        None,
         alias="baseUrl",
+        description="API prefix to use when talking to the secondary",
     )
-    health: StrictStr
+    health: StrictStr = Field(...)
     ip_address: Optional[StrictStr] = Field(
-        default=None, description="IP address", alias="ipAddress"
+        None, alias="ipAddress", description="IP address"
     )
-    network_type: StrictStr = Field(alias="networkType")
-    product_type: Optional[StrictStr] = Field(default=None, alias="productType")
-    serial_number: Annotated[str, Field(strict=True)] = Field(
-        description="Speaker serial number", alias="serialNumber"
+    network_type: StrictStr = Field(..., alias="networkType")
+    product_type: Optional[StrictStr] = Field(None, alias="productType")
+    serial_number: constr(strict=True) = Field(
+        ..., alias="serialNumber", description="Speaker serial number"
     )
     updated_at: datetime = Field(
-        description="Timestamp in RFC3393 format", alias="updatedAt"
+        ..., alias="updatedAt", description="Timestamp in RFC3393 format"
     )
-    __properties: ClassVar[List[str]] = [
+    __properties = [
         "baseUrl",
         "health",
         "ipAddress",
@@ -58,96 +55,81 @@ class SpeakerLinkMemberStatus(BaseModel):
         "updatedAt",
     ]
 
-    @field_validator("health")
+    @validator("health")
     def health_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(["unknown", "good", "warning", "bad"]):
+        if value not in ("unknown", "good", "warning", "bad"):
             raise ValueError(
                 "must be one of enum values ('unknown', 'good', 'warning', 'bad')"
             )
         return value
 
-    @field_validator("network_type")
+    @validator("network_type")
     def network_type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(["none", "wired", "wireless"]):
+        if value not in ("none", "wired", "wireless"):
             raise ValueError("must be one of enum values ('none', 'wired', 'wireless')")
         return value
 
-    @field_validator("serial_number")
+    @validator("serial_number")
     def serial_number_validate_regular_expression(cls, value):
         """Validates the regular expression"""
         if not re.match(r"^\d{8}", value):
             raise ValueError(r"must validate the regular expression /^\d{8}/")
         return value
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> SpeakerLinkMemberStatus:
         """Create an instance of SpeakerLinkMemberStatus from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # set to None if base_url (nullable) is None
-        # and model_fields_set contains the field
-        if self.base_url is None and "base_url" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.base_url is None and "base_url" in self.__fields_set__:
             _dict["baseUrl"] = None
 
         # set to None if ip_address (nullable) is None
-        # and model_fields_set contains the field
-        if self.ip_address is None and "ip_address" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.ip_address is None and "ip_address" in self.__fields_set__:
             _dict["ipAddress"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> SpeakerLinkMemberStatus:
         """Create an instance of SpeakerLinkMemberStatus from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return SpeakerLinkMemberStatus.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = SpeakerLinkMemberStatus.parse_obj(
             {
-                "baseUrl": obj.get("baseUrl"),
+                "base_url": obj.get("baseUrl"),
                 "health": obj.get("health"),
-                "ipAddress": obj.get("ipAddress"),
-                "networkType": obj.get("networkType"),
-                "productType": obj.get("productType"),
-                "serialNumber": obj.get("serialNumber"),
-                "updatedAt": obj.get("updatedAt"),
+                "ip_address": obj.get("ipAddress"),
+                "network_type": obj.get("networkType"),
+                "product_type": obj.get("productType"),
+                "serial_number": obj.get("serialNumber"),
+                "updated_at": obj.get("updatedAt"),
             }
         )
         return _obj

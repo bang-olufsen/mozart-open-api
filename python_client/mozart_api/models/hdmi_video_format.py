@@ -18,64 +18,45 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List, Optional
-from typing_extensions import Annotated
+
+from typing import Optional
+from pydantic import BaseModel, Field, conint
 from mozart_api.models.video_pixel_format import VideoPixelFormat
 from mozart_api.models.video_timings import VideoTimings
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class HdmiVideoFormat(BaseModel):
     """
     HdmiVideoFormat
-    """  # noqa: E501
+    """
 
-    pixel_format: Optional[VideoPixelFormat] = Field(default=None, alias="pixelFormat")
-    v_ic: Optional[Annotated[int, Field(strict=True, ge=0)]] = Field(
-        default=None, alias="vIC"
-    )
-    video_timings: Optional[VideoTimings] = Field(default=None, alias="videoTimings")
-    __properties: ClassVar[List[str]] = ["pixelFormat", "vIC", "videoTimings"]
+    pixel_format: Optional[VideoPixelFormat] = Field(None, alias="pixelFormat")
+    v_ic: Optional[conint(strict=True, ge=0)] = Field(None, alias="vIC")
+    video_timings: Optional[VideoTimings] = Field(None, alias="videoTimings")
+    __properties = ["pixelFormat", "vIC", "videoTimings"]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> HdmiVideoFormat:
         """Create an instance of HdmiVideoFormat from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # override the default output from pydantic by calling `to_dict()` of pixel_format
         if self.pixel_format:
             _dict["pixelFormat"] = self.pixel_format.to_dict()
@@ -85,24 +66,24 @@ class HdmiVideoFormat(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> HdmiVideoFormat:
         """Create an instance of HdmiVideoFormat from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return HdmiVideoFormat.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = HdmiVideoFormat.parse_obj(
             {
-                "pixelFormat": (
-                    VideoPixelFormat.from_dict(obj["pixelFormat"])
+                "pixel_format": (
+                    VideoPixelFormat.from_dict(obj.get("pixelFormat"))
                     if obj.get("pixelFormat") is not None
                     else None
                 ),
-                "vIC": obj.get("vIC"),
-                "videoTimings": (
-                    VideoTimings.from_dict(obj["videoTimings"])
+                "v_ic": obj.get("vIC"),
+                "video_timings": (
+                    VideoTimings.from_dict(obj.get("videoTimings"))
                     if obj.get("videoTimings") is not None
                     else None
                 ),

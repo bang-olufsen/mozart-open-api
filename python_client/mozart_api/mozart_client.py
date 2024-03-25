@@ -1,6 +1,6 @@
 """Helper classes for using auto-generated API."""
 
-# pylint: disable=line-too-long too-many-instance-attributes too-many-public-methods protected-access
+# pylint: disable=line-too-long too-many-instance-attributes too-many-public-methods
 
 import asyncio
 import contextlib

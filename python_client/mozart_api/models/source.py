@@ -18,31 +18,30 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
+
+from typing import Optional
+from pydantic import BaseModel, Field, StrictBool, StrictStr
 from mozart_api.models.source_type_enum import SourceTypeEnum
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class Source(BaseModel):
     """
     Source
-    """  # noqa: E501
+    """
 
     id: Optional[StrictStr] = None
     is_enabled: Optional[StrictBool] = Field(
-        default=None,
-        description="some sources require an explicit activation or accept of terms before being enabled",
+        None,
         alias="isEnabled",
+        description="some sources require an explicit activation or accept of terms before being enabled",
     )
     is_multiroom_available: Optional[StrictBool] = Field(
-        default=None, alias="isMultiroomAvailable"
+        None, alias="isMultiroomAvailable"
     )
-    is_playable: Optional[StrictBool] = Field(default=None, alias="isPlayable")
+    is_playable: Optional[StrictBool] = Field(None, alias="isPlayable")
     name: Optional[StrictStr] = None
     type: Optional[SourceTypeEnum] = None
-    __properties: ClassVar[List[str]] = [
+    __properties = [
         "id",
         "isEnabled",
         "isMultiroomAvailable",
@@ -51,66 +50,51 @@ class Source(BaseModel):
         "type",
     ]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> Source:
         """Create an instance of Source from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # override the default output from pydantic by calling `to_dict()` of type
         if self.type:
             _dict["type"] = self.type.to_dict()
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> Source:
         """Create an instance of Source from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return Source.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = Source.parse_obj(
             {
                 "id": obj.get("id"),
-                "isEnabled": obj.get("isEnabled"),
-                "isMultiroomAvailable": obj.get("isMultiroomAvailable"),
-                "isPlayable": obj.get("isPlayable"),
+                "is_enabled": obj.get("isEnabled"),
+                "is_multiroom_available": obj.get("isMultiroomAvailable"),
+                "is_playable": obj.get("isPlayable"),
                 "name": obj.get("name"),
                 "type": (
-                    SourceTypeEnum.from_dict(obj["type"])
+                    SourceTypeEnum.from_dict(obj.get("type"))
                     if obj.get("type") is not None
                     else None
                 ),

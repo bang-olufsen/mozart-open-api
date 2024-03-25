@@ -18,105 +18,79 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
-from typing_extensions import Annotated
+
+from typing import List, Optional
+from pydantic import BaseModel, Field, StrictStr, conint, conlist, constr, validator
 from mozart_api.models.listening_mode_features import ListeningModeFeatures
 from mozart_api.models.listening_mode_trigger import ListeningModeTrigger
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class ListeningModeProps(BaseModel):
     """
     ListeningModeProps
-    """  # noqa: E501
+    """
 
-    client_ctx: Optional[Annotated[str, Field(strict=True, max_length=4096)]] = Field(
-        default=None,
-        description="An optional generic string property supplied from the client. If provided, it will be stored without changes. If not supplied, any current clientCtx will remain unchanged. ",
+    client_ctx: Optional[constr(strict=True, max_length=4096)] = Field(
+        None,
         alias="clientCtx",
+        description="An optional generic string property supplied from the client. If provided, it will be stored without changes. If not supplied, any current clientCtx will remain unchanged. ",
     )
     features: Optional[ListeningModeFeatures] = None
-    id: Optional[Annotated[int, Field(strict=True, ge=0)]] = None
-    name: Optional[StrictStr] = Field(default=None, description="Friendly name")
+    id: Optional[conint(strict=True, ge=0)] = None
+    name: Optional[StrictStr] = Field(None, description="Friendly name")
     origin: Optional[StrictStr] = Field(
-        default=None,
-        description="User created, default or an edited default listening mode",
+        None, description="User created, default or an edited default listening mode"
     )
     role: Optional[StrictStr] = Field(
-        default=None, description="Role a listening mode applies to"
+        None, description="Role a listening mode applies to"
     )
-    triggers: Optional[List[ListeningModeTrigger]] = None
-    __properties: ClassVar[List[str]] = [
-        "clientCtx",
-        "features",
-        "id",
-        "name",
-        "origin",
-        "role",
-        "triggers",
-    ]
+    triggers: Optional[conlist(ListeningModeTrigger)] = None
+    __properties = ["clientCtx", "features", "id", "name", "origin", "role", "triggers"]
 
-    @field_validator("origin")
+    @validator("origin")
     def origin_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in set(["user", "default", "edited"]):
+        if value not in ("user", "default", "edited"):
             raise ValueError("must be one of enum values ('user', 'default', 'edited')")
         return value
 
-    @field_validator("role")
+    @validator("role")
     def role_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in set(["standalone", "multichannel", "all"]):
+        if value not in ("standalone", "multichannel", "all"):
             raise ValueError(
                 "must be one of enum values ('standalone', 'multichannel', 'all')"
             )
         return value
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> ListeningModeProps:
         """Create an instance of ListeningModeProps from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # override the default output from pydantic by calling `to_dict()` of features
         if self.features:
             _dict["features"] = self.features.to_dict()
@@ -128,31 +102,31 @@ class ListeningModeProps(BaseModel):
                     _items.append(_item.to_dict())
             _dict["triggers"] = _items
         # set to None if client_ctx (nullable) is None
-        # and model_fields_set contains the field
-        if self.client_ctx is None and "client_ctx" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.client_ctx is None and "client_ctx" in self.__fields_set__:
             _dict["clientCtx"] = None
 
         # set to None if role (nullable) is None
-        # and model_fields_set contains the field
-        if self.role is None and "role" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.role is None and "role" in self.__fields_set__:
             _dict["role"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> ListeningModeProps:
         """Create an instance of ListeningModeProps from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return ListeningModeProps.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = ListeningModeProps.parse_obj(
             {
-                "clientCtx": obj.get("clientCtx"),
+                "client_ctx": obj.get("clientCtx"),
                 "features": (
-                    ListeningModeFeatures.from_dict(obj["features"])
+                    ListeningModeFeatures.from_dict(obj.get("features"))
                     if obj.get("features") is not None
                     else None
                 ),
@@ -161,7 +135,10 @@ class ListeningModeProps(BaseModel):
                 "origin": obj.get("origin"),
                 "role": obj.get("role"),
                 "triggers": (
-                    [ListeningModeTrigger.from_dict(_item) for _item in obj["triggers"]]
+                    [
+                        ListeningModeTrigger.from_dict(_item)
+                        for _item in obj.get("triggers")
+                    ]
                     if obj.get("triggers") is not None
                     else None
                 ),

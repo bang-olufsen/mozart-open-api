@@ -19,26 +19,24 @@ import re  # noqa: F401
 import json
 
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional
+from typing import Optional
+from pydantic import BaseModel, Field, StrictInt, StrictStr, validator
 from mozart_api.models.software_update_state import SoftwareUpdateState
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class SoftwareUpdateStatus(BaseModel):
     """
     SoftwareUpdateStatus
-    """  # noqa: E501
+    """
 
-    available_update: Optional[StrictStr] = Field(default=None, alias="availableUpdate")
-    last_check: Optional[datetime] = Field(default=None, alias="lastCheck")
-    last_update: Optional[datetime] = Field(default=None, alias="lastUpdate")
-    software_version: StrictStr = Field(alias="softwareVersion")
-    state: SoftwareUpdateState
-    update_progress: Optional[StrictInt] = Field(default=None, alias="updateProgress")
-    update_type: Optional[StrictStr] = Field(default=None, alias="updateType")
-    __properties: ClassVar[List[str]] = [
+    available_update: Optional[StrictStr] = Field(None, alias="availableUpdate")
+    last_check: Optional[datetime] = Field(None, alias="lastCheck")
+    last_update: Optional[datetime] = Field(None, alias="lastUpdate")
+    software_version: StrictStr = Field(..., alias="softwareVersion")
+    state: SoftwareUpdateState = Field(...)
+    update_progress: Optional[StrictInt] = Field(None, alias="updateProgress")
+    update_type: Optional[StrictStr] = Field(None, alias="updateType")
+    __properties = [
         "availableUpdate",
         "lastCheck",
         "lastUpdate",
@@ -48,82 +46,67 @@ class SoftwareUpdateStatus(BaseModel):
         "updateType",
     ]
 
-    @field_validator("update_type")
+    @validator("update_type")
     def update_type_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in set(["none", "normal", "critical", "forced"]):
+        if value not in ("none", "normal", "critical", "forced"):
             raise ValueError(
                 "must be one of enum values ('none', 'normal', 'critical', 'forced')"
             )
         return value
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> SoftwareUpdateStatus:
         """Create an instance of SoftwareUpdateStatus from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # override the default output from pydantic by calling `to_dict()` of state
         if self.state:
             _dict["state"] = self.state.to_dict()
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> SoftwareUpdateStatus:
         """Create an instance of SoftwareUpdateStatus from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return SoftwareUpdateStatus.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = SoftwareUpdateStatus.parse_obj(
             {
-                "availableUpdate": obj.get("availableUpdate"),
-                "lastCheck": obj.get("lastCheck"),
-                "lastUpdate": obj.get("lastUpdate"),
-                "softwareVersion": obj.get("softwareVersion"),
+                "available_update": obj.get("availableUpdate"),
+                "last_check": obj.get("lastCheck"),
+                "last_update": obj.get("lastUpdate"),
+                "software_version": obj.get("softwareVersion"),
                 "state": (
-                    SoftwareUpdateState.from_dict(obj["state"])
+                    SoftwareUpdateState.from_dict(obj.get("state"))
                     if obj.get("state") is not None
                     else None
                 ),
-                "updateProgress": obj.get("updateProgress"),
-                "updateType": obj.get("updateType"),
+                "update_progress": obj.get("updateProgress"),
+                "update_type": obj.get("updateType"),
             }
         )
         return _obj

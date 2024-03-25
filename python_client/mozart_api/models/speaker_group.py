@@ -18,54 +18,48 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
-from typing import Any, ClassVar, Dict, List, Optional
-from typing_extensions import Annotated
+
+from typing import List, Optional
+from pydantic import BaseModel, Field, StrictBool, StrictStr, conint, conlist
 from mozart_api.models.latency_profile import LatencyProfile
 from mozart_api.models.speaker_group_member import SpeakerGroupMember
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class SpeakerGroup(BaseModel):
     """
     SpeakerGroup
-    """  # noqa: E501
+    """
 
-    crossover_frequency: Optional[Annotated[int, Field(le=300, strict=True, ge=20)]] = (
-        Field(
-            default=None,
-            description="Crossover frequency for bass management in Hz",
-            alias="crossoverFrequency",
-        )
+    crossover_frequency: Optional[conint(strict=True, le=300, ge=20)] = Field(
+        None,
+        alias="crossoverFrequency",
+        description="Crossover frequency for bass management in Hz",
     )
     enable_phase_compensation: Optional[StrictBool] = Field(
-        default=None,
-        description="Enable phase compensation in bass management.",
+        None,
         alias="enablePhaseCompensation",
+        description="Enable phase compensation in bass management.",
     )
     friendly_name: Optional[StrictStr] = Field(
-        default=None,
-        description="Friendly name of the SpeakerGroup. Required when creating a new group ",
+        None,
         alias="friendlyName",
+        description="Friendly name of the SpeakerGroup. Required when creating a new group ",
     )
     id: Optional[StrictStr] = None
-    is_deleteable: Optional[StrictBool] = Field(default=None, alias="isDeleteable")
-    items: Optional[List[SpeakerGroupMember]] = None
-    latency_profile: Optional[LatencyProfile] = Field(
-        default=None, alias="latencyProfile"
-    )
+    is_deleteable: Optional[StrictBool] = Field(None, alias="isDeleteable")
+    items: Optional[conlist(SpeakerGroupMember)] = None
+    latency_profile: Optional[LatencyProfile] = Field(None, alias="latencyProfile")
     room_compensation_id: Optional[StrictStr] = Field(
-        default=None,
-        description="ID of the calculated coefficents for this group, made during advanced room compensation. When updating an existing group, an empty string will clear roomCompensationId. ",
+        None,
         alias="roomCompensationId",
+        description="ID of the calculated coefficents for this group, made during advanced room compensation. When updating an existing group, an empty string will clear roomCompensationId. ",
     )
-    speaker_preset: Optional[Annotated[int, Field(le=99, strict=True, ge=0)]] = Field(
-        default=None,
-        description="Speaker preset / listening mode eg. BL28 curtain position etc.",
+    speaker_preset: Optional[conint(strict=True, le=99, ge=0)] = Field(
+        None,
         alias="speakerPreset",
+        description="Speaker preset / listening mode eg. BL28 curtain position etc.",
     )
-    __properties: ClassVar[List[str]] = [
+    __properties = [
         "crossoverFrequency",
         "enablePhaseCompensation",
         "friendlyName",
@@ -77,43 +71,28 @@ class SpeakerGroup(BaseModel):
         "speakerPreset",
     ]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> SpeakerGroup:
         """Create an instance of SpeakerGroup from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # override the default output from pydantic by calling `to_dict()` of each item in items (list)
         _items = []
         if self.items:
@@ -125,79 +104,79 @@ class SpeakerGroup(BaseModel):
         if self.latency_profile:
             _dict["latencyProfile"] = self.latency_profile.to_dict()
         # set to None if crossover_frequency (nullable) is None
-        # and model_fields_set contains the field
+        # and __fields_set__ contains the field
         if (
             self.crossover_frequency is None
-            and "crossover_frequency" in self.model_fields_set
+            and "crossover_frequency" in self.__fields_set__
         ):
             _dict["crossoverFrequency"] = None
 
         # set to None if enable_phase_compensation (nullable) is None
-        # and model_fields_set contains the field
+        # and __fields_set__ contains the field
         if (
             self.enable_phase_compensation is None
-            and "enable_phase_compensation" in self.model_fields_set
+            and "enable_phase_compensation" in self.__fields_set__
         ):
             _dict["enablePhaseCompensation"] = None
 
         # set to None if friendly_name (nullable) is None
-        # and model_fields_set contains the field
-        if self.friendly_name is None and "friendly_name" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.friendly_name is None and "friendly_name" in self.__fields_set__:
             _dict["friendlyName"] = None
 
         # set to None if is_deleteable (nullable) is None
-        # and model_fields_set contains the field
-        if self.is_deleteable is None and "is_deleteable" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.is_deleteable is None and "is_deleteable" in self.__fields_set__:
             _dict["isDeleteable"] = None
 
         # set to None if items (nullable) is None
-        # and model_fields_set contains the field
-        if self.items is None and "items" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.items is None and "items" in self.__fields_set__:
             _dict["items"] = None
 
         # set to None if room_compensation_id (nullable) is None
-        # and model_fields_set contains the field
+        # and __fields_set__ contains the field
         if (
             self.room_compensation_id is None
-            and "room_compensation_id" in self.model_fields_set
+            and "room_compensation_id" in self.__fields_set__
         ):
             _dict["roomCompensationId"] = None
 
         # set to None if speaker_preset (nullable) is None
-        # and model_fields_set contains the field
-        if self.speaker_preset is None and "speaker_preset" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.speaker_preset is None and "speaker_preset" in self.__fields_set__:
             _dict["speakerPreset"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> SpeakerGroup:
         """Create an instance of SpeakerGroup from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return SpeakerGroup.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = SpeakerGroup.parse_obj(
             {
-                "crossoverFrequency": obj.get("crossoverFrequency"),
-                "enablePhaseCompensation": obj.get("enablePhaseCompensation"),
-                "friendlyName": obj.get("friendlyName"),
+                "crossover_frequency": obj.get("crossoverFrequency"),
+                "enable_phase_compensation": obj.get("enablePhaseCompensation"),
+                "friendly_name": obj.get("friendlyName"),
                 "id": obj.get("id"),
-                "isDeleteable": obj.get("isDeleteable"),
+                "is_deleteable": obj.get("isDeleteable"),
                 "items": (
-                    [SpeakerGroupMember.from_dict(_item) for _item in obj["items"]]
+                    [SpeakerGroupMember.from_dict(_item) for _item in obj.get("items")]
                     if obj.get("items") is not None
                     else None
                 ),
-                "latencyProfile": (
-                    LatencyProfile.from_dict(obj["latencyProfile"])
+                "latency_profile": (
+                    LatencyProfile.from_dict(obj.get("latencyProfile"))
                     if obj.get("latencyProfile") is not None
                     else None
                 ),
-                "roomCompensationId": obj.get("roomCompensationId"),
-                "speakerPreset": obj.get("speakerPreset"),
+                "room_compensation_id": obj.get("roomCompensationId"),
+                "speaker_preset": obj.get("speakerPreset"),
             }
         )
         return _obj

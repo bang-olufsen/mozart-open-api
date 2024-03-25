@@ -18,80 +18,69 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List, Optional, Union
-from typing_extensions import Annotated
+
+from typing import Optional, Union
+from pydantic import BaseModel, Field, StrictStr, confloat, conint, validator
 from mozart_api.models.play_queue_item import PlayQueueItem
 from mozart_api.models.play_queue_settings import PlayQueueSettings
 from mozart_api.models.source_type_enum import SourceTypeEnum
 from mozart_api.models.stand_position import StandPosition
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class Action(BaseModel):
     """
-    An action object. Examples:  RadioAction: ```json {   \"type\": \"radio\",   \"radioStationId\": \"8779112938791514\" } ```  ToneAction: ```json {   \"type\": \"tone\",   \"toneName\": \"alarm_2\" } ```  SourcePresetAction: ```json {   \"type\": \"sourcePreset\",   \"source\": {     \"value\": \"spotify\"   },   \"presetKey\": \"Preset3\" } ```  DeezerFlowAction: ```json {   \"type\": \"deezerFlow\",   \"deezerUserId\": \"1234\" } ```  ActivateSourceAction: ```json {   \"type\": \"activateSource\",   \"source\": {     \"value\": \"spotify\"   } } ```  PlayQueueAction: ```   {     \"type\": \"playQueue\",     \"queueItem\": {       \"provider\": {         \"value\": \"deezer\"       },       \"startNowFromPosition\": 0,       \"type\": \"playlist\",       \"uri\": \"playlist:8074581462\"     },     \"queueSettings\": {       \"consume\": false,       \"repeat\": \"none\",       \"shuffle\": false     }   } ```  StandbyAction: ```json {   \"type\": \"standby\" } ```  AllStandbyAction: ```json {   \"type\": \"allStandby\" } ```  TouchToJoinAction: ```json {   \"type\": \"touchToJoin\" } ```  ButtonShortPressAction: ```json {   \"type\": \"buttonShortPress\",   \"buttonName\": \"preset1\" } ```  FallbackAction: ```json {   \"type\": \"fallback\" } ```  VolumeAction: ```json {   \"type\": \"volume\",   \"volumeLevel\": 25 } ```  StopAction: ```json {   \"type\": \"stop\",   \"stopDuration\": 1300 } ```  TriggerContentAction: ```json {   \"contentId\": \"tv://netflix\",   \"type\": \"triggerContent\" } ```  SpeakerGroupAction: ```json {   \"type\": \"speakerGroup\",   \"speakerGroupId\": \"00112233-4455-6677-8899-aabbccddeeff\" } ```  ListeningModeAction: ```json {   \"type\": \"listeningMode\",   \"listeningModeId\": 1234 } ```  StandAction: ```json {   \"type\": \"stand\",   \"standPosition\": {     \"angle\": 7.5   } } ```  GainAction: ```json {   \"type\": \"sourceGain\",   \"source\": {     \"value\": \"spotify\"   },   \"gainDb\": 1.0 } ```
-    """  # noqa: E501
+    An action object. Examples:  RadioAction: ```json {   \"type\": \"radio\",   \"radioStationId\": \"8779112938791514\" } ```  ToneAction: ```json {   \"type\": \"tone\",   \"toneName\": \"alarm_2\" } ```  SourcePresetAction: ```json {   \"type\": \"sourcePreset\",   \"source\": {     \"value\": \"spotify\"   },   \"presetKey\": \"Preset3\" } ```  DeezerFlowAction: ```json {   \"type\": \"deezerFlow\",   \"deezerUserId\": \"1234\" } ```  ActivateSourceAction: ```json {   \"type\": \"activateSource\",   \"source\": {     \"value\": \"spotify\"   } } ```  PlayQueueAction: ```   {     \"type\": \"playQueue\",     \"queueItem\": {       \"provider\": {         \"value\": \"deezer\"       },       \"startNowFromPosition\": 0,       \"type\": \"playlist\",       \"uri\": \"playlist:8074581462\"     },     \"queueSettings\": {       \"consume\": false,       \"repeat\": \"none\",       \"shuffle\": false     }   } ```  StandbyAction: ```json {   \"type\": \"standby\" } ```  AllStandbyAction: ```json {   \"type\": \"allStandby\" } ```  TouchToJoinAction: ```json {   \"type\": \"touchToJoin\" } ```  ButtonShortPressAction: ```json {   \"type\": \"buttonShortPress\",   \"buttonName\": \"preset1\" } ```  FallbackAction: ```json {   \"type\": \"fallback\" } ```  VolumeAction: ```json {   \"type\": \"volume\",   \"volumeLevel\": 25 } ```  StopAction: ```json {   \"type\": \"stop\",   \"stopDuration\": 1300 } ```  TriggerContentAction: ```json {   \"contentId\": \"tv://netflix\",   \"type\": \"triggerContent\" } ```  SpeakerGroupAction: ```json {   \"type\": \"speakerGroup\",   \"speakerGroupId\": \"00112233-4455-6677-8899-aabbccddeeff\" } ```  ListeningModeAction: ```json {   \"type\": \"listeningMode\",   \"listeningModeId\": 1234 } ```  StandAction: ```json {   \"type\": \"stand\",   \"standPosition\": {     \"angle\": 7.5   } } ```  GainAction: ```json {   \"type\": \"sourceGain\",   \"source\": {     \"value\": \"spotify\"   },   \"gainDb\": 1.0 } ```   # noqa: E501
+    """
 
     button_name: Optional[StrictStr] = Field(
-        default=None,
-        description="Name of the Button used for button-press types ('buttonShortPress')",
+        None,
         alias="buttonName",
+        description="Name of the Button used for button-press types ('buttonShortPress')",
     )
     content_id: Optional[StrictStr] = Field(
-        default=None,
-        description="Id of content only used for 'type=triggerContent'",
+        None,
         alias="contentId",
+        description="Id of content only used for 'type=triggerContent'",
     )
     deezer_user_id: Optional[StrictStr] = Field(
-        default=None,
-        description="Id of user only used for 'type=deezerFlow' and is optional",
+        None,
         alias="deezerUserId",
+        description="Id of user only used for 'type=deezerFlow' and is optional",
     )
     gain_db: Optional[
-        Union[
-            Annotated[float, Field(le=12, strict=True, ge=-12)],
-            Annotated[int, Field(le=12, strict=True, ge=-12)],
-        ]
-    ] = Field(
-        default=None, description="Only usef for 'type=sourceGain'", alias="gainDb"
-    )
-    listening_mode_id: Optional[Annotated[int, Field(strict=True, ge=0)]] = Field(
-        default=None, alias="listeningModeId"
+        Union[confloat(le=12, ge=-12, strict=True), conint(le=12, ge=-12, strict=True)]
+    ] = Field(None, alias="gainDb", description="Only usef for 'type=sourceGain'")
+    listening_mode_id: Optional[conint(strict=True, ge=0)] = Field(
+        None, alias="listeningModeId"
     )
     preset_key: Optional[StrictStr] = Field(
-        default=None, description="Only used for 'type=sourcePreset'", alias="presetKey"
+        None, alias="presetKey", description="Only used for 'type=sourcePreset'"
     )
-    queue_item: Optional[PlayQueueItem] = Field(default=None, alias="queueItem")
-    queue_settings: Optional[PlayQueueSettings] = Field(
-        default=None, alias="queueSettings"
-    )
+    queue_item: Optional[PlayQueueItem] = Field(None, alias="queueItem")
+    queue_settings: Optional[PlayQueueSettings] = Field(None, alias="queueSettings")
     radio_station_id: Optional[StrictStr] = Field(
-        default=None,
-        description="Id of RadioStation only used for 'type=radio'",
+        None,
         alias="radioStationId",
+        description="Id of RadioStation only used for 'type=radio'",
     )
     source: Optional[SourceTypeEnum] = None
-    speaker_group_id: Optional[StrictStr] = Field(default=None, alias="speakerGroupId")
-    stand_position: Optional[StandPosition] = Field(default=None, alias="standPosition")
-    stop_duration: Optional[Annotated[int, Field(strict=True, ge=0)]] = Field(
-        default=None,
-        description="The duration to wait (seconds) until stopping only used for 'type=stop'",
+    speaker_group_id: Optional[StrictStr] = Field(None, alias="speakerGroupId")
+    stand_position: Optional[StandPosition] = Field(None, alias="standPosition")
+    stop_duration: Optional[conint(strict=True, ge=0)] = Field(
+        None,
         alias="stopDuration",
+        description="The duration to wait (seconds) until stopping only used for 'type=stop'",
     )
     tone_name: Optional[StrictStr] = Field(
-        default=None,
-        description="Name of the tone only used for 'type=tone'",
-        alias="toneName",
+        None, alias="toneName", description="Name of the tone only used for 'type=tone'"
     )
-    type: StrictStr = Field(description="The type of Action")
-    volume_level: Optional[Annotated[int, Field(le=100, strict=True, ge=0)]] = Field(
-        default=None,
-        description="The volume level to configure only used for 'type=volume'",
+    type: StrictStr = Field(..., description="The type of Action")
+    volume_level: Optional[conint(strict=True, le=100, ge=0)] = Field(
+        None,
         alias="volumeLevel",
+        description="The volume level to configure only used for 'type=volume'",
     )
-    __properties: ClassVar[List[str]] = [
+    __properties = [
         "buttonName",
         "contentId",
         "deezerUserId",
@@ -110,95 +99,78 @@ class Action(BaseModel):
         "volumeLevel",
     ]
 
-    @field_validator("button_name")
+    @validator("button_name")
     def button_name_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in set(["preset1", "preset2", "preset3", "preset4"]):
+        if value not in ("preset1", "preset2", "preset3", "preset4"):
             raise ValueError(
                 "must be one of enum values ('preset1', 'preset2', 'preset3', 'preset4')"
             )
         return value
 
-    @field_validator("tone_name")
+    @validator("tone_name")
     def tone_name_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in set(["alarm_1", "alarm_2"]):
+        if value not in ("alarm_1", "alarm_2"):
             raise ValueError("must be one of enum values ('alarm_1', 'alarm_2')")
         return value
 
-    @field_validator("type")
+    @validator("type")
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in set(
-            [
-                "standby",
-                "tone",
-                "radio",
-                "sourcePreset",
-                "deezerFlow",
-                "activateSource",
-                "playQueue",
-                "buttonShortPress",
-                "allStandby",
-                "touchToJoin",
-                "fallback",
-                "volume",
-                "stop",
-                "triggerContent",
-                "speakerGroup",
-                "listeningMode",
-                "stand",
-                "sourceGain",
-            ]
+        if value not in (
+            "standby",
+            "tone",
+            "radio",
+            "sourcePreset",
+            "deezerFlow",
+            "activateSource",
+            "playQueue",
+            "buttonShortPress",
+            "allStandby",
+            "touchToJoin",
+            "fallback",
+            "volume",
+            "stop",
+            "triggerContent",
+            "speakerGroup",
+            "listeningMode",
+            "stand",
+            "sourceGain",
         ):
             raise ValueError(
                 "must be one of enum values ('standby', 'tone', 'radio', 'sourcePreset', 'deezerFlow', 'activateSource', 'playQueue', 'buttonShortPress', 'allStandby', 'touchToJoin', 'fallback', 'volume', 'stop', 'triggerContent', 'speakerGroup', 'listeningMode', 'stand', 'sourceGain')"
             )
         return value
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> Action:
         """Create an instance of Action from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # override the default output from pydantic by calling `to_dict()` of queue_item
         if self.queue_item:
             _dict["queueItem"] = self.queue_item.to_dict()
@@ -212,93 +184,90 @@ class Action(BaseModel):
         if self.stand_position:
             _dict["standPosition"] = self.stand_position.to_dict()
         # set to None if button_name (nullable) is None
-        # and model_fields_set contains the field
-        if self.button_name is None and "button_name" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.button_name is None and "button_name" in self.__fields_set__:
             _dict["buttonName"] = None
 
         # set to None if content_id (nullable) is None
-        # and model_fields_set contains the field
-        if self.content_id is None and "content_id" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.content_id is None and "content_id" in self.__fields_set__:
             _dict["contentId"] = None
 
         # set to None if deezer_user_id (nullable) is None
-        # and model_fields_set contains the field
-        if self.deezer_user_id is None and "deezer_user_id" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.deezer_user_id is None and "deezer_user_id" in self.__fields_set__:
             _dict["deezerUserId"] = None
 
         # set to None if preset_key (nullable) is None
-        # and model_fields_set contains the field
-        if self.preset_key is None and "preset_key" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.preset_key is None and "preset_key" in self.__fields_set__:
             _dict["presetKey"] = None
 
         # set to None if radio_station_id (nullable) is None
-        # and model_fields_set contains the field
-        if (
-            self.radio_station_id is None
-            and "radio_station_id" in self.model_fields_set
-        ):
+        # and __fields_set__ contains the field
+        if self.radio_station_id is None and "radio_station_id" in self.__fields_set__:
             _dict["radioStationId"] = None
 
         # set to None if stop_duration (nullable) is None
-        # and model_fields_set contains the field
-        if self.stop_duration is None and "stop_duration" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.stop_duration is None and "stop_duration" in self.__fields_set__:
             _dict["stopDuration"] = None
 
         # set to None if tone_name (nullable) is None
-        # and model_fields_set contains the field
-        if self.tone_name is None and "tone_name" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.tone_name is None and "tone_name" in self.__fields_set__:
             _dict["toneName"] = None
 
         # set to None if volume_level (nullable) is None
-        # and model_fields_set contains the field
-        if self.volume_level is None and "volume_level" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.volume_level is None and "volume_level" in self.__fields_set__:
             _dict["volumeLevel"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> Action:
         """Create an instance of Action from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return Action.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = Action.parse_obj(
             {
-                "buttonName": obj.get("buttonName"),
-                "contentId": obj.get("contentId"),
-                "deezerUserId": obj.get("deezerUserId"),
-                "gainDb": obj.get("gainDb"),
-                "listeningModeId": obj.get("listeningModeId"),
-                "presetKey": obj.get("presetKey"),
-                "queueItem": (
-                    PlayQueueItem.from_dict(obj["queueItem"])
+                "button_name": obj.get("buttonName"),
+                "content_id": obj.get("contentId"),
+                "deezer_user_id": obj.get("deezerUserId"),
+                "gain_db": obj.get("gainDb"),
+                "listening_mode_id": obj.get("listeningModeId"),
+                "preset_key": obj.get("presetKey"),
+                "queue_item": (
+                    PlayQueueItem.from_dict(obj.get("queueItem"))
                     if obj.get("queueItem") is not None
                     else None
                 ),
-                "queueSettings": (
-                    PlayQueueSettings.from_dict(obj["queueSettings"])
+                "queue_settings": (
+                    PlayQueueSettings.from_dict(obj.get("queueSettings"))
                     if obj.get("queueSettings") is not None
                     else None
                 ),
-                "radioStationId": obj.get("radioStationId"),
+                "radio_station_id": obj.get("radioStationId"),
                 "source": (
-                    SourceTypeEnum.from_dict(obj["source"])
+                    SourceTypeEnum.from_dict(obj.get("source"))
                     if obj.get("source") is not None
                     else None
                 ),
-                "speakerGroupId": obj.get("speakerGroupId"),
-                "standPosition": (
-                    StandPosition.from_dict(obj["standPosition"])
+                "speaker_group_id": obj.get("speakerGroupId"),
+                "stand_position": (
+                    StandPosition.from_dict(obj.get("standPosition"))
                     if obj.get("standPosition") is not None
                     else None
                 ),
-                "stopDuration": obj.get("stopDuration"),
-                "toneName": obj.get("toneName"),
+                "stop_duration": obj.get("stopDuration"),
+                "tone_name": obj.get("toneName"),
                 "type": obj.get("type"),
-                "volumeLevel": obj.get("volumeLevel"),
+                "volume_level": obj.get("volumeLevel"),
             }
         )
         return _obj

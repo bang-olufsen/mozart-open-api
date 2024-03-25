@@ -18,57 +18,48 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    StrictBool,
-    StrictStr,
-    field_validator,
-)
-from typing import Any, ClassVar, Dict, List, Optional
+
+from typing import List, Optional
+from pydantic import BaseModel, Field, StrictBool, StrictStr, conlist, validator
 from mozart_api.models.action import Action
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class RemoteMenuItemProperties(BaseModel):
     """
     RemoteMenuItemProperties
-    """  # noqa: E501
+    """
 
-    action_list: Optional[List[Action]] = Field(
-        default=None,
-        description="An ordered list of Actions to run on the product",
+    action_list: Optional[conlist(Action)] = Field(
+        None,
         alias="actionList",
+        description="An ordered list of Actions to run on the product",
     )
-    scene_list: Optional[List[StrictStr]] = Field(
-        default=None, description="A list of scenes", alias="sceneList"
+    scene_list: Optional[conlist(StrictStr)] = Field(
+        None, alias="sceneList", description="A list of scenes"
     )
     disabled: Optional[StrictBool] = None
     dynamic_list: Optional[StrictStr] = Field(
-        default=None,
-        description="Let mozart create a dynamic list. This list will be attached as children to the menu item. If dynamicList is set it's not possible to change or manipulate any of the children because mozart can alter them at any given time ",
+        None,
         alias="dynamicList",
+        description="Let mozart create a dynamic list. This list will be attached as children to the menu item. If dynamicList is set it's not possible to change or manipulate any of the children because mozart can alter them at any given time ",
     )
     first_child_menu_item_id: Optional[StrictStr] = Field(
-        default=None,
-        description="ID of the first child menu item",
+        None,
         alias="firstChildMenuItemId",
+        description="ID of the first child menu item",
     )
     label: Optional[StrictStr] = Field(
-        default=None,
-        description="Alternative label, if omitted mozart will try its best",
+        None, description="Alternative label, if omitted mozart will try its best"
     )
     next_sibling_menu_item_id: Optional[StrictStr] = Field(
-        default=None,
-        description="ID of the next sibling menu item",
+        None,
         alias="nextSiblingMenuItemId",
+        description="ID of the next sibling menu item",
     )
     parent_menu_item_id: Optional[StrictStr] = Field(
-        default=None, description="ID of the parent menu item", alias="parentMenuItemId"
+        None, alias="parentMenuItemId", description="ID of the parent menu item"
     )
-    __properties: ClassVar[List[str]] = [
+    __properties = [
         "actionList",
         "sceneList",
         "disabled",
@@ -79,53 +70,38 @@ class RemoteMenuItemProperties(BaseModel):
         "parentMenuItemId",
     ]
 
-    @field_validator("dynamic_list")
+    @validator("dynamic_list")
     def dynamic_list_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in set(["none", "radioFavorites"]):
+        if value not in ("none", "radioFavorites"):
             raise ValueError("must be one of enum values ('none', 'radioFavorites')")
         return value
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> RemoteMenuItemProperties:
         """Create an instance of RemoteMenuItemProperties from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # override the default output from pydantic by calling `to_dict()` of each item in action_list (list)
         _items = []
         if self.action_list:
@@ -134,69 +110,69 @@ class RemoteMenuItemProperties(BaseModel):
                     _items.append(_item.to_dict())
             _dict["actionList"] = _items
         # set to None if disabled (nullable) is None
-        # and model_fields_set contains the field
-        if self.disabled is None and "disabled" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.disabled is None and "disabled" in self.__fields_set__:
             _dict["disabled"] = None
 
         # set to None if dynamic_list (nullable) is None
-        # and model_fields_set contains the field
-        if self.dynamic_list is None and "dynamic_list" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.dynamic_list is None and "dynamic_list" in self.__fields_set__:
             _dict["dynamicList"] = None
 
         # set to None if first_child_menu_item_id (nullable) is None
-        # and model_fields_set contains the field
+        # and __fields_set__ contains the field
         if (
             self.first_child_menu_item_id is None
-            and "first_child_menu_item_id" in self.model_fields_set
+            and "first_child_menu_item_id" in self.__fields_set__
         ):
             _dict["firstChildMenuItemId"] = None
 
         # set to None if label (nullable) is None
-        # and model_fields_set contains the field
-        if self.label is None and "label" in self.model_fields_set:
+        # and __fields_set__ contains the field
+        if self.label is None and "label" in self.__fields_set__:
             _dict["label"] = None
 
         # set to None if next_sibling_menu_item_id (nullable) is None
-        # and model_fields_set contains the field
+        # and __fields_set__ contains the field
         if (
             self.next_sibling_menu_item_id is None
-            and "next_sibling_menu_item_id" in self.model_fields_set
+            and "next_sibling_menu_item_id" in self.__fields_set__
         ):
             _dict["nextSiblingMenuItemId"] = None
 
         # set to None if parent_menu_item_id (nullable) is None
-        # and model_fields_set contains the field
+        # and __fields_set__ contains the field
         if (
             self.parent_menu_item_id is None
-            and "parent_menu_item_id" in self.model_fields_set
+            and "parent_menu_item_id" in self.__fields_set__
         ):
             _dict["parentMenuItemId"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> RemoteMenuItemProperties:
         """Create an instance of RemoteMenuItemProperties from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return RemoteMenuItemProperties.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = RemoteMenuItemProperties.parse_obj(
             {
-                "actionList": (
-                    [Action.from_dict(_item) for _item in obj["actionList"]]
+                "action_list": (
+                    [Action.from_dict(_item) for _item in obj.get("actionList")]
                     if obj.get("actionList") is not None
                     else None
                 ),
-                "sceneList": obj.get("sceneList"),
+                "scene_list": obj.get("sceneList"),
                 "disabled": obj.get("disabled"),
-                "dynamicList": obj.get("dynamicList"),
-                "firstChildMenuItemId": obj.get("firstChildMenuItemId"),
+                "dynamic_list": obj.get("dynamicList"),
+                "first_child_menu_item_id": obj.get("firstChildMenuItemId"),
                 "label": obj.get("label"),
-                "nextSiblingMenuItemId": obj.get("nextSiblingMenuItemId"),
-                "parentMenuItemId": obj.get("parentMenuItemId"),
+                "next_sibling_menu_item_id": obj.get("nextSiblingMenuItemId"),
+                "parent_menu_item_id": obj.get("parentMenuItemId"),
             }
         )
         return _obj

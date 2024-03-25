@@ -18,8 +18,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List, Optional
+
+from typing import Optional
+from pydantic import BaseModel, Field
 from mozart_api.models.microphones_state import MicrophonesState
 from mozart_api.models.playback_state import PlaybackState
 from mozart_api.models.power_state_enum import PowerStateEnum
@@ -28,26 +29,24 @@ from mozart_api.models.sound_settings import SoundSettings
 from mozart_api.models.source import Source
 from mozart_api.models.tv_state import TvState
 from mozart_api.models.volume_state import VolumeState
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class ProductState(BaseModel):
     """
     ProductState
-    """  # noqa: E501
+    """
 
     microphones: Optional[MicrophonesState] = None
     playback: Optional[PlaybackState] = None
-    power_state: Optional[PowerStateEnum] = Field(default=None, alias="powerState")
+    power_state: Optional[PowerStateEnum] = Field(None, alias="powerState")
     software_update_state: Optional[SoftwareUpdateState] = Field(
-        default=None, alias="softwareUpdateState"
+        None, alias="softwareUpdateState"
     )
-    sound_settings: Optional[SoundSettings] = Field(default=None, alias="soundSettings")
+    sound_settings: Optional[SoundSettings] = Field(None, alias="soundSettings")
     source: Optional[Source] = None
     tv: Optional[TvState] = None
     volume: Optional[VolumeState] = None
-    __properties: ClassVar[List[str]] = [
+    __properties = [
         "microphones",
         "playback",
         "powerState",
@@ -58,43 +57,28 @@ class ProductState(BaseModel):
         "volume",
     ]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> ProductState:
         """Create an instance of ProductState from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # override the default output from pydantic by calling `to_dict()` of microphones
         if self.microphones:
             _dict["microphones"] = self.microphones.to_dict()
@@ -122,51 +106,53 @@ class ProductState(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> ProductState:
         """Create an instance of ProductState from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return ProductState.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = ProductState.parse_obj(
             {
                 "microphones": (
-                    MicrophonesState.from_dict(obj["microphones"])
+                    MicrophonesState.from_dict(obj.get("microphones"))
                     if obj.get("microphones") is not None
                     else None
                 ),
                 "playback": (
-                    PlaybackState.from_dict(obj["playback"])
+                    PlaybackState.from_dict(obj.get("playback"))
                     if obj.get("playback") is not None
                     else None
                 ),
-                "powerState": (
-                    PowerStateEnum.from_dict(obj["powerState"])
+                "power_state": (
+                    PowerStateEnum.from_dict(obj.get("powerState"))
                     if obj.get("powerState") is not None
                     else None
                 ),
-                "softwareUpdateState": (
-                    SoftwareUpdateState.from_dict(obj["softwareUpdateState"])
+                "software_update_state": (
+                    SoftwareUpdateState.from_dict(obj.get("softwareUpdateState"))
                     if obj.get("softwareUpdateState") is not None
                     else None
                 ),
-                "soundSettings": (
-                    SoundSettings.from_dict(obj["soundSettings"])
+                "sound_settings": (
+                    SoundSettings.from_dict(obj.get("soundSettings"))
                     if obj.get("soundSettings") is not None
                     else None
                 ),
                 "source": (
-                    Source.from_dict(obj["source"])
+                    Source.from_dict(obj.get("source"))
                     if obj.get("source") is not None
                     else None
                 ),
                 "tv": (
-                    TvState.from_dict(obj["tv"]) if obj.get("tv") is not None else None
+                    TvState.from_dict(obj.get("tv"))
+                    if obj.get("tv") is not None
+                    else None
                 ),
                 "volume": (
-                    VolumeState.from_dict(obj["volume"])
+                    VolumeState.from_dict(obj.get("volume"))
                     if obj.get("volume") is not None
                     else None
                 ),

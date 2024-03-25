@@ -18,8 +18,9 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Any, ClassVar, Dict, List, Optional
+
+from typing import Optional
+from pydantic import BaseModel, Field
 from mozart_api.models.ambience import Ambience
 from mozart_api.models.balance import Balance
 from mozart_api.models.bass_management import BassManagement
@@ -34,40 +35,34 @@ from mozart_api.models.spatial_surround import SpatialSurround
 from mozart_api.models.spatial_width import SpatialWidth
 from mozart_api.models.speech_enhance import SpeechEnhance
 from mozart_api.models.tone_touch import ToneTouch
-from typing import Optional, Set
-from typing_extensions import Self
 
 
 class ListeningModeFeatures(BaseModel):
     """
-    Sound features to apply
-    """  # noqa: E501
+    Sound features to apply  # noqa: E501
+    """
 
     ambience: Optional[Ambience] = None
     balance: Optional[Balance] = None
-    bass_management: Optional[BassManagement] = Field(
-        default=None, alias="bassManagement"
-    )
+    bass_management: Optional[BassManagement] = Field(None, alias="bassManagement")
     compression: Optional[Compression] = None
     directivity: Optional[Directivity] = None
     fader: Optional[Fader] = None
     room_compensation: Optional[RoomCompensation] = Field(
-        default=None, alias="roomCompensation"
+        None, alias="roomCompensation"
     )
     spatial_envelopment: Optional[SpatialEnvelopment] = Field(
-        default=None, alias="spatialEnvelopment"
+        None, alias="spatialEnvelopment"
     )
-    spatial_height: Optional[SpatialHeight] = Field(default=None, alias="spatialHeight")
+    spatial_height: Optional[SpatialHeight] = Field(None, alias="spatialHeight")
     spatial_processing: Optional[SpatialProcessing] = Field(
-        default=None, alias="spatialProcessing"
+        None, alias="spatialProcessing"
     )
-    spatial_surround: Optional[SpatialSurround] = Field(
-        default=None, alias="spatialSurround"
-    )
-    spatial_width: Optional[SpatialWidth] = Field(default=None, alias="spatialWidth")
-    speech_enhance: Optional[SpeechEnhance] = Field(default=None, alias="speechEnhance")
-    tone_touch: Optional[ToneTouch] = Field(default=None, alias="toneTouch")
-    __properties: ClassVar[List[str]] = [
+    spatial_surround: Optional[SpatialSurround] = Field(None, alias="spatialSurround")
+    spatial_width: Optional[SpatialWidth] = Field(None, alias="spatialWidth")
+    speech_enhance: Optional[SpeechEnhance] = Field(None, alias="speechEnhance")
+    tone_touch: Optional[ToneTouch] = Field(None, alias="toneTouch")
+    __properties = [
         "ambience",
         "balance",
         "bassManagement",
@@ -84,43 +79,28 @@ class ListeningModeFeatures(BaseModel):
         "toneTouch",
     ]
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        validate_assignment=True,
-        protected_namespaces=(),
-    )
+    class Config:
+        """Pydantic configuration"""
+
+        allow_population_by_field_name = True
+        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.model_dump(by_alias=True))
+        return pprint.pformat(self.dict(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> Optional[Self]:
+    def from_json(cls, json_str: str) -> ListeningModeFeatures:
         """Create an instance of ListeningModeFeatures from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Return the dictionary representation of the model using alias.
-
-        This has the following differences from calling pydantic's
-        `self.model_dump(by_alias=True)`:
-
-        * `None` is only added to the output dict for nullable fields that
-          were set at model initialization. Other fields with value `None`
-          are ignored.
-        """
-        excluded_fields: Set[str] = set([])
-
-        _dict = self.model_dump(
-            by_alias=True,
-            exclude=excluded_fields,
-            exclude_none=True,
-        )
+    def to_dict(self):
+        """Returns the dictionary representation of the model using alias"""
+        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
         # override the default output from pydantic by calling `to_dict()` of ambience
         if self.ambience:
             _dict["ambience"] = self.ambience.to_dict()
@@ -166,83 +146,83 @@ class ListeningModeFeatures(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
+    def from_dict(cls, obj: dict) -> ListeningModeFeatures:
         """Create an instance of ListeningModeFeatures from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return cls.model_validate(obj)
+            return ListeningModeFeatures.parse_obj(obj)
 
-        _obj = cls.model_validate(
+        _obj = ListeningModeFeatures.parse_obj(
             {
                 "ambience": (
-                    Ambience.from_dict(obj["ambience"])
+                    Ambience.from_dict(obj.get("ambience"))
                     if obj.get("ambience") is not None
                     else None
                 ),
                 "balance": (
-                    Balance.from_dict(obj["balance"])
+                    Balance.from_dict(obj.get("balance"))
                     if obj.get("balance") is not None
                     else None
                 ),
-                "bassManagement": (
-                    BassManagement.from_dict(obj["bassManagement"])
+                "bass_management": (
+                    BassManagement.from_dict(obj.get("bassManagement"))
                     if obj.get("bassManagement") is not None
                     else None
                 ),
                 "compression": (
-                    Compression.from_dict(obj["compression"])
+                    Compression.from_dict(obj.get("compression"))
                     if obj.get("compression") is not None
                     else None
                 ),
                 "directivity": (
-                    Directivity.from_dict(obj["directivity"])
+                    Directivity.from_dict(obj.get("directivity"))
                     if obj.get("directivity") is not None
                     else None
                 ),
                 "fader": (
-                    Fader.from_dict(obj["fader"])
+                    Fader.from_dict(obj.get("fader"))
                     if obj.get("fader") is not None
                     else None
                 ),
-                "roomCompensation": (
-                    RoomCompensation.from_dict(obj["roomCompensation"])
+                "room_compensation": (
+                    RoomCompensation.from_dict(obj.get("roomCompensation"))
                     if obj.get("roomCompensation") is not None
                     else None
                 ),
-                "spatialEnvelopment": (
-                    SpatialEnvelopment.from_dict(obj["spatialEnvelopment"])
+                "spatial_envelopment": (
+                    SpatialEnvelopment.from_dict(obj.get("spatialEnvelopment"))
                     if obj.get("spatialEnvelopment") is not None
                     else None
                 ),
-                "spatialHeight": (
-                    SpatialHeight.from_dict(obj["spatialHeight"])
+                "spatial_height": (
+                    SpatialHeight.from_dict(obj.get("spatialHeight"))
                     if obj.get("spatialHeight") is not None
                     else None
                 ),
-                "spatialProcessing": (
-                    SpatialProcessing.from_dict(obj["spatialProcessing"])
+                "spatial_processing": (
+                    SpatialProcessing.from_dict(obj.get("spatialProcessing"))
                     if obj.get("spatialProcessing") is not None
                     else None
                 ),
-                "spatialSurround": (
-                    SpatialSurround.from_dict(obj["spatialSurround"])
+                "spatial_surround": (
+                    SpatialSurround.from_dict(obj.get("spatialSurround"))
                     if obj.get("spatialSurround") is not None
                     else None
                 ),
-                "spatialWidth": (
-                    SpatialWidth.from_dict(obj["spatialWidth"])
+                "spatial_width": (
+                    SpatialWidth.from_dict(obj.get("spatialWidth"))
                     if obj.get("spatialWidth") is not None
                     else None
                 ),
-                "speechEnhance": (
-                    SpeechEnhance.from_dict(obj["speechEnhance"])
+                "speech_enhance": (
+                    SpeechEnhance.from_dict(obj.get("speechEnhance"))
                     if obj.get("speechEnhance") is not None
                     else None
                 ),
-                "toneTouch": (
-                    ToneTouch.from_dict(obj["toneTouch"])
+                "tone_touch": (
+                    ToneTouch.from_dict(obj.get("toneTouch"))
                     if obj.get("toneTouch") is not None
                     else None
                 ),
