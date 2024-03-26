@@ -8,18 +8,22 @@ import json
 import logging
 import re
 from collections import defaultdict
+from dataclasses import dataclass
 from datetime import time
-from typing import Callable
+from typing import Callable, Literal
 
-import websockets
-from aiohttp.client_exceptions import ClientConnectorError
+from aiohttp import ClientSession
+from aiohttp.client_exceptions import (
+    ClientConnectorError,
+    ClientOSError,
+    ServerTimeoutError,
+)
 from inflection import underscore
 from mozart_api.api.mozart_api import MozartApi
 from mozart_api.api_client import ApiClient
 from mozart_api.configuration import Configuration
 from mozart_api.exceptions import ApiException
 from mozart_api.models import Art, PlaybackContentMetadata
-from websockets.exceptions import ConnectionClosed, InvalidHandshake, InvalidURI
 
 WEBSOCKET_TIMEOUT = 5.0
 
@@ -161,36 +165,24 @@ class MozartClient(MozartApi):
 
     async def _check_websocket_connection(
         self,
-    ) -> (
-        bool
-        | InvalidHandshake
-        | OSError
-        | asyncio.TimeoutError
-        | InvalidURI
-        | ConnectionClosed
-        | ConnectionError
-    ):
+    ) -> Literal[True] | ClientConnectorError | ClientOSError | ServerTimeoutError:
         """Check if a connection can be made to the device's WebSocket notification channel."""
         try:
-            async with websockets.connect(
-                uri=f"ws://{self.host}:9339/", open_timeout=WEBSOCKET_TIMEOUT
-            ):
-                pass
-        except (
-            InvalidHandshake,
-            OSError,
-            asyncio.TimeoutError,
-            InvalidURI,
-            ConnectionClosed,
-            ConnectionError,
-        ) as error:
-            return error
+            async with ClientSession(conn_timeout=WEBSOCKET_TIMEOUT) as session:
+                async with session.ws_connect(
+                    f"ws://{self.host}:9339/",
+                    timeout=WEBSOCKET_TIMEOUT,
+                    receive_timeout=WEBSOCKET_TIMEOUT,
+                ) as websocket:
+                    if await websocket.receive():
+                        return True
 
-        return True
+        except (ClientConnectorError, ClientOSError, ServerTimeoutError) as error:
+            return error
 
     async def _check_api_connection(
         self,
-    ) -> bool | ApiException | ClientConnectorError | TimeoutError:
+    ) -> Literal[True] | ApiException | ClientConnectorError | TimeoutError:
         """Check if a connection can be made to the device's REST API."""
         try:
             await self.get_battery_state(_request_timeout=3)
@@ -202,7 +194,17 @@ class MozartClient(MozartApi):
     async def check_device_connection(self, raise_error=False) -> bool:
         """Check API and WebSocket connection."""
         # Don't use a taskgroup as both tasks should always be checked
-        tasks: tuple[asyncio.Task] = (
+        tasks: tuple[
+            asyncio.Task[
+                Literal[True]
+                | ClientConnectorError
+                | ClientOSError
+                | ServerTimeoutError
+            ],
+            asyncio.Task[
+                Literal[True] | ApiException | ClientConnectorError | TimeoutError
+            ],
+        ] = (
             asyncio.create_task(self._check_websocket_connection(), name="websocket"),
             asyncio.create_task(self._check_api_connection(), name="REST API"),
         )
@@ -212,17 +214,23 @@ class MozartClient(MozartApi):
             while not task.done():
                 await asyncio.sleep(0)
 
-        connection_available = True
-        errors = []
+        errors: list[
+            ClientConnectorError
+            | ClientOSError
+            | ServerTimeoutError
+            | ApiException
+            | TimeoutError
+        ] = []
 
         # Check status
         for task in tasks:
-            if task.result() is not True:
-                connection_available = False
-                errors.append(task.result())
+            if (result := task.result()) is not True:
+                errors.append(result)
+
+        connection_available = bool(len(errors) == 0)
 
         # Raise any exceptions
-        if raise_error and not connection_available:
+        if not connection_available and raise_error:
             raise ExceptionGroup(f"Can't connect to {self.host}", tuple(errors))
 
         return connection_available
@@ -231,7 +239,6 @@ class MozartClient(MozartApi):
         self, remote_control=False, reconnect=False
     ) -> None:
         """Start the WebSocket listener task(s)."""
-        self.websocket_reconnect = reconnect
         self.websocket_reconnect = reconnect
 
         # Always add main WebSocket listener
@@ -272,54 +279,61 @@ class MozartClient(MozartApi):
 
     async def _websocket_listener(self, host: str) -> None:
         """WebSocket listener."""
-        # Ensure automatic reconnect if needed
-        async for websocket in websockets.connect(
-            uri=host,
-            logger=logger,
-            ping_interval=WEBSOCKET_TIMEOUT,
-            ping_timeout=WEBSOCKET_TIMEOUT,
-        ):
+        while True:
             try:
-                self.websocket_connected = True
+                async with ClientSession(conn_timeout=WEBSOCKET_TIMEOUT) as session:
+                    async with session.ws_connect(
+                        url=host, heartbeat=WEBSOCKET_TIMEOUT
+                    ) as websocket:
+                        self.websocket_connected = True
 
-                if self._on_connection:
-                    await self._trigger_callback(self._on_connection)
+                        if self._on_connection:
+                            await self._trigger_callback(self._on_connection)
 
-                # While listener is active
-                while self._websocket_listeners_active:
-                    with contextlib.suppress(asyncio.TimeoutError):
-                        notification = await asyncio.wait_for(
-                            websocket.recv(),
-                            timeout=WEBSOCKET_TIMEOUT,
-                        )
-                        await self._on_message(json.loads(notification))
+                        while self._websocket_listeners_active:
+                            with contextlib.suppress(asyncio.TimeoutError):
+                                # Receive JSON in order to get the Websocket notification name for deserialization
+                                notification = await asyncio.wait_for(
+                                    websocket.receive_json(),
+                                    timeout=WEBSOCKET_TIMEOUT,
+                                )
 
-                # Disconnect
-                self.websocket_connected = False
-                await websocket.close()
-                return
+                                # Ensure that any notifications received after the disconnect command has been executed are not processed
+                                if not self._websocket_listeners_active:
+                                    break
+
+                                await self._on_message(notification)
+
+                        # Disconnect
+                        self.websocket_connected = False
+                        await websocket.close()
+                        return
 
             except (
-                InvalidHandshake,
-                OSError,
-                asyncio.TimeoutError,
-                InvalidURI,
-                ConnectionClosed,
-                ConnectionError,
+                ClientConnectorError,
+                ClientOSError,
+                TypeError,
+                ServerTimeoutError,
             ) as error:
                 if self.websocket_connected:
-                    self.websocket_connected = False
                     logger.debug("%s : %s - %s", host, type(error), error)
+                    self.websocket_connected = False
 
                     if self._on_connection_lost:
                         await self._trigger_callback(self._on_connection_lost)
 
-                    if not self.websocket_reconnect:
-                        logger.error("%s : %s - %s", host, type(error), error)
-                        self.disconnect_notifications()
-                        return
+                if not self.websocket_reconnect:
+                    logger.error("%s : %s - %s", host, type(error), error)
+                    self.disconnect_notifications()
+                    return
 
                 await asyncio.sleep(WEBSOCKET_TIMEOUT)
+
+    @dataclass
+    class _ResponseWrapper:
+        """Wrapper class for deserializing WebSocket response."""
+
+        data: str
 
     async def _on_message(self, notification) -> None:
         """Handle WebSocket notifications."""
@@ -329,7 +343,7 @@ class MozartClient(MozartApi):
             notification_type = notification["eventType"]
 
             deserialized_data = self.api_client.deserialize(
-                json.dumps(notification), notification_type
+                self._ResponseWrapper(json.dumps(notification)), notification_type
             ).event_data
 
         except (ValueError, AttributeError) as error:
