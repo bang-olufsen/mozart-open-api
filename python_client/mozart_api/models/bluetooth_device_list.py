@@ -20,7 +20,12 @@ import json
 
 
 from typing import List, Optional
-from pydantic import BaseModel, conlist
+
+try:
+    from pydantic.v1 import BaseModel, conlist
+except ImportError:
+    from pydantic import BaseModel, conlist
+
 from mozart_api.models.bluetooth_device import BluetoothDevice
 
 

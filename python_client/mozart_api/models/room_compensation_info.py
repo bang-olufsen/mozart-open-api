@@ -20,7 +20,12 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, Field
+
+try:
+    from pydantic.v1 import BaseModel, Field
+except ImportError:
+    from pydantic import BaseModel, Field
+
 from mozart_api.models.room_compensation_debug import RoomCompensationDebug
 from mozart_api.models.room_compensation_enabled import RoomCompensationEnabled
 from mozart_api.models.room_compensation_result import RoomCompensationResult

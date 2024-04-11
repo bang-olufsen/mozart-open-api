@@ -20,7 +20,12 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, Field, conint
+
+try:
+    from pydantic.v1 import BaseModel, Field, conint
+except ImportError:
+    from pydantic import BaseModel, Field, conint
+
 from mozart_api.models.video_pixel_format import VideoPixelFormat
 from mozart_api.models.video_timings import VideoTimings
 

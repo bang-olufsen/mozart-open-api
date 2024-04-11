@@ -20,7 +20,28 @@ import json
 
 
 from typing import List, Optional
-from pydantic import BaseModel, Field, StrictBool, StrictStr, conint, conlist, validator
+
+try:
+    from pydantic.v1 import (
+        BaseModel,
+        Field,
+        StrictBool,
+        StrictStr,
+        conint,
+        conlist,
+        validator,
+    )
+except ImportError:
+    from pydantic import (
+        BaseModel,
+        Field,
+        StrictBool,
+        StrictStr,
+        conint,
+        conlist,
+        validator,
+    )
+
 from mozart_api.models.latency_profile import LatencyProfile
 
 

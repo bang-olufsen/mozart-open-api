@@ -20,7 +20,12 @@ import json
 
 
 from typing import List
-from pydantic import BaseModel, Field, StrictStr, conlist, validator
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictStr, conlist, validator
+except ImportError:
+    from pydantic import BaseModel, Field, StrictStr, conlist, validator
+
 from mozart_api.models.spatial_processing import SpatialProcessing
 
 

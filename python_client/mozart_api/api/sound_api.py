@@ -17,11 +17,21 @@ import re  # noqa: F401
 import io
 import warnings
 
-from pydantic import validate_arguments, ValidationError
+
+try:
+    from pydantic.v1 import validate_arguments, ValidationError
+except ImportError:
+    from pydantic import validate_arguments, ValidationError
+
 from typing import overload, Optional, Union, Awaitable
 
 from typing_extensions import Annotated
-from pydantic import Field, conint
+
+try:
+    from pydantic.v1 import Field, conint
+except ImportError:
+    from pydantic import Field, conint
+
 
 from typing import Dict, List
 

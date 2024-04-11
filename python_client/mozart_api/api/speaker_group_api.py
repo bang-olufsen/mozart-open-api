@@ -17,7 +17,12 @@ import re  # noqa: F401
 import io
 import warnings
 
-from pydantic import validate_arguments, ValidationError
+
+try:
+    from pydantic.v1 import validate_arguments, ValidationError
+except ImportError:
+    from pydantic import validate_arguments, ValidationError
+
 from typing import overload, Optional, Union, Awaitable
 
 from mozart_api.models.speaker_group_overview import SpeakerGroupOverview

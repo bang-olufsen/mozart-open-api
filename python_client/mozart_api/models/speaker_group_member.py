@@ -20,7 +20,12 @@ import json
 
 
 from typing import Optional, Union
-from pydantic import BaseModel, Field, StrictStr, confloat, conint
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictStr, confloat, conint
+except ImportError:
+    from pydantic import BaseModel, Field, StrictStr, confloat, conint
+
 from mozart_api.models.speaker_group_member_location import SpeakerGroupMemberLocation
 
 

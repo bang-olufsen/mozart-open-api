@@ -20,7 +20,12 @@ import json
 
 
 from typing import List, Union
-from pydantic import BaseModel, Field, StrictFloat, StrictInt, conlist
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictFloat, StrictInt, conlist
+except ImportError:
+    from pydantic import BaseModel, Field, StrictFloat, StrictInt, conlist
+
 from mozart_api.models.spatial_surround import SpatialSurround
 
 

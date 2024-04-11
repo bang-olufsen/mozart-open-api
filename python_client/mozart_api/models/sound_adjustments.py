@@ -20,7 +20,18 @@ import json
 
 
 from typing import Optional, Union
-from pydantic import BaseModel, Field, StrictBool, StrictFloat, StrictInt, StrictStr
+
+try:
+    from pydantic.v1 import (
+        BaseModel,
+        Field,
+        StrictBool,
+        StrictFloat,
+        StrictInt,
+        StrictStr,
+    )
+except ImportError:
+    from pydantic import BaseModel, Field, StrictBool, StrictFloat, StrictInt, StrictStr
 
 
 class SoundAdjustments(BaseModel):

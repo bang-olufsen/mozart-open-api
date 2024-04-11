@@ -19,7 +19,10 @@ import re  # noqa: F401
 import json
 
 
-from pydantic import BaseModel, Field, StrictInt
+try:
+    from pydantic.v1 import BaseModel, Field, StrictInt
+except ImportError:
+    from pydantic import BaseModel, Field, StrictInt
 
 
 class SpeakerGroupMemberLocation(BaseModel):

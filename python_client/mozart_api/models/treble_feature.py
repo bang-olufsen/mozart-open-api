@@ -20,7 +20,12 @@ import json
 
 
 from typing import List
-from pydantic import BaseModel, Field, StrictInt, conlist
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictInt, conlist
+except ImportError:
+    from pydantic import BaseModel, Field, StrictInt, conlist
+
 from mozart_api.models.treble import Treble
 
 

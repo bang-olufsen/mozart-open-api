@@ -20,10 +20,20 @@ import pprint
 import re  # noqa: F401
 
 from typing import Any, List, Optional
-from pydantic import BaseModel, Field, StrictStr, ValidationError, validator
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictStr, ValidationError, validator
+except ImportError:
+    from pydantic import BaseModel, Field, StrictStr, ValidationError, validator
+
 from mozart_api.models.power_link_trigger import PowerLinkTrigger
 from typing import Union, Any, List, TYPE_CHECKING
-from pydantic import StrictStr, Field
+
+try:
+    from pydantic.v1 import StrictStr, Field
+except ImportError:
+    from pydantic import StrictStr, Field
+
 
 LISTENINGMODETRIGGER_ONE_OF_SCHEMAS = ["PowerLinkTrigger"]
 

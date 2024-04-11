@@ -20,15 +20,27 @@ import json
 
 
 from typing import Optional, Union
-from pydantic import (
-    BaseModel,
-    Field,
-    StrictBool,
-    StrictFloat,
-    StrictInt,
-    StrictStr,
-    validator,
-)
+
+try:
+    from pydantic.v1 import (
+        BaseModel,
+        Field,
+        StrictBool,
+        StrictFloat,
+        StrictInt,
+        StrictStr,
+        validator,
+    )
+except ImportError:
+    from pydantic import (
+        BaseModel,
+        Field,
+        StrictBool,
+        StrictFloat,
+        StrictInt,
+        StrictStr,
+        validator,
+    )
 
 
 class StandMovement(BaseModel):

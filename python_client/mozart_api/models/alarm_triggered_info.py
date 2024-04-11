@@ -20,7 +20,11 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, Field, StrictStr, constr
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictStr, constr
+except ImportError:
+    from pydantic import BaseModel, Field, StrictStr, constr
 
 
 class AlarmTriggeredInfo(BaseModel):

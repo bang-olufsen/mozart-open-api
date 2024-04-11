@@ -20,7 +20,11 @@ import json
 
 
 from typing import Optional, Union
-from pydantic import BaseModel, StrictFloat, StrictInt
+
+try:
+    from pydantic.v1 import BaseModel, StrictFloat, StrictInt
+except ImportError:
+    from pydantic import BaseModel, StrictFloat, StrictInt
 
 
 class StandPosition(BaseModel):

@@ -20,7 +20,12 @@ import json
 
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field, StrictBool, StrictStr, validator
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictBool, StrictStr, validator
+except ImportError:
+    from pydantic import BaseModel, Field, StrictBool, StrictStr, validator
+
 from mozart_api.models.room_compensation_error_details import (
     RoomCompensationErrorDetails,
 )

@@ -20,7 +20,12 @@ import json
 
 
 from typing import List, Optional
-from pydantic import BaseModel, Field, StrictStr, conlist
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictStr, conlist
+except ImportError:
+    from pydantic import BaseModel, Field, StrictStr, conlist
+
 from mozart_api.models.action import Action
 from mozart_api.models.content_item import ContentItem
 from mozart_api.models.source_type_enum import SourceTypeEnum

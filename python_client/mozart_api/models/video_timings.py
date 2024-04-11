@@ -20,7 +20,11 @@ import json
 
 
 from typing import Optional, Union
-from pydantic import BaseModel, Field, StrictBool, StrictFloat, StrictInt
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictBool, StrictFloat, StrictInt
+except ImportError:
+    from pydantic import BaseModel, Field, StrictBool, StrictFloat, StrictInt
 
 
 class VideoTimings(BaseModel):

@@ -20,7 +20,11 @@ import json
 
 
 from typing import List, Optional
-from pydantic import BaseModel, Field, StrictStr, conint, conlist
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictStr, conint, conlist
+except ImportError:
+    from pydantic import BaseModel, Field, StrictStr, conint, conlist
 
 
 class RoomCompensationFeature(BaseModel):

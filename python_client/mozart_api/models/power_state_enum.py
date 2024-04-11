@@ -20,7 +20,11 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, StrictStr, validator
+
+try:
+    from pydantic.v1 import BaseModel, StrictStr, validator
+except ImportError:
+    from pydantic import BaseModel, StrictStr, validator
 
 
 class PowerStateEnum(BaseModel):

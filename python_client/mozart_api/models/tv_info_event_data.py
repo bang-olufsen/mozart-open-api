@@ -20,7 +20,12 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel
+
+try:
+    from pydantic.v1 import BaseModel
+except ImportError:
+    from pydantic import BaseModel
+
 from mozart_api.models.tv_integration_types import TvIntegrationTypes
 
 

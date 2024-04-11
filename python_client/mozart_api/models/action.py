@@ -20,7 +20,12 @@ import json
 
 
 from typing import Optional, Union
-from pydantic import BaseModel, Field, StrictStr, confloat, conint, validator
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictStr, confloat, conint, validator
+except ImportError:
+    from pydantic import BaseModel, Field, StrictStr, confloat, conint, validator
+
 from mozart_api.models.play_queue_item import PlayQueueItem
 from mozart_api.models.play_queue_settings import PlayQueueSettings
 from mozart_api.models.source_type_enum import SourceTypeEnum

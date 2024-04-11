@@ -20,7 +20,11 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, StrictInt
+
+try:
+    from pydantic.v1 import BaseModel, StrictInt
+except ImportError:
+    from pydantic import BaseModel, StrictInt
 
 
 class VolumeLevel(BaseModel):

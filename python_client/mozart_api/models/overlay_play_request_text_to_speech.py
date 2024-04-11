@@ -20,7 +20,12 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, Field
+
+try:
+    from pydantic.v1 import BaseModel, Field
+except ImportError:
+    from pydantic import BaseModel, Field
+
 from mozart_api.models.overlay_play_request_text_to_speech_text_to_speech import (
     OverlayPlayRequestTextToSpeechTextToSpeech,
 )

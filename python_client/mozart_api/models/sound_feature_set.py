@@ -20,7 +20,12 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, Field
+
+try:
+    from pydantic.v1 import BaseModel, Field
+except ImportError:
+    from pydantic import BaseModel, Field
+
 from mozart_api.models.ambience_feature import AmbienceFeature
 from mozart_api.models.balance_feature import BalanceFeature
 from mozart_api.models.bass_feature import BassFeature

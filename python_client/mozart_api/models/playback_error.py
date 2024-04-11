@@ -20,7 +20,12 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, StrictStr
+
+try:
+    from pydantic.v1 import BaseModel, StrictStr
+except ImportError:
+    from pydantic import BaseModel, StrictStr
+
 from mozart_api.models.playback_content_metadata import PlaybackContentMetadata
 
 

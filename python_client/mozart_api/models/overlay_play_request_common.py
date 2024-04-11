@@ -20,7 +20,11 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, Field, conint
+
+try:
+    from pydantic.v1 import BaseModel, Field, conint
+except ImportError:
+    from pydantic import BaseModel, Field, conint
 
 
 class OverlayPlayRequestCommon(BaseModel):

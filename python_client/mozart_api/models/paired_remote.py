@@ -20,7 +20,11 @@ import json
 
 
 from typing import List, Optional
-from pydantic import BaseModel, Field, StrictStr, conint, conlist, validator
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictStr, conint, conlist, validator
+except ImportError:
+    from pydantic import BaseModel, Field, StrictStr, conint, conlist, validator
 
 
 class PairedRemote(BaseModel):

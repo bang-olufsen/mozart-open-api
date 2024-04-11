@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: mozart_api
-Version: 3.4.1.8.3
+Version: 3.4.1.8.5
 Summary: Mozart platform API
 Home-page: https://pypi.org/project/mozart-api/
 License: MIT
@@ -20,7 +20,7 @@ Requires-Dist: aenum (>=3.1.11)
 Requires-Dist: aioconsole (>=0.4.1)
 Requires-Dist: aiohttp (>=3.8.3)
 Requires-Dist: inflection (>=0.5.1)
-Requires-Dist: pydantic (>=1.10.5,<2.0.0)
+Requires-Dist: pydantic (>=1.10)
 Requires-Dist: python-dateutil (>=2.8.2)
 Requires-Dist: typing-extensions (>=4.7.1)
 Requires-Dist: urllib3 (>=1.25.3)

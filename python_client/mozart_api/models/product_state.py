@@ -20,7 +20,12 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, Field
+
+try:
+    from pydantic.v1 import BaseModel, Field
+except ImportError:
+    from pydantic import BaseModel, Field
+
 from mozart_api.models.microphones_state import MicrophonesState
 from mozart_api.models.playback_state import PlaybackState
 from mozart_api.models.power_state_enum import PowerStateEnum

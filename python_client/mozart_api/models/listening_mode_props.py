@@ -20,7 +20,20 @@ import json
 
 
 from typing import List, Optional
-from pydantic import BaseModel, Field, StrictStr, conint, conlist, constr, validator
+
+try:
+    from pydantic.v1 import (
+        BaseModel,
+        Field,
+        StrictStr,
+        conint,
+        conlist,
+        constr,
+        validator,
+    )
+except ImportError:
+    from pydantic import BaseModel, Field, StrictStr, conint, conlist, constr, validator
+
 from mozart_api.models.listening_mode_features import ListeningModeFeatures
 from mozart_api.models.listening_mode_trigger import ListeningModeTrigger
 

@@ -20,7 +20,12 @@ import json
 
 
 from typing import List, Optional
-from pydantic import BaseModel, Field, StrictInt, StrictStr, conlist, validator
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictInt, StrictStr, conlist, validator
+except ImportError:
+    from pydantic import BaseModel, Field, StrictInt, StrictStr, conlist, validator
+
 from mozart_api.models.art import Art
 from mozart_api.models.beolink_leader import BeolinkLeader
 

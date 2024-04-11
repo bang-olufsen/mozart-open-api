@@ -20,7 +20,12 @@ import json
 
 
 from typing import List, Optional
-from pydantic import BaseModel, Field, StrictBool, StrictStr, conint, conlist
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictBool, StrictStr, conint, conlist
+except ImportError:
+    from pydantic import BaseModel, Field, StrictBool, StrictStr, conint, conlist
+
 from mozart_api.models.latency_profile import LatencyProfile
 from mozart_api.models.speaker_group_member import SpeakerGroupMember
 

@@ -20,7 +20,11 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, StrictBool, StrictStr
+
+try:
+    from pydantic.v1 import BaseModel, StrictBool, StrictStr
+except ImportError:
+    from pydantic import BaseModel, StrictBool, StrictStr
 
 
 class BluetoothDevice(BaseModel):

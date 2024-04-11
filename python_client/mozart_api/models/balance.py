@@ -20,7 +20,11 @@ import json
 
 
 from typing import Union
-from pydantic import BaseModel, Field, StrictFloat, StrictInt
+
+try:
+    from pydantic.v1 import BaseModel, Field, StrictFloat, StrictInt
+except ImportError:
+    from pydantic import BaseModel, Field, StrictFloat, StrictInt
 
 
 class Balance(BaseModel):

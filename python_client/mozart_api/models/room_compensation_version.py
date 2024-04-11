@@ -20,7 +20,11 @@ import json
 
 
 from typing import Optional
-from pydantic import BaseModel, conint
+
+try:
+    from pydantic.v1 import BaseModel, conint
+except ImportError:
+    from pydantic import BaseModel, conint
 
 
 class RoomCompensationVersion(BaseModel):

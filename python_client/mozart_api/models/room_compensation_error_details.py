@@ -20,7 +20,12 @@ import json
 
 
 from typing import List, Optional
-from pydantic import BaseModel, Field, conlist
+
+try:
+    from pydantic.v1 import BaseModel, Field, conlist
+except ImportError:
+    from pydantic import BaseModel, Field, conlist
+
 from mozart_api.models.room_compensation_measurement_error import (
     RoomCompensationMeasurementError,
 )
