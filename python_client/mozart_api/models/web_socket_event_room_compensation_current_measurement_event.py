@@ -37,9 +37,9 @@ class WebSocketEventRoomCompensationCurrentMeasurementEvent(BaseModel):
     """
 
     event_data: Optional[RoomCompensationCurrentMeasurement] = Field(
-        None, alias="eventData"
+        default=None, alias="eventData"
     )
-    event_type: Optional[StrictStr] = Field(None, alias="eventType")
+    event_type: Optional[StrictStr] = Field(default=None, alias="eventType")
     __properties = ["eventData", "eventType"]
 
     class Config:

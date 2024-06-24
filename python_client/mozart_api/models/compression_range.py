@@ -36,7 +36,7 @@ class CompressionRange(BaseModel):
 
     default: Compression = Field(...)
     range: conlist(Compression, unique_items=True) = Field(
-        ..., description="compression range"
+        default=..., description="compression range"
     )
     __properties = ["default", "range"]
 

@@ -33,7 +33,7 @@ class RoomCompensation(BaseModel):
     """
 
     value: conlist(StrictStr) = Field(
-        ...,
+        default=...,
         description="List of room compensation sweeps to combine. No room compensation is done if this list is empty. The maximum length of this list is product specific. ",
     )
     __properties = ["value"]

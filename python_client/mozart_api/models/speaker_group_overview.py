@@ -30,9 +30,9 @@ class SpeakerGroupOverview(BaseModel):
     SpeakerGroupOverview
     """
 
-    friendly_name: StrictStr = Field(..., alias="friendlyName")
+    friendly_name: StrictStr = Field(default=..., alias="friendlyName")
     id: StrictStr = Field(...)
-    is_deleteable: StrictBool = Field(..., alias="isDeleteable")
+    is_deleteable: StrictBool = Field(default=..., alias="isDeleteable")
     __properties = ["friendlyName", "id", "isDeleteable"]
 
     class Config:

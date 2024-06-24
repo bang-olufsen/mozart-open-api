@@ -49,24 +49,28 @@ class ListeningModeFeatures(BaseModel):
 
     ambience: Optional[Ambience] = None
     balance: Optional[Balance] = None
-    bass_management: Optional[BassManagement] = Field(None, alias="bassManagement")
+    bass_management: Optional[BassManagement] = Field(
+        default=None, alias="bassManagement"
+    )
     compression: Optional[Compression] = None
     directivity: Optional[Directivity] = None
     fader: Optional[Fader] = None
     room_compensation: Optional[RoomCompensation] = Field(
-        None, alias="roomCompensation"
+        default=None, alias="roomCompensation"
     )
     spatial_envelopment: Optional[SpatialEnvelopment] = Field(
-        None, alias="spatialEnvelopment"
+        default=None, alias="spatialEnvelopment"
     )
-    spatial_height: Optional[SpatialHeight] = Field(None, alias="spatialHeight")
+    spatial_height: Optional[SpatialHeight] = Field(default=None, alias="spatialHeight")
     spatial_processing: Optional[SpatialProcessing] = Field(
-        None, alias="spatialProcessing"
+        default=None, alias="spatialProcessing"
     )
-    spatial_surround: Optional[SpatialSurround] = Field(None, alias="spatialSurround")
-    spatial_width: Optional[SpatialWidth] = Field(None, alias="spatialWidth")
-    speech_enhance: Optional[SpeechEnhance] = Field(None, alias="speechEnhance")
-    tone_touch: Optional[ToneTouch] = Field(None, alias="toneTouch")
+    spatial_surround: Optional[SpatialSurround] = Field(
+        default=None, alias="spatialSurround"
+    )
+    spatial_width: Optional[SpatialWidth] = Field(default=None, alias="spatialWidth")
+    speech_enhance: Optional[SpeechEnhance] = Field(default=None, alias="speechEnhance")
+    tone_touch: Optional[ToneTouch] = Field(default=None, alias="toneTouch")
     __properties = [
         "ambience",
         "balance",

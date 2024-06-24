@@ -35,12 +35,12 @@ class SceneTriggerBaseProperties(BaseModel):
     """
 
     action_list: Optional[conlist(Action)] = Field(
-        None,
+        default=None,
         alias="actionList",
         description="An ordered list of Actions to run on the product",
     )
     scene_list: Optional[conlist(StrictStr)] = Field(
-        None, alias="sceneList", description="A list of scenes"
+        default=None, alias="sceneList", description="A list of scenes"
     )
     __properties = ["actionList", "sceneList"]
 

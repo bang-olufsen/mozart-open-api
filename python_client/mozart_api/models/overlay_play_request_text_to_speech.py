@@ -37,7 +37,7 @@ class OverlayPlayRequestTextToSpeech(BaseModel):
     """
 
     text_to_speech: Optional[OverlayPlayRequestTextToSpeechTextToSpeech] = Field(
-        None, alias="textToSpeech"
+        default=None, alias="textToSpeech"
     )
     __properties = ["textToSpeech"]
 

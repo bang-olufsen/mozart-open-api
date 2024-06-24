@@ -42,7 +42,7 @@ class SoundAdjustments(BaseModel):
     ambience: Optional[Union[StrictFloat, StrictInt]] = None
     bass: Optional[StrictInt] = None
     directivity: Optional[StrictStr] = None
-    eco_mode: Optional[StrictBool] = Field(None, alias="ecoMode")
+    eco_mode: Optional[StrictBool] = Field(default=None, alias="ecoMode")
     fadein: Optional[StrictBool] = None
     loudness: Optional[StrictBool] = None
     treble: Optional[StrictInt] = None

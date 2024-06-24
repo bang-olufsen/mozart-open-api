@@ -34,10 +34,10 @@ class BassFeature(BaseModel):
     BassFeature
     """
 
-    value: StrictInt = Field(..., description="Selected bass value")
+    value: StrictInt = Field(default=..., description="Selected bass value")
     default: Bass = Field(...)
     range: conlist(Bass, unique_items=True) = Field(
-        ..., description="Product and role specific bass range"
+        default=..., description="Product and role specific bass range"
     )
     __properties = ["value", "default", "range"]
 

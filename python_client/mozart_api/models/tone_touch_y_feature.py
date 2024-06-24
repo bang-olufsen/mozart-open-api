@@ -37,7 +37,7 @@ class ToneTouchYFeature(BaseModel):
     value: Union[StrictFloat, StrictInt] = Field(...)
     default: ToneTouchType = Field(...)
     range: conlist(ToneTouchType, unique_items=True) = Field(
-        ..., description="Product and role specific tone touch X or Y range"
+        default=..., description="Product and role specific tone touch X or Y range"
     )
     __properties = ["value", "default", "range"]
 

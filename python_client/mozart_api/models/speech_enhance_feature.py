@@ -35,11 +35,11 @@ class SpeechEnhanceFeature(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected speech-enhance value"
+        default=..., description="Selected speech-enhance value"
     )
     default: SpeechEnhance = Field(...)
     range: conlist(SpeechEnhance, unique_items=True) = Field(
-        ..., description="speech-enhance range"
+        default=..., description="speech-enhance range"
     )
     __properties = ["value", "default", "range"]
 

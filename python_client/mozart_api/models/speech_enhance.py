@@ -33,7 +33,7 @@ class SpeechEnhance(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected speech-enhance value"
+        default=..., description="Selected speech-enhance value"
     )
     __properties = ["value"]
 

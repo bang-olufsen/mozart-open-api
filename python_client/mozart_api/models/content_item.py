@@ -35,7 +35,7 @@ class ContentItem(BaseModel):
     """
 
     categories: Optional[conlist(StrictStr)] = None
-    content_uri: StrictStr = Field(..., alias="contentUri")
+    content_uri: StrictStr = Field(default=..., alias="contentUri")
     label: Optional[StrictStr] = None
     source: SourceTypeEnum = Field(...)
     __properties = ["categories", "contentUri", "label", "source"]

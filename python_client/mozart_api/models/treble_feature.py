@@ -34,10 +34,10 @@ class TrebleFeature(BaseModel):
     TrebleFeature
     """
 
-    value: StrictInt = Field(..., description="Selected treble value")
+    value: StrictInt = Field(default=..., description="Selected treble value")
     default: Treble = Field(...)
     range: conlist(Treble, unique_items=True) = Field(
-        ..., description="Product and role specific treble range"
+        default=..., description="Product and role specific treble range"
     )
     __properties = ["value", "default", "range"]
 

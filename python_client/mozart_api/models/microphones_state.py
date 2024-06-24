@@ -34,9 +34,11 @@ class MicrophonesState(BaseModel):
     state of microphones, both physical switches and software state  # noqa: E501
     """
 
-    microphone_state: Optional[MicrophoneState] = Field(None, alias="microphoneState")
+    microphone_state: Optional[MicrophoneState] = Field(
+        default=None, alias="microphoneState"
+    )
     microphone_switch_state: Optional[MicrophoneState] = Field(
-        None, alias="microphoneSwitchState"
+        default=None, alias="microphoneSwitchState"
     )
     __properties = ["microphoneState", "microphoneSwitchState"]
 

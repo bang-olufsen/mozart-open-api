@@ -30,7 +30,9 @@ class SpatialProcessing(BaseModel):
     SpatialProcessing
     """
 
-    value: StrictStr = Field(..., description="Selected spatial-processing value")
+    value: StrictStr = Field(
+        default=..., description="Selected spatial-processing value"
+    )
     __properties = ["value"]
 
     @validator("value")

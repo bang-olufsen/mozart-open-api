@@ -34,8 +34,10 @@ class WebSocketEventNotification(BaseModel):
     This telegram is used to send a tagged notification.  # noqa: E501
     """
 
-    event_data: Optional[WebsocketNotificationTag] = Field(None, alias="eventData")
-    event_type: Optional[StrictStr] = Field(None, alias="eventType")
+    event_data: Optional[WebsocketNotificationTag] = Field(
+        default=None, alias="eventData"
+    )
+    event_type: Optional[StrictStr] = Field(default=None, alias="eventType")
     __properties = ["eventData", "eventType"]
 
     class Config:

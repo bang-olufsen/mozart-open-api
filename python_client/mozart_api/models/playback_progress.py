@@ -34,7 +34,7 @@ class PlaybackProgress(BaseModel):
 
     id: Optional[StrictStr] = None
     progress: Optional[StrictInt] = None
-    total_duration: Optional[StrictInt] = Field(None, alias="totalDuration")
+    total_duration: Optional[StrictInt] = Field(default=None, alias="totalDuration")
     __properties = ["id", "progress", "totalDuration"]
 
     class Config:

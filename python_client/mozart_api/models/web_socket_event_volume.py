@@ -34,8 +34,8 @@ class WebSocketEventVolume(BaseModel):
     WebSocketEventVolume
     """
 
-    event_data: Optional[VolumeState] = Field(None, alias="eventData")
-    event_type: Optional[StrictStr] = Field(None, alias="eventType")
+    event_data: Optional[VolumeState] = Field(default=None, alias="eventData")
+    event_type: Optional[StrictStr] = Field(default=None, alias="eventType")
     __properties = ["eventData", "eventType"]
 
     class Config:

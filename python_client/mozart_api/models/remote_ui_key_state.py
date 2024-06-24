@@ -33,7 +33,7 @@ class RemoteUIKeyState(BaseModel):
     """
 
     state: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="The state of the pressed key. ShortPress and LongPress's duration are determined by the remote. Whereas Down, Continue, and Release reflect the state of the key and press duration is the time between a Down and a Release state. Continue indicates that a button is pressed and the key event should be handled multiple times until a release is received. ",
     )
     __properties = ["state"]

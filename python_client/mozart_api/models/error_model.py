@@ -33,17 +33,17 @@ class ErrorModel(BaseModel):
     """
 
     error_code: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="errorCode",
         description="A wellknown code that signal the error, can be used by callers ",
     )
     error_id: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="errorId",
         description="A unique identifier used to e.g. quick find in logs ",
     )
     error_message: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="errorMessage",
         description="A textual representation, human readable and suitable for logs ",
     )

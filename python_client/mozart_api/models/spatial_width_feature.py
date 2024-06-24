@@ -35,11 +35,11 @@ class SpatialWidthFeature(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected spatial-width value"
+        default=..., description="Selected spatial-width value"
     )
     default: SpatialWidth = Field(...)
     range: conlist(SpatialWidth, unique_items=True) = Field(
-        ..., description="spatial-width range"
+        default=..., description="spatial-width range"
     )
     __properties = ["value", "default", "range"]
 

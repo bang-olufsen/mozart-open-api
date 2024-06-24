@@ -39,19 +39,19 @@ class RoomCompensationState(BaseModel):
 
     state: Optional[StrictStr] = None
     error: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="microphoneMuted:   The microphone is muted (soft-off, using touch button). microphoneSwitchOff:   The microphone switch is set in its off position. microphoneSignalMissing:   No signal was detected. Is the microphone blocked? externalMicrophoneMissing:   The external microphone is not connected.   Is only relevant for advanced room compensation. externalMicrophoneInvalidPosition:   The external microphone is placed in an invalid position,   e.g. placed too close or in an extreme angle to the internal speakers.   Is only relevant for advanced room compensation. noisyEnvironment:   Too much environment noise to get a valid measurement. speakerMeasurementFailed:   A measurement failed, related to one of the individual speakers.   See the errorDetails property for details about the error and which speaker measurement failed.   Is only relevant for advanced room compensation. invalidSpeakerList:   The speaker list contains invalid speakers.   Valid speakers are: all external speakers and non-virtual internal speakers.   Is only relevant for advanced room compensation. invalidAction:   Could not start with given action.   Eg. can't run from last failed speaker if there isn't any failed run.   Is only relevant for advanced room compensation. internalError:   Internal product error. ",
     )
     error_details: Optional[RoomCompensationErrorDetails] = Field(
-        None, alias="errorDetails"
+        default=None, alias="errorDetails"
     )
     last_run_available: Optional[StrictBool] = Field(
-        None,
+        default=None,
         alias="lastRunAvailable",
         description='When true, measurements have been cached due to manual interrupt or failure, making it possible to use the action "continue" where the system will continue from the speaker where interrupted. The cached measurements are only temporary and will be cleared after some time (default 15min), in which case lastRunAvailable becomes false. ',
     )
     properties: Optional[RoomCompensationProperties] = None
-    time_stamp: Optional[datetime] = Field(None, alias="timeStamp")
+    time_stamp: Optional[datetime] = Field(default=None, alias="timeStamp")
     __properties = [
         "state",
         "error",

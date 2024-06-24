@@ -33,7 +33,7 @@ class PowerLinkTrigger(BaseModel):
     """
 
     power_link_preset: Optional[StrictInt] = Field(
-        None,
+        default=None,
         alias="powerLinkPreset",
         description="Despite the name, this preset is used anytime a speaker is used as a secondary as a way for the primary to indicate which directivity (and possibly other caracteristics in the future) should be used on a speaker by speaker basis. It is used when a speaker is a powerlink speaker (hence the name), WISA speaker or a speakerlink secondary in multichannel. ",
     )

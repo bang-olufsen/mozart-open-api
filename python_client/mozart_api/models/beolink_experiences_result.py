@@ -36,10 +36,10 @@ class BeolinkExperiencesResult(BaseModel):
 
     experiences: conlist(BeolinkExperience) = Field(...)
     request_id: StrictStr = Field(
-        ..., alias="requestID", description="Beolink request ID"
+        default=..., alias="requestID", description="Beolink request ID"
     )
     status: StrictStr = Field(
-        ...,
+        default=...,
         description="Current scan status. * busy: there is another scan in progress * timeout: the scan timed out. The results will be partial ",
     )
     __properties = ["experiences", "requestID", "status"]

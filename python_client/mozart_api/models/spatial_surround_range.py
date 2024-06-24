@@ -36,7 +36,7 @@ class SpatialSurroundRange(BaseModel):
 
     default: SpatialSurround = Field(...)
     range: conlist(SpatialSurround, unique_items=True) = Field(
-        ..., description="spatial-surround range"
+        default=..., description="spatial-surround range"
     )
     __properties = ["default", "range"]
 

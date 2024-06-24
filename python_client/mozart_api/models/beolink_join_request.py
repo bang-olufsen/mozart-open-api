@@ -32,11 +32,13 @@ class BeolinkJoinRequest(BaseModel):
     BeolinkJoinRequest
     """
 
-    jid: Optional[StrictStr] = Field(None, description="Beolink peer ID")
+    jid: Optional[StrictStr] = Field(default=None, description="Beolink peer ID")
     request_id: StrictStr = Field(
-        ..., alias="requestID", description="Beolink request ID"
+        default=..., alias="requestID", description="Beolink request ID"
     )
-    result: StrictStr = Field(..., description="Relative URL of the join result")
+    result: StrictStr = Field(
+        default=..., description="Relative URL of the join result"
+    )
     __properties = ["jid", "requestID", "result"]
 
     class Config:

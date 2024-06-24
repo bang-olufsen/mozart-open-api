@@ -32,8 +32,8 @@ class WebSocketEventBeolinkJoinResult(BaseModel):
     WebSocketEventBeolinkJoinResult
     """
 
-    event_data: BeolinkJoinResult = Field(..., alias="eventData")
-    event_type: StrictStr = Field(..., alias="eventType")
+    event_data: BeolinkJoinResult = Field(default=..., alias="eventData")
+    event_type: StrictStr = Field(default=..., alias="eventType")
     __properties = ["eventData", "eventType"]
 
     class Config:

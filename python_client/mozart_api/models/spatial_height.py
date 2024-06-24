@@ -33,7 +33,7 @@ class SpatialHeight(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected spatial-height value"
+        default=..., description="Selected spatial-height value"
     )
     __properties = ["value"]
 

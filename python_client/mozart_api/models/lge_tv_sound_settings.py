@@ -32,8 +32,8 @@ class LgeTvSoundSettings(BaseModel):
     LgeTvSoundSettings
     """
 
-    digital_output: Optional[StrictStr] = Field(None, alias="digitalOutput")
-    e_arc: Optional[StrictBool] = Field(None, alias="eArc")
+    digital_output: Optional[StrictStr] = Field(default=None, alias="digitalOutput")
+    e_arc: Optional[StrictBool] = Field(default=None, alias="eArc")
     output: Optional[StrictStr] = None
     __properties = ["digitalOutput", "eArc", "output"]
 

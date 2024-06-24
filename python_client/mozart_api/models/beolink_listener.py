@@ -30,7 +30,7 @@ class BeolinkListener(BaseModel):
     BeolinkListener
     """
 
-    jid: StrictStr = Field(..., description="Beolink peer ID")
+    jid: StrictStr = Field(default=..., description="Beolink peer ID")
     __properties = ["jid"]
 
     class Config:

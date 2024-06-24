@@ -35,11 +35,11 @@ class SpatialEnvelopmentFeature(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected spatial-envelopment value"
+        default=..., description="Selected spatial-envelopment value"
     )
     default: SpatialEnvelopment = Field(...)
     range: conlist(SpatialEnvelopment, unique_items=True) = Field(
-        ..., description="spatial-envelopment range"
+        default=..., description="spatial-envelopment range"
     )
     __properties = ["value", "default", "range"]
 

@@ -36,7 +36,7 @@ class SpeechEnhanceRange(BaseModel):
 
     default: SpeechEnhance = Field(...)
     range: conlist(SpeechEnhance, unique_items=True) = Field(
-        ..., description="speech-enhance range"
+        default=..., description="speech-enhance range"
     )
     __properties = ["default", "range"]
 

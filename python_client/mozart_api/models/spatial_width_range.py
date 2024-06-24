@@ -36,7 +36,7 @@ class SpatialWidthRange(BaseModel):
 
     default: SpatialWidth = Field(...)
     range: conlist(SpatialWidth, unique_items=True) = Field(
-        ..., description="spatial-width range"
+        default=..., description="spatial-width range"
     )
     __properties = ["default", "range"]
 

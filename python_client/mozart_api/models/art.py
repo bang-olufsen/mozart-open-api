@@ -32,7 +32,7 @@ class Art(BaseModel):
     Art
     """
 
-    has_local_image: Optional[StrictBool] = Field(None, alias="hasLocalImage")
+    has_local_image: Optional[StrictBool] = Field(default=None, alias="hasLocalImage")
     key: Optional[StrictStr] = None
     size: Optional[StrictStr] = None
     type: Optional[StrictStr] = None

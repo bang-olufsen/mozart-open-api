@@ -34,8 +34,8 @@ class WebSocketEventActiveSpeakerGroup(BaseModel):
     WebSocketEventActiveSpeakerGroup
     """
 
-    event_data: Optional[SpeakerGroupOverview] = Field(None, alias="eventData")
-    event_type: Optional[StrictStr] = Field(None, alias="eventType")
+    event_data: Optional[SpeakerGroupOverview] = Field(default=None, alias="eventData")
+    event_type: Optional[StrictStr] = Field(default=None, alias="eventType")
     __properties = ["eventData", "eventType"]
 
     class Config:

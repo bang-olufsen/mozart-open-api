@@ -32,7 +32,7 @@ class UserFlow(BaseModel):
     UserFlow
     """
 
-    user_id: Optional[StrictStr] = Field(None, alias="userId")
+    user_id: Optional[StrictStr] = Field(default=None, alias="userId")
     __properties = ["userId"]
 
     class Config:

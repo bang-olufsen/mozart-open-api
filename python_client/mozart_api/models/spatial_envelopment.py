@@ -33,7 +33,7 @@ class SpatialEnvelopment(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected spatial-envelopment value"
+        default=..., description="Selected spatial-envelopment value"
     )
     __properties = ["value"]
 

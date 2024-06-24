@@ -36,7 +36,7 @@ class BassManagementRange(BaseModel):
 
     default: BassManagement = Field(...)
     range: conlist(BassManagement, unique_items=True) = Field(
-        ..., description="bass-management range"
+        default=..., description="bass-management range"
     )
     __properties = ["default", "range"]
 

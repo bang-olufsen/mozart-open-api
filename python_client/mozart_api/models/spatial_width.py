@@ -33,7 +33,7 @@ class SpatialWidth(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected spatial-width value"
+        default=..., description="Selected spatial-width value"
     )
     __properties = ["value"]
 

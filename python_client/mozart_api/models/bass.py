@@ -30,7 +30,7 @@ class Bass(BaseModel):
     Bass
     """
 
-    value: StrictInt = Field(..., description="Selected bass value")
+    value: StrictInt = Field(default=..., description="Selected bass value")
     __properties = ["value"]
 
     class Config:

@@ -35,11 +35,11 @@ class SpatialSurroundFeature(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected spatial-surround value"
+        default=..., description="Selected spatial-surround value"
     )
     default: SpatialSurround = Field(...)
     range: conlist(SpatialSurround, unique_items=True) = Field(
-        ..., description="spatial-surround range"
+        default=..., description="spatial-surround range"
     )
     __properties = ["value", "default", "range"]
 

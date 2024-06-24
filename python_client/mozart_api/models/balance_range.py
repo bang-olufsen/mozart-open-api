@@ -35,7 +35,9 @@ class BalanceRange(BaseModel):
     """
 
     default: Balance = Field(...)
-    range: conlist(Balance, unique_items=True) = Field(..., description="balance range")
+    range: conlist(Balance, unique_items=True) = Field(
+        default=..., description="balance range"
+    )
     __properties = ["default", "range"]
 
     class Config:

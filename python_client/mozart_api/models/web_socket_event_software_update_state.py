@@ -34,8 +34,8 @@ class WebSocketEventSoftwareUpdateState(BaseModel):
     WebSocketEventSoftwareUpdateState
     """
 
-    event_data: Optional[SoftwareUpdateState] = Field(None, alias="eventData")
-    event_type: Optional[StrictStr] = Field(None, alias="eventType")
+    event_data: Optional[SoftwareUpdateState] = Field(default=None, alias="eventData")
+    event_type: Optional[StrictStr] = Field(default=None, alias="eventType")
     __properties = ["eventData", "eventType"]
 
     class Config:

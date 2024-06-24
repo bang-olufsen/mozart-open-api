@@ -51,31 +51,33 @@ class RoomCompensationProperties(BaseModel):
     """
 
     value: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="The type of roomcompensation used / to use. simple:   For speakers without external speakers. advanced:   For products with external speakers or other advanced multichannel capabilities.   This requires that at least action in the other properties of RoomCompensationProperties is set. ",
     )
     action: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="Must be set if room compensation type is advanced. runAll:   Do measurements on all connected speakers. continue:   Continue from and including the speaker where last interrupted (stopped or failed). useSpeakerList:   Do measurements on the speakers in the list property. ",
     )
     continue_on_error: Optional[StrictBool] = Field(
-        None,
+        default=None,
         alias="continueOnError",
         description="On failing measurement on a speaker, default behavior is to stop measurement and skip the remaining speakers. Setting continueOnError to true will make the measurement process continue and finish measurement on all speakers, even though an error ocurred on one of the speakers. ",
     )
-    latency_profile: Optional[LatencyProfile] = Field(None, alias="latencyProfile")
+    latency_profile: Optional[LatencyProfile] = Field(
+        default=None, alias="latencyProfile"
+    )
     skip_automatic_role_assignment: Optional[StrictBool] = Field(
-        None,
+        default=None,
         alias="skipAutomaticRoleAssignment",
         description="Skip calculation of automatic role assignment.",
     )
     speaker_list: Optional[conlist(StrictStr)] = Field(
-        None,
+        default=None,
         alias="speakerList",
         description="List of speaker IDs to include in room compensation / automatic role assignment measurement. Relevant e.g. if you want to create a speaker group without the external speakers included. This can not be used for doing measurements on a partial speaker group, only on all speakers in an existing group or for all speakers in a new group. ",
     )
     speaker_preset: Optional[conint(strict=True, le=255, ge=0)] = Field(
-        None,
+        default=None,
         alias="speakerPreset",
         description="The Powerlink preset to use for the external PL/WPL speakers.",
     )

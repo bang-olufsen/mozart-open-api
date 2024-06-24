@@ -34,7 +34,7 @@ class AlarmTriggeredInfo(BaseModel):
 
     id: Optional[StrictStr] = None
     label: Optional[constr(strict=True, max_length=128)] = Field(
-        None, description="Label for an alarm"
+        default=None, description="Label for an alarm"
     )
     __properties = ["id", "label"]
 

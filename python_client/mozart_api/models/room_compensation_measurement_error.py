@@ -33,10 +33,10 @@ class RoomCompensationMeasurementError(BaseModel):
     """
 
     error: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="noError:   The measurement went OK. lowSignal:   When there is too low signal in the recording, e.g. due to a loudspeaker being placed at   too great a distance from the microphone. speakerSilent:   No signal could be measured.   Could be because:     - The speaker is powered off or not connected.     - The left/right switch on a wired powerlink speaker is set in the wrong position.     - The speaker is placed in another room behind closed doors. noisy<Left/Right/External>Microphone:   When the recording of the given microphone is too noisy.   Could be because:     - Something is blocking the microphone externalMicrophoneLocation:   When the location of the external microphone is invalid. externalMicrophoneMissing:   If the external microphone was missing/disconnected during a measurement. microphonesDisabled:   If the microphones are either muted or disabled. noisyMeasurement:   When too much background noise has been detected during the measurement internalError:   Something went wrong internally - can not be fixed by the user. Try again. ",
     )
-    speaker_id: Optional[StrictStr] = Field(None, alias="speakerId")
+    speaker_id: Optional[StrictStr] = Field(default=None, alias="speakerId")
     __properties = ["error", "speakerId"]
 
     @validator("error")

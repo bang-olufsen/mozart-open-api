@@ -36,7 +36,7 @@ class SpatialHeightRange(BaseModel):
 
     default: SpatialHeight = Field(...)
     range: conlist(SpatialHeight, unique_items=True) = Field(
-        ..., description="spatial-height range"
+        default=..., description="spatial-height range"
     )
     __properties = ["default", "range"]
 

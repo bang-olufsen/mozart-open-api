@@ -44,18 +44,19 @@ class ListeningModeProps(BaseModel):
     """
 
     client_ctx: Optional[constr(strict=True, max_length=4096)] = Field(
-        None,
+        default=None,
         alias="clientCtx",
         description="An optional generic string property supplied from the client. If provided, it will be stored without changes. If not supplied, any current clientCtx will remain unchanged. ",
     )
     features: Optional[ListeningModeFeatures] = None
     id: Optional[conint(strict=True, ge=0)] = None
-    name: Optional[StrictStr] = Field(None, description="Friendly name")
+    name: Optional[StrictStr] = Field(default=None, description="Friendly name")
     origin: Optional[StrictStr] = Field(
-        None, description="User created, default or an edited default listening mode"
+        default=None,
+        description="User created, default or an edited default listening mode",
     )
     role: Optional[StrictStr] = Field(
-        None, description="Role a listening mode applies to"
+        default=None, description="Role a listening mode applies to"
     )
     triggers: Optional[conlist(ListeningModeTrigger)] = None
     __properties = ["clientCtx", "features", "id", "name", "origin", "role", "triggers"]

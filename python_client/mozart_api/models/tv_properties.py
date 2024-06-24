@@ -35,7 +35,7 @@ class TvProperties(BaseModel):
     """
 
     integration_supported: Optional[TvIntegrationTypes] = Field(
-        None, alias="integrationSupported"
+        default=None, alias="integrationSupported"
     )
     name: Optional[StrictStr] = None
     year: Optional[StrictInt] = None

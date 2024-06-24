@@ -33,7 +33,7 @@ class ProductFriendlyName(BaseModel):
     """
 
     friendly_name: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="friendlyName",
         description="The friendly name of the product, assignable by the end user, e.g. 'Kitchen speaker ",
     )

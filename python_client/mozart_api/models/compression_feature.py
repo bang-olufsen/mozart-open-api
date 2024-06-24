@@ -34,10 +34,10 @@ class CompressionFeature(BaseModel):
     CompressionFeature
     """
 
-    value: StrictStr = Field(..., description="Selected compression value")
+    value: StrictStr = Field(default=..., description="Selected compression value")
     default: Compression = Field(...)
     range: conlist(Compression, unique_items=True) = Field(
-        ..., description="compression range"
+        default=..., description="compression range"
     )
     __properties = ["value", "default", "range"]
 

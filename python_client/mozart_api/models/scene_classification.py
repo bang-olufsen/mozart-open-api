@@ -33,7 +33,7 @@ class SceneClassification(BaseModel):
     """
 
     classification: Optional[StrictStr] = Field(
-        None, description="The classification of Scene"
+        default=None, description="The classification of Scene"
     )
     __properties = ["classification"]
 

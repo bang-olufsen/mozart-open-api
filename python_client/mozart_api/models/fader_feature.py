@@ -35,10 +35,12 @@ class FaderFeature(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected fader value"
+        default=..., description="Selected fader value"
     )
     default: Fader = Field(...)
-    range: conlist(Fader, unique_items=True) = Field(..., description="fader range")
+    range: conlist(Fader, unique_items=True) = Field(
+        default=..., description="fader range"
+    )
     __properties = ["value", "default", "range"]
 
     class Config:

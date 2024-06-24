@@ -36,7 +36,9 @@ class OverlayPlayRequestFromUsb(BaseModel):
     OverlayPlayRequestFromUsb
     """
 
-    from_usb: Optional[OverlayPlayRequestFromUsbFromUsb] = Field(None, alias="fromUsb")
+    from_usb: Optional[OverlayPlayRequestFromUsbFromUsb] = Field(
+        default=None, alias="fromUsb"
+    )
     __properties = ["fromUsb"]
 
     class Config:

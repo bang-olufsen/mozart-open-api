@@ -33,7 +33,7 @@ class SpatialSurround(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected spatial-surround value"
+        default=..., description="Selected spatial-surround value"
     )
     __properties = ["value"]
 

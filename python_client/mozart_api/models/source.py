@@ -36,14 +36,14 @@ class Source(BaseModel):
 
     id: Optional[StrictStr] = None
     is_enabled: Optional[StrictBool] = Field(
-        None,
+        default=None,
         alias="isEnabled",
         description="some sources require an explicit activation or accept of terms before being enabled",
     )
     is_multiroom_available: Optional[StrictBool] = Field(
-        None, alias="isMultiroomAvailable"
+        default=None, alias="isMultiroomAvailable"
     )
-    is_playable: Optional[StrictBool] = Field(None, alias="isPlayable")
+    is_playable: Optional[StrictBool] = Field(default=None, alias="isPlayable")
     name: Optional[StrictStr] = None
     type: Optional[SourceTypeEnum] = None
     __properties = [

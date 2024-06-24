@@ -33,11 +33,11 @@ class ListeningModeRef(BaseModel):
     """
 
     href: Optional[StrictStr] = Field(
-        ...,
+        default=...,
         description="Host relative URI of the listening mode or `null` if there is no active listening mode. ",
     )
     id: Optional[conint(strict=True, ge=0)] = Field(
-        ...,
+        default=...,
         description="ID of the active listening mode or `null` if there is no active listening mode. ",
     )
     __properties = ["href", "id"]

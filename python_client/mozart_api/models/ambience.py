@@ -33,7 +33,7 @@ class Ambience(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected ambience value"
+        default=..., description="Selected ambience value"
     )
     __properties = ["value"]
 

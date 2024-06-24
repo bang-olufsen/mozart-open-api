@@ -33,9 +33,9 @@ class VideoPixelFormat(BaseModel):
     """
 
     bitdepth: Optional[StrictStr] = None
-    chroma_subsample: Optional[StrictStr] = Field(None, alias="chromaSubsample")
+    chroma_subsample: Optional[StrictStr] = Field(default=None, alias="chromaSubsample")
     colorimetry: Optional[StrictStr] = None
-    full_range: Optional[StrictBool] = Field(None, alias="fullRange")
+    full_range: Optional[StrictBool] = Field(default=None, alias="fullRange")
     __properties = ["bitdepth", "chromaSubsample", "colorimetry", "fullRange"]
 
     @validator("bitdepth")

@@ -35,11 +35,11 @@ class SpatialHeightFeature(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected spatial-height value"
+        default=..., description="Selected spatial-height value"
     )
     default: SpatialHeight = Field(...)
     range: conlist(SpatialHeight, unique_items=True) = Field(
-        ..., description="spatial-height range"
+        default=..., description="spatial-height range"
     )
     __properties = ["value", "default", "range"]
 

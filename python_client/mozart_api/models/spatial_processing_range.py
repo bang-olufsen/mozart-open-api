@@ -36,7 +36,7 @@ class SpatialProcessingRange(BaseModel):
 
     default: SpatialProcessing = Field(...)
     range: conlist(SpatialProcessing, unique_items=True) = Field(
-        ..., description="spatial-processing range"
+        default=..., description="spatial-processing range"
     )
     __properties = ["default", "range"]
 

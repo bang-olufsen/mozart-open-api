@@ -30,7 +30,7 @@ class Treble(BaseModel):
     Treble
     """
 
-    value: StrictInt = Field(..., description="Selected treble value")
+    value: StrictInt = Field(default=..., description="Selected treble value")
     __properties = ["value"]
 
     class Config:

@@ -31,7 +31,7 @@ class OverlayPlayRequestFromUsbFromUsb(BaseModel):
     """
 
     file_location: constr(strict=True, max_length=1024) = Field(
-        ...,
+        default=...,
         alias="fileLocation",
         description="Required field containing the relative path (i.e. from the USB drive root) and file name with extension (if one exists) that will be played. A maximum length of 1024 characters is allowed. ",
     )

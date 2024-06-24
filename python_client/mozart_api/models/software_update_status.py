@@ -34,13 +34,13 @@ class SoftwareUpdateStatus(BaseModel):
     SoftwareUpdateStatus
     """
 
-    available_update: Optional[StrictStr] = Field(None, alias="availableUpdate")
-    last_check: Optional[datetime] = Field(None, alias="lastCheck")
-    last_update: Optional[datetime] = Field(None, alias="lastUpdate")
-    software_version: StrictStr = Field(..., alias="softwareVersion")
+    available_update: Optional[StrictStr] = Field(default=None, alias="availableUpdate")
+    last_check: Optional[datetime] = Field(default=None, alias="lastCheck")
+    last_update: Optional[datetime] = Field(default=None, alias="lastUpdate")
+    software_version: StrictStr = Field(default=..., alias="softwareVersion")
     state: SoftwareUpdateState = Field(...)
-    update_progress: Optional[StrictInt] = Field(None, alias="updateProgress")
-    update_type: Optional[StrictStr] = Field(None, alias="updateType")
+    update_progress: Optional[StrictInt] = Field(default=None, alias="updateProgress")
+    update_type: Optional[StrictStr] = Field(default=None, alias="updateType")
     __properties = [
         "availableUpdate",
         "lastCheck",

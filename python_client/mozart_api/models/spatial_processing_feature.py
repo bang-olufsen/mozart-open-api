@@ -34,10 +34,12 @@ class SpatialProcessingFeature(BaseModel):
     SpatialProcessingFeature
     """
 
-    value: StrictStr = Field(..., description="Selected spatial-processing value")
+    value: StrictStr = Field(
+        default=..., description="Selected spatial-processing value"
+    )
     default: SpatialProcessing = Field(...)
     range: conlist(SpatialProcessing, unique_items=True) = Field(
-        ..., description="spatial-processing range"
+        default=..., description="spatial-processing range"
     )
     __properties = ["value", "default", "range"]
 

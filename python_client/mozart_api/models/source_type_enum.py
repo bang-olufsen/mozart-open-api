@@ -33,7 +33,7 @@ class SourceTypeEnum(BaseModel):
     """
 
     value: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="- beolink - bluetooth - dlna - qplay - airPlay - lineIn - chromeCast - uriStreamer - netRadio - local - generator - spotify - spdif - pl - wpl - tv - deezer - usbIn - tidal - tidalConnect - unknown",
     )
     __properties = ["value"]

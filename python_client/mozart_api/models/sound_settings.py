@@ -38,9 +38,9 @@ class SoundSettings(BaseModel):
 
     adjustments: Optional[SoundAdjustments] = None
     room_compensation: Optional[RoomCompensationInfo] = Field(
-        None, alias="roomCompensation"
+        default=None, alias="roomCompensation"
     )
-    tone_touch: Optional[SoundToneTouch] = Field(None, alias="toneTouch")
+    tone_touch: Optional[SoundToneTouch] = Field(default=None, alias="toneTouch")
     __properties = ["adjustments", "roomCompensation", "toneTouch"]
 
     class Config:

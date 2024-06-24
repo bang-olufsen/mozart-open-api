@@ -35,18 +35,18 @@ class SceneProperties(BaseModel):
     """
 
     action_list: conlist(Action) = Field(
-        ...,
+        default=...,
         alias="actionList",
         description="An ordered list of Actions to run on the product",
     )
     client_context: Optional[constr(strict=True, max_length=4096)] = Field(
-        None,
+        default=None,
         alias="clientContext",
         description="An optional generic string property supplied from the client. If supplied it will overwrite any currently stored clientContext. If not supplied any stored clientContext will be left unchanged. ",
     )
     label: Optional[StrictStr] = None
     tags: Optional[conlist(StrictStr)] = Field(
-        None,
+        default=None,
         description="A list of user defined tags. This allows a client to create virtual lists",
     )
     __properties = ["actionList", "clientContext", "label", "tags"]

@@ -32,8 +32,12 @@ class ButtonEvent(BaseModel):
     ButtonEvent
     """
 
-    button: Optional[StrictStr] = Field(None, description="identifies the button")
-    state: Optional[StrictStr] = Field(None, description="identifies the state change")
+    button: Optional[StrictStr] = Field(
+        default=None, description="identifies the button"
+    )
+    state: Optional[StrictStr] = Field(
+        default=None, description="identifies the state change"
+    )
     __properties = ["button", "state"]
 
     class Config:

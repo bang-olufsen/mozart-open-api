@@ -32,28 +32,33 @@ class BeolinkExperience(BaseModel):
     BeolinkExperience
     """
 
-    category: StrictStr = Field(..., description="Source category")
-    id: StrictStr = Field(..., description='experience id, e.g. "RADIO" or "toslink"')
+    category: StrictStr = Field(default=..., description="Source category")
+    id: StrictStr = Field(
+        default=..., description='experience id, e.g. "RADIO" or "toslink"'
+    )
     linkable: StrictBool = Field(
-        ..., description='Linkable means "Does pressing play on this source make sense"'
+        default=...,
+        description='Linkable means "Does pressing play on this source make sense"',
     )
     name: StrictStr = Field(
-        ..., description='Experience name, e.g. "Bluetooth" or "B&O Radio"'
+        default=..., description='Experience name, e.g. "Bluetooth" or "B&O Radio"'
     )
     product_friendly_name: Optional[StrictStr] = Field(
-        None, alias="productFriendlyName", description="Optional product friendly name"
+        default=None,
+        alias="productFriendlyName",
+        description="Optional product friendly name",
     )
     source_friendly_name: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="sourceFriendlyName",
         description="Optional friendly name for source",
     )
     type: StrictStr = Field(
-        ...,
+        default=...,
         description="Source type. This corresponds to the exhaustive list or sources provided by the control layer",
     )
     unique_source_id: StrictStr = Field(
-        ...,
+        default=...,
         alias="uniqueSourceId",
         description="The actual device jabber id that the experience comes from",
     )

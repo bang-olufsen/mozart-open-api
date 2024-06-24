@@ -37,7 +37,7 @@ class RoomCompensationErrorDetails(BaseModel):
     """
 
     error_list: Optional[conlist(RoomCompensationMeasurementError)] = Field(
-        None,
+        default=None,
         alias="errorList",
         description="List of the speakers where measurement failed, including error type.",
     )

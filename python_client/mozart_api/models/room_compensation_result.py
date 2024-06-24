@@ -37,16 +37,16 @@ class RoomCompensationResult(BaseModel):
 
     compensation: Optional[conlist(RoomCompensationResponse)] = None
     measured_response: Optional[conlist(RoomCompensationResponse)] = Field(
-        None, alias="measuredResponse"
+        default=None, alias="measuredResponse"
     )
     placement: Optional[StrictStr] = None
     reference_response: Optional[conlist(RoomCompensationResponse)] = Field(
-        None, alias="referenceResponse"
+        default=None, alias="referenceResponse"
     )
     speaker_group_suggestion: Optional[SpeakerGroup] = Field(
-        None, alias="speakerGroupSuggestion"
+        default=None, alias="speakerGroupSuggestion"
     )
-    time_stamp: Optional[datetime] = Field(None, alias="timeStamp")
+    time_stamp: Optional[datetime] = Field(default=None, alias="timeStamp")
     __properties = [
         "compensation",
         "measuredResponse",

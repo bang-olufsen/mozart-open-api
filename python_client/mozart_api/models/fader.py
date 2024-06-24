@@ -33,7 +33,7 @@ class Fader(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected fader value"
+        default=..., description="Selected fader value"
     )
     __properties = ["value"]
 

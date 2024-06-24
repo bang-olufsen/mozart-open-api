@@ -33,7 +33,7 @@ class HdmiInput(BaseModel):
     """
 
     content_uri: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="contentUri",
         description="This points to the editable content trigger for this specific hdmi input",
     )

@@ -32,14 +32,14 @@ class BeolinkJoinResult(BaseModel):
     BeolinkJoinResult
     """
 
-    error: Optional[StrictStr] = Field(None, description="Join error")
-    jid: StrictStr = Field(..., description="Beolink peer ID")
+    error: Optional[StrictStr] = Field(default=None, description="Join error")
+    jid: StrictStr = Field(default=..., description="Beolink peer ID")
     request_id: StrictStr = Field(
-        ..., alias="requestID", description="Beolink request ID"
+        default=..., alias="requestID", description="Beolink request ID"
     )
-    status: StrictStr = Field(..., description="Overall join status")
+    status: StrictStr = Field(default=..., description="Overall join status")
     type: StrictStr = Field(
-        ..., description="The type of join request this is a result of"
+        default=..., description="The type of join request this is a result of"
     )
     __properties = ["error", "jid", "requestID", "status", "type"]
 

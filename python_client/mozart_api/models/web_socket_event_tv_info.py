@@ -34,8 +34,8 @@ class WebSocketEventTvInfo(BaseModel):
     WebSocketEventTvInfo
     """
 
-    event_data: Optional[TvInfoEventData] = Field(None, alias="eventData")
-    event_type: Optional[StrictStr] = Field(None, alias="eventType")
+    event_data: Optional[TvInfoEventData] = Field(default=None, alias="eventData")
+    event_type: Optional[StrictStr] = Field(default=None, alias="eventType")
     __properties = ["eventData", "eventType"]
 
     class Config:

@@ -33,7 +33,7 @@ class RoomCompensationType(BaseModel):
     """
 
     value: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="The type of roomcompensation used / to use. simple:   For speakers without external speakers. advanced:   For products with external speakers or other advanced multichannel capabilities.   This requires that at least action in the other properties of RoomCompensationProperties is set. ",
     )
     __properties = ["value"]

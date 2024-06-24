@@ -36,31 +36,33 @@ class SpeakerGroup(BaseModel):
     """
 
     crossover_frequency: Optional[conint(strict=True, le=300, ge=20)] = Field(
-        None,
+        default=None,
         alias="crossoverFrequency",
         description="Crossover frequency for bass management in Hz",
     )
     enable_phase_compensation: Optional[StrictBool] = Field(
-        None,
+        default=None,
         alias="enablePhaseCompensation",
         description="Enable phase compensation in bass management.",
     )
     friendly_name: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="friendlyName",
         description="Friendly name of the SpeakerGroup. Required when creating a new group ",
     )
     id: Optional[StrictStr] = None
-    is_deleteable: Optional[StrictBool] = Field(None, alias="isDeleteable")
+    is_deleteable: Optional[StrictBool] = Field(default=None, alias="isDeleteable")
     items: Optional[conlist(SpeakerGroupMember)] = None
-    latency_profile: Optional[LatencyProfile] = Field(None, alias="latencyProfile")
+    latency_profile: Optional[LatencyProfile] = Field(
+        default=None, alias="latencyProfile"
+    )
     room_compensation_id: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="roomCompensationId",
         description="ID of the calculated coefficents for this group, made during advanced room compensation. When updating an existing group, an empty string will clear roomCompensationId. ",
     )
     speaker_preset: Optional[conint(strict=True, le=99, ge=0)] = Field(
-        None,
+        default=None,
         alias="speakerPreset",
         description="Speaker preset / listening mode eg. BL28 curtain position etc.",
     )

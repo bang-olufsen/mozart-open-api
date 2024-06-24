@@ -35,11 +35,11 @@ class AmbienceFeature(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected ambience value"
+        default=..., description="Selected ambience value"
     )
     default: Ambience = Field(...)
     range: conlist(Ambience, unique_items=True) = Field(
-        ..., description="Product and role specific ambience range"
+        default=..., description="Product and role specific ambience range"
     )
     __properties = ["value", "default", "range"]
 

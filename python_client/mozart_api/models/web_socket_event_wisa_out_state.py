@@ -32,8 +32,8 @@ class WebSocketEventWisaOutState(BaseModel):
     Speaker Discovery State changed  # noqa: E501
     """
 
-    event_data: WisaOutState = Field(..., alias="eventData")
-    event_type: StrictStr = Field(..., alias="eventType")
+    event_data: WisaOutState = Field(default=..., alias="eventData")
+    event_type: StrictStr = Field(default=..., alias="eventType")
     __properties = ["eventData", "eventType"]
 
     class Config:

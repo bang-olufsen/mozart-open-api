@@ -37,8 +37,10 @@ class TvState(BaseModel):
     """
 
     integration: Optional[TvIntegrationTypes] = None
-    sound_settings: Optional[TvSoundSettings] = Field(None, alias="soundSettings")
-    tv_info: Optional[TvProperties] = Field(None, alias="tvInfo")
+    sound_settings: Optional[TvSoundSettings] = Field(
+        default=None, alias="soundSettings"
+    )
+    tv_info: Optional[TvProperties] = Field(default=None, alias="tvInfo")
     __properties = ["integration", "soundSettings", "tvInfo"]
 
     class Config:

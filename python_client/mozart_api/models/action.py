@@ -38,50 +38,56 @@ class Action(BaseModel):
     """
 
     button_name: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="buttonName",
         description="Name of the Button used for button-press types ('buttonShortPress')",
     )
     content_id: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="contentId",
         description="Id of content only used for 'type=triggerContent'",
     )
     deezer_user_id: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="deezerUserId",
         description="Id of user only used for 'type=deezerFlow' and is optional",
     )
     gain_db: Optional[
         Union[confloat(le=12, ge=-12, strict=True), conint(le=12, ge=-12, strict=True)]
-    ] = Field(None, alias="gainDb", description="Only usef for 'type=sourceGain'")
+    ] = Field(
+        default=None, alias="gainDb", description="Only usef for 'type=sourceGain'"
+    )
     listening_mode_id: Optional[conint(strict=True, ge=0)] = Field(
-        None, alias="listeningModeId"
+        default=None, alias="listeningModeId"
     )
     preset_key: Optional[StrictStr] = Field(
-        None, alias="presetKey", description="Only used for 'type=sourcePreset'"
+        default=None, alias="presetKey", description="Only used for 'type=sourcePreset'"
     )
-    queue_item: Optional[PlayQueueItem] = Field(None, alias="queueItem")
-    queue_settings: Optional[PlayQueueSettings] = Field(None, alias="queueSettings")
+    queue_item: Optional[PlayQueueItem] = Field(default=None, alias="queueItem")
+    queue_settings: Optional[PlayQueueSettings] = Field(
+        default=None, alias="queueSettings"
+    )
     radio_station_id: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="radioStationId",
         description="Id of RadioStation only used for 'type=radio'",
     )
     source: Optional[SourceTypeEnum] = None
-    speaker_group_id: Optional[StrictStr] = Field(None, alias="speakerGroupId")
-    stand_position: Optional[StandPosition] = Field(None, alias="standPosition")
+    speaker_group_id: Optional[StrictStr] = Field(default=None, alias="speakerGroupId")
+    stand_position: Optional[StandPosition] = Field(default=None, alias="standPosition")
     stop_duration: Optional[conint(strict=True, ge=0)] = Field(
-        None,
+        default=None,
         alias="stopDuration",
         description="The duration to wait (seconds) until stopping only used for 'type=stop'",
     )
     tone_name: Optional[StrictStr] = Field(
-        None, alias="toneName", description="Name of the tone only used for 'type=tone'"
+        default=None,
+        alias="toneName",
+        description="Name of the tone only used for 'type=tone'",
     )
-    type: StrictStr = Field(..., description="The type of Action")
+    type: StrictStr = Field(default=..., description="The type of Action")
     volume_level: Optional[conint(strict=True, le=100, ge=0)] = Field(
-        None,
+        default=None,
         alias="volumeLevel",
         description="The volume level to configure only used for 'type=volume'",
     )

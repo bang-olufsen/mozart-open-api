@@ -32,8 +32,8 @@ class WebSocketEventBeolinkExperiencesResult(BaseModel):
     WebSocketEventBeolinkExperiencesResult
     """
 
-    event_data: BeolinkExperiencesResult = Field(..., alias="eventData")
-    event_type: StrictStr = Field(..., alias="eventType")
+    event_data: BeolinkExperiencesResult = Field(default=..., alias="eventData")
+    event_type: StrictStr = Field(default=..., alias="eventType")
     __properties = ["eventData", "eventType"]
 
     class Config:

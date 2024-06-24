@@ -30,7 +30,7 @@ class Compression(BaseModel):
     Compression
     """
 
-    value: StrictStr = Field(..., description="Selected compression value")
+    value: StrictStr = Field(default=..., description="Selected compression value")
     __properties = ["value"]
 
     @validator("value")

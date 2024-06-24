@@ -33,20 +33,20 @@ class RoomCompensationFeature(BaseModel):
     """
 
     value: conlist(StrictStr) = Field(
-        ...,
+        default=...,
         description="List of room compensation sweeps to combine. No room compensation is done if this list is empty. The maximum length of this list is product specific. ",
     )
     default: conlist(StrictStr) = Field(
-        ...,
+        default=...,
         description="List of room compensation sweeps to combine. No room compensation is done if this list is empty. The maximum length of this list is product specific. ",
     )
     max_items: Optional[conint(strict=True, le=20, ge=1)] = Field(
-        None,
+        default=None,
         alias="maxItems",
         description="Maximum number of items in the `value` field",
     )
     range: conlist(StrictStr) = Field(
-        ..., description="Possible values for the `value` field"
+        default=..., description="Possible values for the `value` field"
     )
     __properties = ["value", "default", "maxItems", "range"]
 

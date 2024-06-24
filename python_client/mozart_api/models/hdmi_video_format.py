@@ -35,9 +35,9 @@ class HdmiVideoFormat(BaseModel):
     HdmiVideoFormat
     """
 
-    pixel_format: Optional[VideoPixelFormat] = Field(None, alias="pixelFormat")
-    v_ic: Optional[conint(strict=True, ge=0)] = Field(None, alias="vIC")
-    video_timings: Optional[VideoTimings] = Field(None, alias="videoTimings")
+    pixel_format: Optional[VideoPixelFormat] = Field(default=None, alias="pixelFormat")
+    v_ic: Optional[conint(strict=True, ge=0)] = Field(default=None, alias="vIC")
+    video_timings: Optional[VideoTimings] = Field(default=None, alias="videoTimings")
     __properties = ["pixelFormat", "vIC", "videoTimings"]
 
     class Config:

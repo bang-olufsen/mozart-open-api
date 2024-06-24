@@ -54,28 +54,34 @@ class SoundFeatureSet(BaseModel):
     balance: Optional[BalanceFeature] = None
     bass: Optional[BassFeature] = None
     bass_management: Optional[BassManagementFeature] = Field(
-        None, alias="bass-management"
+        default=None, alias="bass-management"
     )
     compression: Optional[CompressionFeature] = None
     directivity: Optional[DirectivityFeature] = None
     fader: Optional[FaderFeature] = None
     room_compensation: Optional[RoomCompensationFeature] = Field(
-        None, alias="roomCompensation"
+        default=None, alias="roomCompensation"
     )
     spatial_envelopment: Optional[SpatialEnvelopmentFeature] = Field(
-        None, alias="spatial-envelopment"
+        default=None, alias="spatial-envelopment"
     )
-    spatial_height: Optional[SpatialHeightFeature] = Field(None, alias="spatial-height")
+    spatial_height: Optional[SpatialHeightFeature] = Field(
+        default=None, alias="spatial-height"
+    )
     spatial_processing: Optional[SpatialProcessingFeature] = Field(
-        None, alias="spatial-processing"
+        default=None, alias="spatial-processing"
     )
     spatial_surround: Optional[SpatialSurroundFeature] = Field(
-        None, alias="spatial-surround"
+        default=None, alias="spatial-surround"
     )
-    spatial_width: Optional[SpatialWidthFeature] = Field(None, alias="spatial-width")
-    speech_enhance: Optional[SpeechEnhanceFeature] = Field(None, alias="speech-enhance")
-    tone_touch_x: Optional[ToneTouchXFeature] = Field(None, alias="toneTouchX")
-    tone_touch_y: Optional[ToneTouchYFeature] = Field(None, alias="toneTouchY")
+    spatial_width: Optional[SpatialWidthFeature] = Field(
+        default=None, alias="spatial-width"
+    )
+    speech_enhance: Optional[SpeechEnhanceFeature] = Field(
+        default=None, alias="speech-enhance"
+    )
+    tone_touch_x: Optional[ToneTouchXFeature] = Field(default=None, alias="toneTouchX")
+    tone_touch_y: Optional[ToneTouchYFeature] = Field(default=None, alias="toneTouchY")
     treble: Optional[TrebleFeature] = None
     __properties = [
         "ambience",

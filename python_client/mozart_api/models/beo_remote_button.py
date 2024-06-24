@@ -32,8 +32,8 @@ class BeoRemoteButton(BaseModel):
     BeoRemoteButton
     """
 
-    key: Optional[StrictStr] = Field(None, alias="Key")
-    type: Optional[StrictStr] = Field(None, alias="Type")
+    key: Optional[StrictStr] = Field(default=None, alias="Key")
+    type: Optional[StrictStr] = Field(default=None, alias="Type")
     __properties = ["Key", "Type"]
 
     @validator("type")

@@ -35,34 +35,35 @@ class RemoteMenuItemProperties(BaseModel):
     """
 
     action_list: Optional[conlist(Action)] = Field(
-        None,
+        default=None,
         alias="actionList",
         description="An ordered list of Actions to run on the product",
     )
     scene_list: Optional[conlist(StrictStr)] = Field(
-        None, alias="sceneList", description="A list of scenes"
+        default=None, alias="sceneList", description="A list of scenes"
     )
     disabled: Optional[StrictBool] = None
     dynamic_list: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="dynamicList",
         description="Let mozart create a dynamic list. This list will be attached as children to the menu item. If dynamicList is set it's not possible to change or manipulate any of the children because mozart can alter them at any given time ",
     )
     first_child_menu_item_id: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="firstChildMenuItemId",
         description="ID of the first child menu item",
     )
     label: Optional[StrictStr] = Field(
-        None, description="Alternative label, if omitted mozart will try its best"
+        default=None,
+        description="Alternative label, if omitted mozart will try its best",
     )
     next_sibling_menu_item_id: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="nextSiblingMenuItemId",
         description="ID of the next sibling menu item",
     )
     parent_menu_item_id: Optional[StrictStr] = Field(
-        None, alias="parentMenuItemId", description="ID of the parent menu item"
+        default=None, alias="parentMenuItemId", description="ID of the parent menu item"
     )
     __properties = [
         "actionList",

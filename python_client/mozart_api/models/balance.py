@@ -33,7 +33,7 @@ class Balance(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected balance value"
+        default=..., description="Selected balance value"
     )
     __properties = ["value"]
 

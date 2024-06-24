@@ -34,7 +34,7 @@ class SceneMatch(BaseModel):
 
     label: Optional[StrictStr] = None
     tags: Optional[conlist(StrictStr)] = Field(
-        None,
+        default=None,
         description="A list of user defined tags. This allows a client to create virtual lists",
     )
     __properties = ["label", "tags"]

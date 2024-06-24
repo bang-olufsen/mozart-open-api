@@ -37,7 +37,7 @@ class DirectivityFeature(BaseModel):
     value: StrictStr = Field(...)
     default: Directivity = Field(...)
     range: conlist(Directivity, unique_items=True) = Field(
-        ..., description="Product and role specific list of directivities"
+        default=..., description="Product and role specific list of directivities"
     )
     __properties = ["value", "default", "range"]
 

@@ -36,7 +36,7 @@ class SpatialEnvelopmentRange(BaseModel):
 
     default: SpatialEnvelopment = Field(...)
     range: conlist(SpatialEnvelopment, unique_items=True) = Field(
-        ..., description="spatial-envelopment range"
+        default=..., description="spatial-envelopment range"
     )
     __properties = ["default", "range"]
 

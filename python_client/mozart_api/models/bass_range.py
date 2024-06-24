@@ -36,7 +36,7 @@ class BassRange(BaseModel):
 
     default: Bass = Field(...)
     range: conlist(Bass, unique_items=True) = Field(
-        ..., description="Product and role specific bass range"
+        default=..., description="Product and role specific bass range"
     )
     __properties = ["default", "range"]
 

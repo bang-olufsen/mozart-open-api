@@ -35,7 +35,9 @@ class FaderRange(BaseModel):
     """
 
     default: Fader = Field(...)
-    range: conlist(Fader, unique_items=True) = Field(..., description="fader range")
+    range: conlist(Fader, unique_items=True) = Field(
+        default=..., description="fader range"
+    )
     __properties = ["default", "range"]
 
     class Config:

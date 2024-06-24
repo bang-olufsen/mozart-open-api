@@ -36,7 +36,7 @@ class AmbienceRange(BaseModel):
 
     default: Ambience = Field(...)
     range: conlist(Ambience, unique_items=True) = Field(
-        ..., description="Product and role specific ambience range"
+        default=..., description="Product and role specific ambience range"
     )
     __properties = ["default", "range"]
 

@@ -30,7 +30,7 @@ class BassManagement(BaseModel):
     BassManagement
     """
 
-    value: StrictStr = Field(..., description="Selected bass-management value")
+    value: StrictStr = Field(default=..., description="Selected bass-management value")
     __properties = ["value"]
 
     @validator("value")

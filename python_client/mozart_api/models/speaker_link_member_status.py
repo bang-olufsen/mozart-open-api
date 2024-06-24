@@ -33,21 +33,21 @@ class SpeakerLinkMemberStatus(BaseModel):
     """
 
     base_url: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="baseUrl",
         description="API prefix to use when talking to the secondary",
     )
     health: StrictStr = Field(...)
     ip_address: Optional[StrictStr] = Field(
-        None, alias="ipAddress", description="IP address"
+        default=None, alias="ipAddress", description="IP address"
     )
-    network_type: StrictStr = Field(..., alias="networkType")
-    product_type: Optional[StrictStr] = Field(None, alias="productType")
+    network_type: StrictStr = Field(default=..., alias="networkType")
+    product_type: Optional[StrictStr] = Field(default=None, alias="productType")
     serial_number: constr(strict=True) = Field(
-        ..., alias="serialNumber", description="Speaker serial number"
+        default=..., alias="serialNumber", description="Speaker serial number"
     )
     updated_at: datetime = Field(
-        ..., alias="updatedAt", description="Timestamp in RFC3393 format"
+        default=..., alias="updatedAt", description="Timestamp in RFC3393 format"
     )
     __properties = [
         "baseUrl",

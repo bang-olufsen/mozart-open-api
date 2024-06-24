@@ -35,50 +35,52 @@ class PlaybackContentMetadata(BaseModel):
     PlaybackContentMetadata
     """
 
-    album_name: Optional[StrictStr] = Field(None, alias="albumName")
+    album_name: Optional[StrictStr] = Field(default=None, alias="albumName")
     art: Optional[conlist(Art)] = None
-    artist_name: Optional[StrictStr] = Field(None, alias="artistName")
+    artist_name: Optional[StrictStr] = Field(default=None, alias="artistName")
     bitdepth: Optional[StrictInt] = None
     bitrate: Optional[StrictInt] = None
-    container_name: Optional[StrictStr] = Field(None, alias="containerName")
+    container_name: Optional[StrictStr] = Field(default=None, alias="containerName")
     encoding: Optional[StrictStr] = None
     genre: Optional[StrictStr] = None
     id: Optional[StrictInt] = None
     input_channel_processing: Optional[StrictStr] = Field(
-        None,
+        default=None,
         alias="inputChannelProcessing",
         description="Input processing/decoding on top of the base codec indicated in encoding. E.g. Dolby Atmos on top of Dolby TrueHD or Dolby Surround on top of PCM. For Dolby, this value has priority over encoding, meaning that if inputChannelProcessing has a value, it must be indicated in the app, and optionally the encoding value can be indicated as well. If inputChannelProcessing does not have value the encoding value must be indicated. ",
     )
     input_channels: Optional[StrictStr] = Field(
-        None, alias="inputChannels", description="e.g. 5.1"
+        default=None, alias="inputChannels", description="e.g. 5.1"
     )
     organization: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description='This can be filled by gstreamer\'s GST_TAG_ORGANIZATION. Mozart can also fill this with netradio station name like "P3" and TV content like "Netflix". This is needed so it\'s possible to show who the provider is for the playing audio track/content. ',
     )
     output_channel_processing: Optional[StrictStr] = Field(
-        None, alias="outputChannelProcessing", description="e.g. downmix"
+        default=None, alias="outputChannelProcessing", description="e.g. downmix"
     )
     output_channels: Optional[StrictStr] = Field(
-        None, alias="outputChannels", description="e.g. 7.1"
+        default=None, alias="outputChannels", description="e.g. 7.1"
     )
-    queue_id: Optional[StrictStr] = Field(None, alias="queueId")
-    remote_leader: Optional[BeolinkLeader] = Field(None, alias="remoteLeader")
-    remote_source: Optional[StrictStr] = Field(None, alias="remoteSource")
+    queue_id: Optional[StrictStr] = Field(default=None, alias="queueId")
+    remote_leader: Optional[BeolinkLeader] = Field(default=None, alias="remoteLeader")
+    remote_source: Optional[StrictStr] = Field(default=None, alias="remoteSource")
     samplerate: Optional[StrictInt] = None
     source: Optional[StrictStr] = None
-    source_internal_id: Optional[StrictStr] = Field(None, alias="sourceInternalId")
+    source_internal_id: Optional[StrictStr] = Field(
+        default=None, alias="sourceInternalId"
+    )
     title: Optional[StrictStr] = None
     total_duration: Optional[StrictInt] = Field(
-        None,
+        default=None,
         alias="totalDuration",
         description="to be removed once all devices and apps are updated",
     )
     total_duration_seconds: Optional[StrictInt] = Field(
-        None, alias="totalDurationSeconds"
+        default=None, alias="totalDurationSeconds"
     )
     track: Optional[StrictInt] = None
-    track_count: Optional[StrictInt] = Field(None, alias="trackCount")
+    track_count: Optional[StrictInt] = Field(default=None, alias="trackCount")
     uri: Optional[StrictStr] = None
     __properties = [
         "albumName",

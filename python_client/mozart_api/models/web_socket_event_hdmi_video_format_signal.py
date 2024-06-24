@@ -34,8 +34,8 @@ class WebSocketEventHdmiVideoFormatSignal(BaseModel):
     WebSocketEventHdmiVideoFormatSignal
     """
 
-    event_data: Optional[HdmiVideoFormat] = Field(None, alias="eventData")
-    event_type: Optional[StrictStr] = Field(None, alias="eventType")
+    event_data: Optional[HdmiVideoFormat] = Field(default=None, alias="eventData")
+    event_type: Optional[StrictStr] = Field(default=None, alias="eventType")
     __properties = ["eventData", "eventType"]
 
     class Config:

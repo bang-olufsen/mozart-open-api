@@ -33,13 +33,15 @@ class VideoTimings(BaseModel):
     """
 
     horizontal_resolution: Optional[StrictInt] = Field(
-        None, alias="horizontalResolution"
+        default=None, alias="horizontalResolution"
     )
     interlaced: Optional[StrictBool] = None
     refresh_rate: Optional[Union[StrictFloat, StrictInt]] = Field(
-        None, alias="refreshRate"
+        default=None, alias="refreshRate"
     )
-    vertical_resolution: Optional[StrictInt] = Field(None, alias="verticalResolution")
+    vertical_resolution: Optional[StrictInt] = Field(
+        default=None, alias="verticalResolution"
+    )
     __properties = [
         "horizontalResolution",
         "interlaced",

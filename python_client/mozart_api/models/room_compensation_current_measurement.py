@@ -32,9 +32,9 @@ class RoomCompensationCurrentMeasurement(BaseModel):
     State and speaker ID of the currently running measurement. Is only relevant for advanced room compensation.   # noqa: E501
     """
 
-    speaker_id: Optional[StrictStr] = Field(None, alias="speakerId")
+    speaker_id: Optional[StrictStr] = Field(default=None, alias="speakerId")
     state: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="State of the measurement for the speaker. started:   The measurement has started. done:   The measurement has ended successfully. lastDone:   The last measurement in the run has ended successfully. error:   An error occurred during measurement. ",
     )
     __properties = ["speakerId", "state"]

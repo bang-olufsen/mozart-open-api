@@ -39,13 +39,14 @@ class PlayQueueItem(BaseModel):
     metadata: Optional[PlaybackContentMetadata] = None
     provider: PlayQueueItemType = Field(...)
     start_now_from_position: Optional[StrictInt] = Field(
-        None,
+        default=None,
         alias="startNowFromPosition",
         description="Start playing specified track as soon as possible. This works for any type, for `track` set to 0 and for `playlist` specify the wanted track from position 0",
     )
     type: StrictStr = Field(...)
     uri: StrictStr = Field(
-        ..., description="This can be url, track id, playlist id, radio id and suchlike"
+        default=...,
+        description="This can be url, track id, playlist id, radio id and suchlike",
     )
     __properties = [
         "index",

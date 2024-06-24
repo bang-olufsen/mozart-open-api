@@ -35,16 +35,16 @@ class SpeakerGroupMember(BaseModel):
     """
 
     distance: Optional[conint(strict=True, le=1500, ge=0)] = Field(
-        None, description="Distance from listening position in cm"
+        default=None, description="Distance from listening position in cm"
     )
-    friendly_name: Optional[StrictStr] = Field(None, alias="friendlyName")
+    friendly_name: Optional[StrictStr] = Field(default=None, alias="friendlyName")
     gain: Optional[
         Union[confloat(le=6, ge=-24, strict=True), conint(le=6, ge=-24, strict=True)]
-    ] = Field(None, description="Level in dB")
+    ] = Field(default=None, description="Level in dB")
     id: StrictStr = Field(...)
     location: Optional[SpeakerGroupMemberLocation] = None
     redirection_level: Optional[conint(strict=True, le=6, ge=-100)] = Field(
-        None,
+        default=None,
         alias="redirectionLevel",
         description="Redirection level for bass management in dB",
     )

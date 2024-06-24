@@ -30,8 +30,8 @@ class BeolinkPeer(BaseModel):
     BeolinkPeer
     """
 
-    friendly_name: StrictStr = Field(..., alias="friendlyName")
-    jid: StrictStr = Field(..., description="Beolink peer ID")
+    friendly_name: StrictStr = Field(default=..., alias="friendlyName")
+    jid: StrictStr = Field(default=..., description="Beolink peer ID")
     __properties = ["friendlyName", "jid"]
 
     class Config:

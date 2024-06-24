@@ -33,13 +33,13 @@ class PairedRemote(BaseModel):
     """
 
     address: StrictStr = Field(...)
-    app_version: Optional[StrictStr] = Field(None, alias="appVersion")
+    app_version: Optional[StrictStr] = Field(default=None, alias="appVersion")
     battery_level: Optional[conint(strict=True, le=100, ge=0)] = Field(
-        None, alias="batteryLevel"
+        default=None, alias="batteryLevel"
     )
-    db_version: Optional[StrictStr] = Field(None, alias="dbVersion")
+    db_version: Optional[StrictStr] = Field(default=None, alias="dbVersion")
     name: StrictStr = Field(...)
-    serial_number: Optional[StrictStr] = Field(None, alias="serialNumber")
+    serial_number: Optional[StrictStr] = Field(default=None, alias="serialNumber")
     updated: Optional[conlist(StrictStr)] = None
     __properties = [
         "address",

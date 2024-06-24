@@ -32,7 +32,9 @@ class SoftwareUpdateState(BaseModel):
     SoftwareUpdateState
     """
 
-    seconds_remaining: Optional[StrictInt] = Field(None, alias="secondsRemaining")
+    seconds_remaining: Optional[StrictInt] = Field(
+        default=None, alias="secondsRemaining"
+    )
     value: Optional[StrictStr] = None
     __properties = ["secondsRemaining", "value"]
 

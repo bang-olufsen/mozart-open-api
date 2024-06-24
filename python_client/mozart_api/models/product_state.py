@@ -43,11 +43,11 @@ class ProductState(BaseModel):
 
     microphones: Optional[MicrophonesState] = None
     playback: Optional[PlaybackState] = None
-    power_state: Optional[PowerStateEnum] = Field(None, alias="powerState")
+    power_state: Optional[PowerStateEnum] = Field(default=None, alias="powerState")
     software_update_state: Optional[SoftwareUpdateState] = Field(
-        None, alias="softwareUpdateState"
+        default=None, alias="softwareUpdateState"
     )
-    sound_settings: Optional[SoundSettings] = Field(None, alias="soundSettings")
+    sound_settings: Optional[SoundSettings] = Field(default=None, alias="soundSettings")
     source: Optional[Source] = None
     tv: Optional[TvState] = None
     volume: Optional[VolumeState] = None

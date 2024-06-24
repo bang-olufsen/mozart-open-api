@@ -49,8 +49,8 @@ class StandMovement(BaseModel):
     """
 
     angle: Optional[Union[StrictFloat, StrictInt]] = None
-    ignore_endstop: Optional[StrictBool] = Field(None, alias="ignoreEndstop")
-    stand_motion: Optional[StrictStr] = Field(None, alias="standMotion")
+    ignore_endstop: Optional[StrictBool] = Field(default=None, alias="ignoreEndstop")
+    stand_motion: Optional[StrictStr] = Field(default=None, alias="standMotion")
     __properties = ["angle", "ignoreEndstop", "standMotion"]
 
     @validator("stand_motion")

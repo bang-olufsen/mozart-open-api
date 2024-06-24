@@ -36,7 +36,7 @@ class TrebleRange(BaseModel):
 
     default: Treble = Field(...)
     range: conlist(Treble, unique_items=True) = Field(
-        ..., description="Product and role specific treble range"
+        default=..., description="Product and role specific treble range"
     )
     __properties = ["default", "range"]
 

@@ -34,10 +34,10 @@ class BassManagementFeature(BaseModel):
     BassManagementFeature
     """
 
-    value: StrictStr = Field(..., description="Selected bass-management value")
+    value: StrictStr = Field(default=..., description="Selected bass-management value")
     default: BassManagement = Field(...)
     range: conlist(BassManagement, unique_items=True) = Field(
-        ..., description="bass-management range"
+        default=..., description="bass-management range"
     )
     __properties = ["value", "default", "range"]
 

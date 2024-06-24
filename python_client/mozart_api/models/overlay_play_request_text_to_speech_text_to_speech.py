@@ -33,11 +33,11 @@ class OverlayPlayRequestTextToSpeechTextToSpeech(BaseModel):
     """
 
     lang: Optional[StrictStr] = Field(
-        None,
+        default=None,
         description="An optional specification of the language to use. The default value is ultimately decided by the BeoCloud API, but currently it defaults to `en-us`. ",
     )
     text: constr(strict=True, max_length=2048) = Field(
-        ...,
+        default=...,
         description="Required field containing the actual text that will be converted to speech (audio). A maximum length of 2048 characters is allowed. ",
     )
     __properties = ["lang", "text"]

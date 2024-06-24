@@ -33,7 +33,7 @@ class OverlayPlayRequestCommon(BaseModel):
     """
 
     volume_absolute: Optional[conint(strict=True, le=100, ge=0)] = Field(
-        None,
+        default=None,
         alias="volumeAbsolute",
         description="An optional absolute volume level at which to play the URI. If not provided, the URI will play at the currently configured volume level on the product. The level should be provided in volume steps [0, 100] ",
     )

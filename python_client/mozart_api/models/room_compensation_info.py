@@ -41,8 +41,10 @@ class RoomCompensationInfo(BaseModel):
 
     debug: Optional[RoomCompensationDebug] = None
     enabled: Optional[RoomCompensationEnabled] = None
-    last_result: Optional[RoomCompensationResult] = Field(None, alias="lastResult")
-    last_run: Optional[RoomCompensationState] = Field(None, alias="lastRun")
+    last_result: Optional[RoomCompensationResult] = Field(
+        default=None, alias="lastResult"
+    )
+    last_run: Optional[RoomCompensationState] = Field(default=None, alias="lastRun")
     type: Optional[RoomCompensationType] = None
     version: Optional[RoomCompensationVersion] = None
     __properties = ["debug", "enabled", "lastResult", "lastRun", "type", "version"]

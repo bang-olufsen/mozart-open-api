@@ -35,10 +35,12 @@ class BalanceFeature(BaseModel):
     """
 
     value: Union[StrictFloat, StrictInt] = Field(
-        ..., description="Selected balance value"
+        default=..., description="Selected balance value"
     )
     default: Balance = Field(...)
-    range: conlist(Balance, unique_items=True) = Field(..., description="balance range")
+    range: conlist(Balance, unique_items=True) = Field(
+        default=..., description="balance range"
+    )
     __properties = ["value", "default", "range"]
 
     class Config:
