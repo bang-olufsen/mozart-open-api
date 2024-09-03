@@ -109,12 +109,19 @@ def get_highest_resolution_artwork(metadata: PlaybackContentMetadata) -> Art:
 
     # Images either have a key for specifying resolution or a "size" for the image.
     for image in metadata.art:
+        # Skip any invalid artwork
+        if not image.url:
+            continue
         # Netradio.
         if image.key:
             images.append(int(image.key.split("x")[0]))
         # Everything else.
         elif image.size:
             images.append(art_size[image.size])
+
+    # Check if only invalid images were provided
+    if not images:
+        return Art()  # type: ignore
 
     # Choose the largest image.
     return metadata.art[images.index(max(images))]

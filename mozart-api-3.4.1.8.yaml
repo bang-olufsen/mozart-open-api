@@ -4352,6 +4352,22 @@ paths:
             tags:
             - Power
             - mozart
+    /api/v1/state/reboot:
+        put:
+            operationId: post-reboot
+            responses:
+                '200':
+                    description: The device is being rebooted
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Reboot the mozart device
+            tags:
+            - Power
+            - mozart
     /api/v1/state/standby:
         put:
             operationId: post-standby
