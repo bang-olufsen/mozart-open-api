@@ -10,6 +10,7 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import time
+from ssl import SSLContext
 from typing import Callable, Literal
 
 from aiohttp import ClientSession
@@ -21,6 +22,7 @@ from aiohttp.client_exceptions import (
 from inflection import underscore
 from mozart_api.api.mozart_api import MozartApi
 from mozart_api.api_client import ApiClient
+from mozart_api.rest import RESTClientObject
 from mozart_api.configuration import Configuration
 from mozart_api.exceptions import ApiException
 from mozart_api.models import Art, PlaybackContentMetadata
@@ -130,7 +132,7 @@ def get_highest_resolution_artwork(metadata: PlaybackContentMetadata) -> Art:
 class MozartClient(MozartApi):
     """User friendly Mozart REST API and WebSocket client."""
 
-    def __init__(self, host: str) -> None:
+    def __init__(self, host: str, ssl_context: SSLContext | None = None) -> None:
         """Initialize Mozart client."""
         self.host = host
         self.websocket_connected = False
@@ -151,10 +153,20 @@ class MozartClient(MozartApi):
         self._notification_callbacks.default_factory = lambda: None
 
         # Configure MozartApi object.
-        self.configuration = Configuration(host="http://" + self.host)
+        self.configuration = Configuration(host=f"http://{self.host}")
         self.configuration.verify_ssl = False
 
-        super().__init__(ApiClient(self.configuration))
+        if ssl_context is None:
+            super().__init__(ApiClient(self.configuration))
+        elif ssl_context:
+            super().__init__(
+                ApiClient(
+                    self.configuration,
+                    rest_client=RESTClientObject(
+                        configuration=self.configuration, ssl_context=ssl_context
+                    ),
+                )
+            )
 
     async def close_api_client(self) -> None:
         """Close the API ClientSession."""

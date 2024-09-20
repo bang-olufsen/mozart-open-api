@@ -15,7 +15,7 @@
 """  # noqa: E501
 
 
-__version__ = "3.4.1.8.7"
+__version__ = "3.4.1.8.8"
 
 # import apis into sdk package
 from mozart_api.api.beolink_api import BeolinkApi

@@ -46,21 +46,24 @@ class RESTResponse(io.IOBase):
 
 class RESTClientObject:
 
-    def __init__(self, configuration, pools_size=4, maxsize=None) -> None:
+    def __init__(
+        self, configuration, pools_size=4, maxsize=None, ssl_context=None
+    ) -> None:
 
         # maxsize is number of requests to host that are allowed in parallel
         if maxsize is None:
             maxsize = configuration.connection_pool_maxsize
 
-        ssl_context = ssl.create_default_context(cafile=configuration.ssl_ca_cert)
-        if configuration.cert_file:
-            ssl_context.load_cert_chain(
-                configuration.cert_file, keyfile=configuration.key_file
-            )
+        if ssl_context is None:
+            ssl_context = ssl.create_default_context(cafile=configuration.ssl_ca_cert)
+            if configuration.cert_file:
+                ssl_context.load_cert_chain(
+                    configuration.cert_file, keyfile=configuration.key_file
+                )
 
-        if not configuration.verify_ssl:
-            ssl_context.check_hostname = False
-            ssl_context.verify_mode = ssl.CERT_NONE
+            if not configuration.verify_ssl:
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = ssl.CERT_NONE
 
         connector = aiohttp.TCPConnector(limit=maxsize, ssl=ssl_context)
 
