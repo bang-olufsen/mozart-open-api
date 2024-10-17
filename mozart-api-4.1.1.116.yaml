@@ -57,7 +57,10 @@ components:
                 {\n  \"type\": \"stand\",\n  \"standPosition\": {\n    \"angle\":\
                 \ 7.5\n  }\n}\n```\n\nGainAction:\n```json\n{\n  \"type\": \"sourceGain\"\
                 ,\n  \"source\": {\n    \"value\": \"spotify\"\n  },\n  \"gainDb\"\
-                : 1.0\n}\n```\n"
+                : 1.0\n}\n```\n\nSoundProfileAction:\n```json\n{\n  \"type\": \"soundProfile\"\
+                ,\n  \"soundProfile\": {\n    \"speakerId1\": {\n      \"directivity\"\
+                : \"wide\"\n    },\n    \"speakerId2\": {\n      \"directivity\":\
+                \ \"narrow\"\n    }\n  }\n}\n```\n"
             properties:
                 buttonName:
                     description: Name of the Button used for button-press types ('buttonShortPress')
@@ -106,6 +109,17 @@ components:
                     format: '[0-9]+'
                     nullable: true
                     type: string
+                soundProfile:
+                    additionalProperties:
+                        $ref: '#/components/schemas/ActionSoundProfile'
+                    description: Only used for 'type=soundProfile'
+                    example:
+                        speakerId1:
+                            directivity: directivity1
+                        speakerId2:
+                            directivity: directivity1
+                    nullable: true
+                    type: object
                 source:
                     $ref: '#/components/schemas/SourceTypeEnum'
                     nullable: true
@@ -151,6 +165,7 @@ components:
                     - listeningMode
                     - stand
                     - sourceGain
+                    - soundProfile
                     type: string
                 volumeLevel:
                     description: The volume level to configure only used for 'type=volume'
@@ -174,6 +189,12 @@ components:
             items:
                 $ref: '#/components/schemas/Action'
             type: array
+        ActionSoundProfile:
+            properties:
+                directivity:
+                    nullable: true
+                    type: string
+            type: object
         AlarmId:
             format: uuid
             type: string
@@ -356,6 +377,57 @@ components:
                     - KeyPress
                     - KeyRelease
             type: object
+        BeoShapeStatus:
+            description: Status
+            properties:
+                amplifierTilesConfigured:
+                    description: Number of amplifier Shape titles currently configured
+                    format: int32
+                    type: integer
+                amplifierTilesOnline:
+                    description: Number of amplifier Shape tiles currently connected
+                    format: int32
+                    type: integer
+                designId:
+                    type: string
+                designName:
+                    type: string
+                soundProfile:
+                    properties:
+                        activeDirectivity:
+                            type: string
+                        speakerId:
+                            type: string
+                        supportedDirectivity:
+                            description: The supported Beosound Shape directivity.
+                                Extracted from the provided design fetched from the
+                                cloud.
+                            items:
+                                type: string
+                            type: array
+                    required:
+                    - speakerId
+                    - activeDirectivity
+                    - supportedDirectivity
+                    type: object
+                speakerTilesConfigured:
+                    description: Number of speaker Shape titles currently configured
+                    format: int32
+                    type: integer
+                state:
+                    enum:
+                    - notUsed
+                    - updatingFirmware
+                    - initializing
+                    - errorHardwareConfig
+                    - ready
+                    type: string
+            required:
+            - state
+            - amplifierTilesOnline
+            - amplifierTilesConfigured
+            - speakerTilesConfigured
+            type: object
         BeolinkAvailableListener:
             properties:
                 jid:
@@ -506,11 +578,14 @@ components:
             properties:
                 friendlyName:
                     type: string
+                ipAddress:
+                    $ref: '#/components/schemas/IpAddress'
                 jid:
                     $ref: '#/components/schemas/BeolinkPeerID'
             required:
             - jid
             - friendlyName
+            - ipAddress
             type: object
         BeolinkPeerID:
             description: Beolink peer ID
@@ -521,6 +596,16 @@ components:
             example: 48985a4f-a4de-4b44-9757-c9a7407b8882
             format: uuid
             type: string
+        BeolinkSelf:
+            properties:
+                friendlyName:
+                    type: string
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            - friendlyName
+            type: object
         BluetoothDevice:
             properties:
                 address:
@@ -613,6 +698,13 @@ components:
                 475169e4-32bb-59ad-b88d-a6d53c289838:
                     contentUri: tv://netflix
                     label: Netflix
+            type: object
+        ContentItemWithId:
+            properties:
+                content:
+                    $ref: '#/components/schemas/ContentItem'
+                id:
+                    type: string
             type: object
         Directivity:
             properties:
@@ -744,6 +836,10 @@ components:
                     - downloadFailed
                     type: string
             type: object
+        IpAddress:
+            description: IP address
+            example: fe80::209:a7ff:fe78:f605
+            type: string
         LatencyProfile:
             description: 'The latency profile of this speaker group.
 
@@ -789,11 +885,11 @@ components:
         ListeningMode:
             allOf:
             -   $ref: '#/components/schemas/ListeningModeProps'
-            required:
-            - features
-            - id
-            - name
-            - triggers
+            -   required:
+                - features
+                - id
+                - name
+                - triggers
         ListeningModeFeatures:
             description: Sound features to apply
             properties:
@@ -1020,7 +1116,12 @@ components:
                     maximum: 100
                     minimum: 0
                     type: integer
+                connected:
+                    type: boolean
                 dbVersion:
+                    type: string
+                lastSeen:
+                    format: date-time
                     type: string
                 name:
                     type: string
@@ -1057,6 +1158,16 @@ components:
                 metadata:
                     $ref: '#/components/schemas/PlaybackContentMetadata'
                     nullable: true
+                playlistSortBy:
+                    description: Option to choose the order that a playlist is sorted
+                        by
+                    enum:
+                    - name
+                    - artist
+                    - date
+                    - album
+                    nullable: true
+                    type: string
                 provider:
                     $ref: '#/components/schemas/PlayQueueItemType'
                 startNowFromPosition:
@@ -1166,6 +1277,8 @@ components:
                     description: e.g. 5.1
                     nullable: true
                     type: string
+                isExplicit:
+                    type: boolean
                 organization:
                     description: 'This can be filled by gstreamer''s GST_TAG_ORGANIZATION.
                         Mozart can also fill this with netradio station name like
@@ -1201,6 +1314,10 @@ components:
                     type: string
                 sourceInternalId:
                     type: string
+                tags:
+                    items:
+                        type: string
+                    type: array
                 title:
                     type: string
                 totalDuration:
@@ -1280,6 +1397,17 @@ components:
                     - standby
                     - shutdown
                     - storage
+                    type: string
+            type: object
+        PowerlinkConnectionStateEnum:
+            description: Indicated the state of the connection with powerlink
+            nullable: true
+            properties:
+                value:
+                    enum:
+                    - disabled
+                    - enabledPendingData
+                    - enabledWithData
                     type: string
             type: object
         Preset:
@@ -2060,6 +2188,8 @@ components:
                 isMultiroomAvailable:
                     type: boolean
                 isPlayable:
+                    type: boolean
+                isSeekable:
                     type: boolean
                 name:
                     type: string
@@ -2860,6 +2990,13 @@ components:
                 eventType:
                     type: string
             type: object
+        WebSocketEventPowerlinkConnectionState:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/PowerlinkConnectionStateEnum'
+                eventType:
+                    type: string
+            type: object
         WebSocketEventPucInstallRemoteIdStatus:
             properties:
                 eventData:
@@ -3283,7 +3420,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/BeolinkPeer'
+                                $ref: '#/components/schemas/BeolinkSelf'
                     description: successful operation
             summary: Get information about this device
             tags:
@@ -3340,6 +3477,42 @@ paths:
             required: false
             schema:
                 type: string
+    /api/v1/content/active:
+        get:
+            operationId: get-active-content
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContentItemWithId'
+                    description: Successful request
+                '204':
+                    description: No content active
+            summary: Get currently active content
+            tags:
+            - Content
+            - mozart
+    /api/v1/output/beosound-shape/status:
+        get:
+            operationId: get-beosound-shape-status
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BeoShapeStatus'
+                    description: status returned
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: beosound-shape not found/supported
+            summary: Get status
+            tags:
+            - Output
+            - mozart
     /api/v1/overlay/play:
         post:
             description: 'Play some audio as an overlay. This will duck currently

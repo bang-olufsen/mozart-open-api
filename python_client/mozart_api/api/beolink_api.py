@@ -40,6 +40,7 @@ from mozart_api.models.beolink_join_request import BeolinkJoinRequest
 from mozart_api.models.beolink_join_result import BeolinkJoinResult
 from mozart_api.models.beolink_listener import BeolinkListener
 from mozart_api.models.beolink_peer import BeolinkPeer
+from mozart_api.models.beolink_self import BeolinkSelf
 
 from mozart_api.api_client import ApiClient
 from mozart_api.api_response import ApiResponse
@@ -563,7 +564,7 @@ class BeolinkApi:
         )
 
     @validate_arguments
-    async def get_beolink_self(self, **kwargs) -> BeolinkPeer:  # noqa: E501
+    async def get_beolink_self(self, **kwargs) -> BeolinkSelf:  # noqa: E501
         """Get information about this device  # noqa: E501
 
         Returns Beolink information like about this device. This can be useful if you want to expand _to_ this device.   # noqa: E501
@@ -575,7 +576,7 @@ class BeolinkApi:
         :return: Returns the result object.
                  If the method is called asynchronously,
                  returns the request thread.
-        :rtype: BeolinkPeer
+        :rtype: BeolinkSelf
         """
         kwargs["_return_http_data_only"] = True
         if "_preload_content" in kwargs:
@@ -611,7 +612,7 @@ class BeolinkApi:
         :return: Returns the result object.
                  If the method is called asynchronously,
                  returns the request thread.
-        :rtype: tuple(BeolinkPeer, status_code(int), headers(HTTPHeaderDict))
+        :rtype: tuple(BeolinkSelf, status_code(int), headers(HTTPHeaderDict))
         """
 
         _params = locals()
@@ -661,7 +662,7 @@ class BeolinkApi:
         _auth_settings = []  # noqa: E501
 
         _response_types_map = {
-            "200": "BeolinkPeer",
+            "200": "BeolinkSelf",
         }
 
         return await self.api_client.call_api(

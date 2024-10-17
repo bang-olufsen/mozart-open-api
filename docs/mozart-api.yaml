@@ -186,6 +186,21 @@ components:
                   "gainDb": 1.0
                 }
                 ```
+
+                SoundProfileAction:
+                ```json
+                {
+                  "type": "soundProfile",
+                  "soundProfile": {
+                    "speakerId1": {
+                      "directivity": "wide"
+                    },
+                    "speakerId2": {
+                      "directivity": "narrow"
+                    }
+                  }
+                }
+                ```
             properties:
                 buttonName:
                     description: Name of the Button used for button-press types ('buttonShortPress')
@@ -234,6 +249,17 @@ components:
                     format: '[0-9]+'
                     nullable: true
                     type: string
+                soundProfile:
+                    additionalProperties:
+                        $ref: '#/components/schemas/ActionSoundProfile'
+                    description: Only used for 'type=soundProfile'
+                    example:
+                        speakerId1:
+                            directivity: directivity1
+                        speakerId2:
+                            directivity: directivity1
+                    nullable: true
+                    type: object
                 source:
                     $ref: '#/components/schemas/SourceTypeEnum'
                     nullable: true
@@ -279,6 +305,7 @@ components:
                     - listeningMode
                     - stand
                     - sourceGain
+                    - soundProfile
                     type: string
                 volumeLevel:
                     description: The volume level to configure only used for 'type=volume'
@@ -302,6 +329,12 @@ components:
             items:
                 $ref: '#/components/schemas/Action'
             type: array
+        ActionSoundProfile:
+            properties:
+                directivity:
+                    nullable: true
+                    type: string
+            type: object
         AlarmId:
             format: uuid
             type: string
@@ -483,6 +516,57 @@ components:
                     - KeyPress
                     - KeyRelease
             type: object
+        BeoShapeStatus:
+            description: Status
+            properties:
+                amplifierTilesConfigured:
+                    description: Number of amplifier Shape titles currently configured
+                    format: int32
+                    type: integer
+                amplifierTilesOnline:
+                    description: Number of amplifier Shape tiles currently connected
+                    format: int32
+                    type: integer
+                designId:
+                    type: string
+                designName:
+                    type: string
+                soundProfile:
+                    properties:
+                        activeDirectivity:
+                            type: string
+                        speakerId:
+                            type: string
+                        supportedDirectivity:
+                            description: The supported Beosound Shape directivity.
+                                Extracted from the provided design fetched from the
+                                cloud.
+                            items:
+                                type: string
+                            type: array
+                    required:
+                    - speakerId
+                    - activeDirectivity
+                    - supportedDirectivity
+                    type: object
+                speakerTilesConfigured:
+                    description: Number of speaker Shape titles currently configured
+                    format: int32
+                    type: integer
+                state:
+                    enum:
+                    - notUsed
+                    - updatingFirmware
+                    - initializing
+                    - errorHardwareConfig
+                    - ready
+                    type: string
+            required:
+            - state
+            - amplifierTilesOnline
+            - amplifierTilesConfigured
+            - speakerTilesConfigured
+            type: object
         BeolinkAvailableListener:
             properties:
                 jid:
@@ -630,11 +714,14 @@ components:
             properties:
                 friendlyName:
                     type: string
+                ipAddress:
+                    $ref: '#/components/schemas/IpAddress'
                 jid:
                     $ref: '#/components/schemas/BeolinkPeerID'
             required:
             - jid
             - friendlyName
+            - ipAddress
             type: object
         BeolinkPeerID:
             description: Beolink peer ID
@@ -645,6 +732,16 @@ components:
             example: 48985a4f-a4de-4b44-9757-c9a7407b8882
             format: uuid
             type: string
+        BeolinkSelf:
+            properties:
+                friendlyName:
+                    type: string
+                jid:
+                    $ref: '#/components/schemas/BeolinkPeerID'
+            required:
+            - jid
+            - friendlyName
+            type: object
         BluetoothDevice:
             properties:
                 address:
@@ -737,6 +834,13 @@ components:
                 475169e4-32bb-59ad-b88d-a6d53c289838:
                     contentUri: tv://netflix
                     label: Netflix
+            type: object
+        ContentItemWithId:
+            properties:
+                content:
+                    $ref: '#/components/schemas/ContentItem'
+                id:
+                    type: string
             type: object
         Directivity:
             properties:
@@ -863,6 +967,10 @@ components:
                     - downloadFailed
                     type: string
             type: object
+        IpAddress:
+            description: IP address
+            example: fe80::209:a7ff:fe78:f605
+            type: string
         LatencyProfile:
             description: |
                 The latency profile of this speaker group.
@@ -905,11 +1013,11 @@ components:
         ListeningMode:
             allOf:
             -   $ref: '#/components/schemas/ListeningModeProps'
-            required:
-            - features
-            - id
-            - name
-            - triggers
+            -   required:
+                - features
+                - id
+                - name
+                - triggers
         ListeningModeFeatures:
             description: Sound features to apply
             properties:
@@ -1110,7 +1218,12 @@ components:
                     maximum: 100
                     minimum: 0
                     type: integer
+                connected:
+                    type: boolean
                 dbVersion:
+                    type: string
+                lastSeen:
+                    format: date-time
                     type: string
                 name:
                     type: string
@@ -1147,6 +1260,16 @@ components:
                 metadata:
                     $ref: '#/components/schemas/PlaybackContentMetadata'
                     nullable: true
+                playlistSortBy:
+                    description: Option to choose the order that a playlist is sorted
+                        by
+                    enum:
+                    - name
+                    - artist
+                    - date
+                    - album
+                    nullable: true
+                    type: string
                 provider:
                     $ref: '#/components/schemas/PlayQueueItemType'
                 startNowFromPosition:
@@ -1249,6 +1372,8 @@ components:
                     description: e.g. 5.1
                     nullable: true
                     type: string
+                isExplicit:
+                    type: boolean
                 organization:
                     description: |
                         This can be filled by gstreamer's GST_TAG_ORGANIZATION. Mozart can also fill this with netradio station name like "P3" and TV content like "Netflix". This is needed so it's possible to show who the provider is for the playing audio track/content.
@@ -1279,6 +1404,10 @@ components:
                     type: string
                 sourceInternalId:
                     type: string
+                tags:
+                    items:
+                        type: string
+                    type: array
                 title:
                     type: string
                 totalDuration:
@@ -1349,6 +1478,17 @@ components:
                     - standby
                     - shutdown
                     - storage
+                    type: string
+            type: object
+        PowerlinkConnectionStateEnum:
+            description: Indicated the state of the connection with powerlink
+            nullable: true
+            properties:
+                value:
+                    enum:
+                    - disabled
+                    - enabledPendingData
+                    - enabledWithData
                     type: string
             type: object
         Preset:
@@ -2088,6 +2228,8 @@ components:
                 isMultiroomAvailable:
                     type: boolean
                 isPlayable:
+                    type: boolean
+                isSeekable:
                     type: boolean
                 name:
                     type: string
@@ -3347,6 +3489,40 @@ components:
                 eventType:
                     type: string
             type: object
+        WebSocketEventPowerlinkConnectionState:
+            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
+                -->\n\nUse the `get_powerlink_connection_state_notifications()` method\
+                \ in the Python package to get notifications of this type.\n\n<!--\
+                \ title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
+                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
+                \nasync def receive_powerlink_connection_state_notifications():\n\
+                \    \"\"\"React on WebSocketEventPowerlinkConnectionState events.\"\
+                \"\"\n\n    def powerlink_connection_state_notifications(notification:\
+                \ object):\n        \"\"\"PowerlinkConnectionState notification handler.\"\
+                \"\"\n        print(notification)\n\n    async with MozartClient(host=\"\
+                192.168.0.1\") as mozart_client:\n        mozart_client.get_powerlink_connection_state_notifications(powerlink_connection_state_notifications)\n\
+                \        await mozart_client.connect_notifications()\n\n        #\
+                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
+                \n            \nasyncio.run(receive_powerlink_connection_state_notifications())\n\
+                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
+                \ library to get notifications of this type.\n\n<!-- title: \"Python\
+                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
+                \nfrom aiohttp import ClientSession\n\n\nasync def receive_powerlink_connection_state_notifications():\n\
+                \    \"\"\"React on WebSocketEventPowerlinkConnectionState events.\"\
+                \"\"\n    async with ClientSession() as session:\n        async with\
+                \ session.ws_connect(url=\"ws://192.168.0.1:9339/\") as websocket:\n\
+                \            async for notification in websocket:\n              \
+                \  notification = notification.json()\n\n                if notification[\"\
+                eventType\"] == \"WebSocketEventPowerlinkConnectionState\":\n    \
+                \                print(notification[\"eventData\"])\n\n          \
+                \          \nasyncio.run(receive_powerlink_connection_state_notifications())\n\
+                ```\n<!-- type: tab-end -->\n"
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/PowerlinkConnectionStateEnum'
+                eventType:
+                    type: string
+            type: object
         WebSocketEventPucInstallRemoteIdStatus:
             description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
                 -->\n\nUse the `get_puc_install_remote_id_status_notifications()`\
@@ -3865,9 +4041,9 @@ info:
         - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)\n\
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
-        \n\nThis API documentation has been generated for version 3.4.1.8 of the Mozart\
-        \ platform and API generation version 3.4.1.8.8.\n\n## Python API\n\nThe Python\
-        \ package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
+        \n\nThis API documentation has been generated for version 4.1.1.116 of the\
+        \ Mozart platform and API generation version 4.1.1.116.0.\n\n## Python API\n\
+        \nThe Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
         \ version 7.8.0. On top of the generated API, a helper file, mozart_client.py,\
         \ has been made that makes the API more pythonic. We recommend using this.\n\
         \nAnother file, mozart_cli.py, has been made for using the Mozart API in a\
@@ -4404,7 +4580,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/BeolinkPeer'
+                                $ref: '#/components/schemas/BeolinkSelf'
                     description: successful operation
             summary: Get information about this device
             tags:
@@ -4481,6 +4657,64 @@ paths:
             required: false
             schema:
                 type: string
+    /api/v1/content/active:
+        get:
+            description: |-
+                Use the `get-active-content` method in the Python package with one of:
+                ```mozart_client
+                await mozart_client.get_active_content()
+                ```
+                ```mozart_api
+                await mozart_api.get_active_content()
+                ```
+                ```content_api
+                await content_api.get_active_content()
+                ```
+            operationId: get-active-content
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContentItemWithId'
+                    description: Successful request
+                '204':
+                    description: No content active
+            summary: Get currently active content
+            tags:
+            - Content
+            - mozart
+    /api/v1/output/beosound-shape/status:
+        get:
+            description: |-
+                Use the `get-beosound-shape-status` method in the Python package with one of:
+                ```mozart_client
+                await mozart_client.get_beosound_shape_status()
+                ```
+                ```mozart_api
+                await mozart_api.get_beosound_shape_status()
+                ```
+                ```output_api
+                await output_api.get_beosound_shape_status()
+                ```
+            operationId: get-beosound-shape-status
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BeoShapeStatus'
+                    description: status returned
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: beosound-shape not found/supported
+            summary: Get status
+            tags:
+            - Output
+            - mozart
     /api/v1/overlay/play:
         post:
             description: |-

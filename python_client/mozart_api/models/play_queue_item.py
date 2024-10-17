@@ -37,6 +37,11 @@ class PlayQueueItem(BaseModel):
 
     index: Optional[StrictInt] = None
     metadata: Optional[PlaybackContentMetadata] = None
+    playlist_sort_by: Optional[StrictStr] = Field(
+        default=None,
+        alias="playlistSortBy",
+        description="Option to choose the order that a playlist is sorted by",
+    )
     provider: PlayQueueItemType = Field(...)
     start_now_from_position: Optional[StrictInt] = Field(
         default=None,
@@ -51,11 +56,24 @@ class PlayQueueItem(BaseModel):
     __properties = [
         "index",
         "metadata",
+        "playlistSortBy",
         "provider",
         "startNowFromPosition",
         "type",
         "uri",
     ]
+
+    @validator("playlist_sort_by")
+    def playlist_sort_by_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in ("name", "artist", "date", "album"):
+            raise ValueError(
+                "must be one of enum values ('name', 'artist', 'date', 'album')"
+            )
+        return value
 
     @validator("type")
     def type_validate_enum(cls, value):
@@ -92,6 +110,11 @@ class PlayQueueItem(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of provider
         if self.provider:
             _dict["provider"] = self.provider.to_dict()
+        # set to None if playlist_sort_by (nullable) is None
+        # and __fields_set__ contains the field
+        if self.playlist_sort_by is None and "playlist_sort_by" in self.__fields_set__:
+            _dict["playlistSortBy"] = None
+
         # set to None if start_now_from_position (nullable) is None
         # and __fields_set__ contains the field
         if (
@@ -119,6 +142,7 @@ class PlayQueueItem(BaseModel):
                     if obj.get("metadata") is not None
                     else None
                 ),
+                "playlist_sort_by": obj.get("playlistSortBy"),
                 "provider": (
                     PlayQueueItemType.from_dict(obj.get("provider"))
                     if obj.get("provider") is not None

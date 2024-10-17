@@ -19,23 +19,24 @@ import re  # noqa: F401
 import json
 
 
+from typing import Optional
+
 try:
-    from pydantic.v1 import BaseModel, Field, StrictStr
+    from pydantic.v1 import BaseModel, StrictStr
 except ImportError:
-    from pydantic import BaseModel, Field, StrictStr
+    from pydantic import BaseModel, StrictStr
+
+from mozart_api.models.content_item import ContentItem
 
 
-class BeolinkPeer(BaseModel):
+class ContentItemWithId(BaseModel):
     """
-    BeolinkPeer
+    ContentItemWithId
     """
 
-    friendly_name: StrictStr = Field(default=..., alias="friendlyName")
-    ip_address: StrictStr = Field(
-        default=..., alias="ipAddress", description="IP address"
-    )
-    jid: StrictStr = Field(default=..., description="Beolink peer ID")
-    __properties = ["friendlyName", "ipAddress", "jid"]
+    content: Optional[ContentItem] = None
+    id: Optional[StrictStr] = None
+    __properties = ["content", "id"]
 
     class Config:
         """Pydantic configuration"""
@@ -52,29 +53,35 @@ class BeolinkPeer(BaseModel):
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a JSON string"""
+    def from_json(cls, json_str: str) -> ContentItemWithId:
+        """Create an instance of ContentItemWithId from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self):
         """Returns the dictionary representation of the model using alias"""
         _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+        # override the default output from pydantic by calling `to_dict()` of content
+        if self.content:
+            _dict["content"] = self.content.to_dict()
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a dict"""
+    def from_dict(cls, obj: dict) -> ContentItemWithId:
+        """Create an instance of ContentItemWithId from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return BeolinkPeer.parse_obj(obj)
+            return ContentItemWithId.parse_obj(obj)
 
-        _obj = BeolinkPeer.parse_obj(
+        _obj = ContentItemWithId.parse_obj(
             {
-                "friendly_name": obj.get("friendlyName"),
-                "ip_address": obj.get("ipAddress"),
-                "jid": obj.get("jid"),
+                "content": (
+                    ContentItem.from_dict(obj.get("content"))
+                    if obj.get("content") is not None
+                    else None
+                ),
+                "id": obj.get("id"),
             }
         )
         return _obj

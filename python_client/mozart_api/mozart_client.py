@@ -51,6 +51,7 @@ NOTIFICATION_TYPES = {
     "playback_source",
     "playback_state",
     "power_state",
+    "powerlink_connection_state",
     "puc_install_remote_id_status",
     "role",
     "room_compensation_current_measurement_event",
@@ -552,6 +553,14 @@ class MozartClient(MozartApi):
         """Callback for WebSocketEventPowerState notifications."""
         self._notification_callbacks["WebSocketEventPowerState"] = (
             on_power_state_notification
+        )
+
+    def get_powerlink_connection_state_notifications(
+        self, on_powerlink_connection_state_notification
+    ) -> None:
+        """Callback for WebSocketEventPowerlinkConnectionState notifications."""
+        self._notification_callbacks["WebSocketEventPowerlinkConnectionState"] = (
+            on_powerlink_connection_state_notification
         )
 
     def get_puc_install_remote_id_status_notifications(

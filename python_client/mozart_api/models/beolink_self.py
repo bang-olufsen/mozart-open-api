@@ -25,17 +25,14 @@ except ImportError:
     from pydantic import BaseModel, Field, StrictStr
 
 
-class BeolinkPeer(BaseModel):
+class BeolinkSelf(BaseModel):
     """
-    BeolinkPeer
+    BeolinkSelf
     """
 
     friendly_name: StrictStr = Field(default=..., alias="friendlyName")
-    ip_address: StrictStr = Field(
-        default=..., alias="ipAddress", description="IP address"
-    )
     jid: StrictStr = Field(default=..., description="Beolink peer ID")
-    __properties = ["friendlyName", "ipAddress", "jid"]
+    __properties = ["friendlyName", "jid"]
 
     class Config:
         """Pydantic configuration"""
@@ -52,8 +49,8 @@ class BeolinkPeer(BaseModel):
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a JSON string"""
+    def from_json(cls, json_str: str) -> BeolinkSelf:
+        """Create an instance of BeolinkSelf from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self):
@@ -62,19 +59,15 @@ class BeolinkPeer(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a dict"""
+    def from_dict(cls, obj: dict) -> BeolinkSelf:
+        """Create an instance of BeolinkSelf from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return BeolinkPeer.parse_obj(obj)
+            return BeolinkSelf.parse_obj(obj)
 
-        _obj = BeolinkPeer.parse_obj(
-            {
-                "friendly_name": obj.get("friendlyName"),
-                "ip_address": obj.get("ipAddress"),
-                "jid": obj.get("jid"),
-            }
+        _obj = BeolinkSelf.parse_obj(
+            {"friendly_name": obj.get("friendlyName"), "jid": obj.get("jid")}
         )
         return _obj

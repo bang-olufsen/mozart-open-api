@@ -44,6 +44,7 @@ class Source(BaseModel):
         default=None, alias="isMultiroomAvailable"
     )
     is_playable: Optional[StrictBool] = Field(default=None, alias="isPlayable")
+    is_seekable: Optional[StrictBool] = Field(default=None, alias="isSeekable")
     name: Optional[StrictStr] = None
     type: Optional[SourceTypeEnum] = None
     __properties = [
@@ -51,6 +52,7 @@ class Source(BaseModel):
         "isEnabled",
         "isMultiroomAvailable",
         "isPlayable",
+        "isSeekable",
         "name",
         "type",
     ]
@@ -97,6 +99,7 @@ class Source(BaseModel):
                 "is_enabled": obj.get("isEnabled"),
                 "is_multiroom_available": obj.get("isMultiroomAvailable"),
                 "is_playable": obj.get("isPlayable"),
+                "is_seekable": obj.get("isSeekable"),
                 "name": obj.get("name"),
                 "type": (
                     SourceTypeEnum.from_dict(obj.get("type"))

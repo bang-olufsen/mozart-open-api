@@ -5,6 +5,7 @@ from mozart_api.api.beolink_api import BeolinkApi
 from mozart_api.api.bluetooth_api import BluetoothApi
 from mozart_api.api.content_api import ContentApi
 from mozart_api.api.deezer_api import DeezerApi
+from mozart_api.api.output_api import OutputApi
 from mozart_api.api.overlay_api import OverlayApi
 from mozart_api.api.playback_api import PlaybackApi
 from mozart_api.api.power_api import PowerApi

@@ -19,23 +19,27 @@ import re  # noqa: F401
 import json
 
 
+from typing import List
+
 try:
-    from pydantic.v1 import BaseModel, Field, StrictStr
+    from pydantic.v1 import BaseModel, Field, StrictStr, conlist
 except ImportError:
-    from pydantic import BaseModel, Field, StrictStr
+    from pydantic import BaseModel, Field, StrictStr, conlist
 
 
-class BeolinkPeer(BaseModel):
+class BeoShapeStatusSoundProfile(BaseModel):
     """
-    BeolinkPeer
+    BeoShapeStatusSoundProfile
     """
 
-    friendly_name: StrictStr = Field(default=..., alias="friendlyName")
-    ip_address: StrictStr = Field(
-        default=..., alias="ipAddress", description="IP address"
+    active_directivity: StrictStr = Field(default=..., alias="activeDirectivity")
+    speaker_id: StrictStr = Field(default=..., alias="speakerId")
+    supported_directivity: conlist(StrictStr) = Field(
+        default=...,
+        alias="supportedDirectivity",
+        description="The supported Beosound Shape directivity. Extracted from the provided design fetched from the cloud.",
     )
-    jid: StrictStr = Field(default=..., description="Beolink peer ID")
-    __properties = ["friendlyName", "ipAddress", "jid"]
+    __properties = ["activeDirectivity", "speakerId", "supportedDirectivity"]
 
     class Config:
         """Pydantic configuration"""
@@ -52,8 +56,8 @@ class BeolinkPeer(BaseModel):
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a JSON string"""
+    def from_json(cls, json_str: str) -> BeoShapeStatusSoundProfile:
+        """Create an instance of BeoShapeStatusSoundProfile from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self):
@@ -62,19 +66,19 @@ class BeolinkPeer(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a dict"""
+    def from_dict(cls, obj: dict) -> BeoShapeStatusSoundProfile:
+        """Create an instance of BeoShapeStatusSoundProfile from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return BeolinkPeer.parse_obj(obj)
+            return BeoShapeStatusSoundProfile.parse_obj(obj)
 
-        _obj = BeolinkPeer.parse_obj(
+        _obj = BeoShapeStatusSoundProfile.parse_obj(
             {
-                "friendly_name": obj.get("friendlyName"),
-                "ip_address": obj.get("ipAddress"),
-                "jid": obj.get("jid"),
+                "active_directivity": obj.get("activeDirectivity"),
+                "speaker_id": obj.get("speakerId"),
+                "supported_directivity": obj.get("supportedDirectivity"),
             }
         )
         return _obj

@@ -16,6 +16,7 @@
 
 # import models into model package
 from mozart_api.models.action import Action
+from mozart_api.models.action_sound_profile import ActionSoundProfile
 from mozart_api.models.alarm_timer_event_data import AlarmTimerEventData
 from mozart_api.models.alarm_triggered_info import AlarmTriggeredInfo
 from mozart_api.models.ambience import Ambience
@@ -33,6 +34,8 @@ from mozart_api.models.bass_management_range import BassManagementRange
 from mozart_api.models.bass_range import BassRange
 from mozart_api.models.battery_state import BatteryState
 from mozart_api.models.beo_remote_button import BeoRemoteButton
+from mozart_api.models.beo_shape_status import BeoShapeStatus
+from mozart_api.models.beo_shape_status_sound_profile import BeoShapeStatusSoundProfile
 from mozart_api.models.beolink_available_listener import BeolinkAvailableListener
 from mozart_api.models.beolink_experience import BeolinkExperience
 from mozart_api.models.beolink_experiences_result import BeolinkExperiencesResult
@@ -41,6 +44,7 @@ from mozart_api.models.beolink_join_result import BeolinkJoinResult
 from mozart_api.models.beolink_leader import BeolinkLeader
 from mozart_api.models.beolink_listener import BeolinkListener
 from mozart_api.models.beolink_peer import BeolinkPeer
+from mozart_api.models.beolink_self import BeolinkSelf
 from mozart_api.models.bluetooth_device import BluetoothDevice
 from mozart_api.models.bluetooth_device_list import BluetoothDeviceList
 from mozart_api.models.button_event import ButtonEvent
@@ -48,6 +52,7 @@ from mozart_api.models.compression import Compression
 from mozart_api.models.compression_feature import CompressionFeature
 from mozart_api.models.compression_range import CompressionRange
 from mozart_api.models.content_item import ContentItem
+from mozart_api.models.content_item_with_id import ContentItemWithId
 from mozart_api.models.directivity import Directivity
 from mozart_api.models.directivity_feature import DirectivityFeature
 from mozart_api.models.directivity_range import DirectivityRange
@@ -94,6 +99,9 @@ from mozart_api.models.playback_progress import PlaybackProgress
 from mozart_api.models.playback_state import PlaybackState
 from mozart_api.models.power_link_trigger import PowerLinkTrigger
 from mozart_api.models.power_state_enum import PowerStateEnum
+from mozart_api.models.powerlink_connection_state_enum import (
+    PowerlinkConnectionStateEnum,
+)
 from mozart_api.models.preset import Preset
 from mozart_api.models.product_curtain_status import ProductCurtainStatus
 from mozart_api.models.product_friendly_name import ProductFriendlyName
@@ -232,6 +240,9 @@ from mozart_api.models.web_socket_event_playback_state import (
     WebSocketEventPlaybackState,
 )
 from mozart_api.models.web_socket_event_power_state import WebSocketEventPowerState
+from mozart_api.models.web_socket_event_powerlink_connection_state import (
+    WebSocketEventPowerlinkConnectionState,
+)
 from mozart_api.models.web_socket_event_puc_install_remote_id_status import (
     WebSocketEventPucInstallRemoteIdStatus,
 )

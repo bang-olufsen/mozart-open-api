@@ -22,9 +22,25 @@ import json
 from typing import List, Optional
 
 try:
-    from pydantic.v1 import BaseModel, Field, StrictInt, StrictStr, conlist, validator
+    from pydantic.v1 import (
+        BaseModel,
+        Field,
+        StrictBool,
+        StrictInt,
+        StrictStr,
+        conlist,
+        validator,
+    )
 except ImportError:
-    from pydantic import BaseModel, Field, StrictInt, StrictStr, conlist, validator
+    from pydantic import (
+        BaseModel,
+        Field,
+        StrictBool,
+        StrictInt,
+        StrictStr,
+        conlist,
+        validator,
+    )
 
 from mozart_api.models.art import Art
 from mozart_api.models.beolink_leader import BeolinkLeader
@@ -52,6 +68,7 @@ class PlaybackContentMetadata(BaseModel):
     input_channels: Optional[StrictStr] = Field(
         default=None, alias="inputChannels", description="e.g. 5.1"
     )
+    is_explicit: Optional[StrictBool] = Field(default=None, alias="isExplicit")
     organization: Optional[StrictStr] = Field(
         default=None,
         description='This can be filled by gstreamer\'s GST_TAG_ORGANIZATION. Mozart can also fill this with netradio station name like "P3" and TV content like "Netflix". This is needed so it\'s possible to show who the provider is for the playing audio track/content. ',
@@ -70,6 +87,7 @@ class PlaybackContentMetadata(BaseModel):
     source_internal_id: Optional[StrictStr] = Field(
         default=None, alias="sourceInternalId"
     )
+    tags: Optional[conlist(StrictStr)] = None
     title: Optional[StrictStr] = None
     total_duration: Optional[StrictInt] = Field(
         default=None,
@@ -94,6 +112,7 @@ class PlaybackContentMetadata(BaseModel):
         "id",
         "inputChannelProcessing",
         "inputChannels",
+        "isExplicit",
         "organization",
         "outputChannelProcessing",
         "outputChannels",
@@ -103,6 +122,7 @@ class PlaybackContentMetadata(BaseModel):
         "samplerate",
         "source",
         "sourceInternalId",
+        "tags",
         "title",
         "totalDuration",
         "totalDurationSeconds",
@@ -265,6 +285,7 @@ class PlaybackContentMetadata(BaseModel):
                 "id": obj.get("id"),
                 "input_channel_processing": obj.get("inputChannelProcessing"),
                 "input_channels": obj.get("inputChannels"),
+                "is_explicit": obj.get("isExplicit"),
                 "organization": obj.get("organization"),
                 "output_channel_processing": obj.get("outputChannelProcessing"),
                 "output_channels": obj.get("outputChannels"),
@@ -278,6 +299,7 @@ class PlaybackContentMetadata(BaseModel):
                 "samplerate": obj.get("samplerate"),
                 "source": obj.get("source"),
                 "source_internal_id": obj.get("sourceInternalId"),
+                "tags": obj.get("tags"),
                 "title": obj.get("title"),
                 "total_duration": obj.get("totalDuration"),
                 "total_duration_seconds": obj.get("totalDurationSeconds"),

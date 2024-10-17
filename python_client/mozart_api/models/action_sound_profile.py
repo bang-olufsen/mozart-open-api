@@ -19,23 +19,21 @@ import re  # noqa: F401
 import json
 
 
+from typing import Optional
+
 try:
-    from pydantic.v1 import BaseModel, Field, StrictStr
+    from pydantic.v1 import BaseModel, StrictStr
 except ImportError:
-    from pydantic import BaseModel, Field, StrictStr
+    from pydantic import BaseModel, StrictStr
 
 
-class BeolinkPeer(BaseModel):
+class ActionSoundProfile(BaseModel):
     """
-    BeolinkPeer
+    ActionSoundProfile
     """
 
-    friendly_name: StrictStr = Field(default=..., alias="friendlyName")
-    ip_address: StrictStr = Field(
-        default=..., alias="ipAddress", description="IP address"
-    )
-    jid: StrictStr = Field(default=..., description="Beolink peer ID")
-    __properties = ["friendlyName", "ipAddress", "jid"]
+    directivity: Optional[StrictStr] = None
+    __properties = ["directivity"]
 
     class Config:
         """Pydantic configuration"""
@@ -52,29 +50,28 @@ class BeolinkPeer(BaseModel):
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a JSON string"""
+    def from_json(cls, json_str: str) -> ActionSoundProfile:
+        """Create an instance of ActionSoundProfile from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self):
         """Returns the dictionary representation of the model using alias"""
         _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+        # set to None if directivity (nullable) is None
+        # and __fields_set__ contains the field
+        if self.directivity is None and "directivity" in self.__fields_set__:
+            _dict["directivity"] = None
+
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a dict"""
+    def from_dict(cls, obj: dict) -> ActionSoundProfile:
+        """Create an instance of ActionSoundProfile from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return BeolinkPeer.parse_obj(obj)
+            return ActionSoundProfile.parse_obj(obj)
 
-        _obj = BeolinkPeer.parse_obj(
-            {
-                "friendly_name": obj.get("friendlyName"),
-                "ip_address": obj.get("ipAddress"),
-                "jid": obj.get("jid"),
-            }
-        )
+        _obj = ActionSoundProfile.parse_obj({"directivity": obj.get("directivity")})
         return _obj

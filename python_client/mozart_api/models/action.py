@@ -19,13 +19,14 @@ import re  # noqa: F401
 import json
 
 
-from typing import Optional, Union
+from typing import Dict, Optional, Union
 
 try:
     from pydantic.v1 import BaseModel, Field, StrictStr, confloat, conint, validator
 except ImportError:
     from pydantic import BaseModel, Field, StrictStr, confloat, conint, validator
 
+from mozart_api.models.action_sound_profile import ActionSoundProfile
 from mozart_api.models.play_queue_item import PlayQueueItem
 from mozart_api.models.play_queue_settings import PlayQueueSettings
 from mozart_api.models.source_type_enum import SourceTypeEnum
@@ -34,7 +35,7 @@ from mozart_api.models.stand_position import StandPosition
 
 class Action(BaseModel):
     """
-    An action object. Examples:  RadioAction: ```json {   \"type\": \"radio\",   \"radioStationId\": \"8779112938791514\" } ```  ToneAction: ```json {   \"type\": \"tone\",   \"toneName\": \"alarm_2\" } ```  SourcePresetAction: ```json {   \"type\": \"sourcePreset\",   \"source\": {     \"value\": \"spotify\"   },   \"presetKey\": \"Preset3\" } ```  DeezerFlowAction: ```json {   \"type\": \"deezerFlow\",   \"deezerUserId\": \"1234\" } ```  ActivateSourceAction: ```json {   \"type\": \"activateSource\",   \"source\": {     \"value\": \"spotify\"   } } ```  PlayQueueAction: ```   {     \"type\": \"playQueue\",     \"queueItem\": {       \"provider\": {         \"value\": \"deezer\"       },       \"startNowFromPosition\": 0,       \"type\": \"playlist\",       \"uri\": \"playlist:8074581462\"     },     \"queueSettings\": {       \"consume\": false,       \"repeat\": \"none\",       \"shuffle\": false     }   } ```  StandbyAction: ```json {   \"type\": \"standby\" } ```  AllStandbyAction: ```json {   \"type\": \"allStandby\" } ```  TouchToJoinAction: ```json {   \"type\": \"touchToJoin\" } ```  ButtonShortPressAction: ```json {   \"type\": \"buttonShortPress\",   \"buttonName\": \"preset1\" } ```  FallbackAction: ```json {   \"type\": \"fallback\" } ```  VolumeAction: ```json {   \"type\": \"volume\",   \"volumeLevel\": 25 } ```  StopAction: ```json {   \"type\": \"stop\",   \"stopDuration\": 1300 } ```  TriggerContentAction: ```json {   \"contentId\": \"tv://netflix\",   \"type\": \"triggerContent\" } ```  SpeakerGroupAction: ```json {   \"type\": \"speakerGroup\",   \"speakerGroupId\": \"00112233-4455-6677-8899-aabbccddeeff\" } ```  ListeningModeAction: ```json {   \"type\": \"listeningMode\",   \"listeningModeId\": 1234 } ```  StandAction: ```json {   \"type\": \"stand\",   \"standPosition\": {     \"angle\": 7.5   } } ```  GainAction: ```json {   \"type\": \"sourceGain\",   \"source\": {     \"value\": \"spotify\"   },   \"gainDb\": 1.0 } ```   # noqa: E501
+    An action object. Examples:  RadioAction: ```json {   \"type\": \"radio\",   \"radioStationId\": \"8779112938791514\" } ```  ToneAction: ```json {   \"type\": \"tone\",   \"toneName\": \"alarm_2\" } ```  SourcePresetAction: ```json {   \"type\": \"sourcePreset\",   \"source\": {     \"value\": \"spotify\"   },   \"presetKey\": \"Preset3\" } ```  DeezerFlowAction: ```json {   \"type\": \"deezerFlow\",   \"deezerUserId\": \"1234\" } ```  ActivateSourceAction: ```json {   \"type\": \"activateSource\",   \"source\": {     \"value\": \"spotify\"   } } ```  PlayQueueAction: ```   {     \"type\": \"playQueue\",     \"queueItem\": {       \"provider\": {         \"value\": \"deezer\"       },       \"startNowFromPosition\": 0,       \"type\": \"playlist\",       \"uri\": \"playlist:8074581462\"     },     \"queueSettings\": {       \"consume\": false,       \"repeat\": \"none\",       \"shuffle\": false     }   } ```  StandbyAction: ```json {   \"type\": \"standby\" } ```  AllStandbyAction: ```json {   \"type\": \"allStandby\" } ```  TouchToJoinAction: ```json {   \"type\": \"touchToJoin\" } ```  ButtonShortPressAction: ```json {   \"type\": \"buttonShortPress\",   \"buttonName\": \"preset1\" } ```  FallbackAction: ```json {   \"type\": \"fallback\" } ```  VolumeAction: ```json {   \"type\": \"volume\",   \"volumeLevel\": 25 } ```  StopAction: ```json {   \"type\": \"stop\",   \"stopDuration\": 1300 } ```  TriggerContentAction: ```json {   \"contentId\": \"tv://netflix\",   \"type\": \"triggerContent\" } ```  SpeakerGroupAction: ```json {   \"type\": \"speakerGroup\",   \"speakerGroupId\": \"00112233-4455-6677-8899-aabbccddeeff\" } ```  ListeningModeAction: ```json {   \"type\": \"listeningMode\",   \"listeningModeId\": 1234 } ```  StandAction: ```json {   \"type\": \"stand\",   \"standPosition\": {     \"angle\": 7.5   } } ```  GainAction: ```json {   \"type\": \"sourceGain\",   \"source\": {     \"value\": \"spotify\"   },   \"gainDb\": 1.0 } ```  SoundProfileAction: ```json {   \"type\": \"soundProfile\",   \"soundProfile\": {     \"speakerId1\": {       \"directivity\": \"wide\"     },     \"speakerId2\": {       \"directivity\": \"narrow\"     }   } } ```   # noqa: E501
     """
 
     button_name: Optional[StrictStr] = Field(
@@ -72,6 +73,11 @@ class Action(BaseModel):
         alias="radioStationId",
         description="Id of RadioStation only used for 'type=radio'",
     )
+    sound_profile: Optional[Dict[str, ActionSoundProfile]] = Field(
+        default=None,
+        alias="soundProfile",
+        description="Only used for 'type=soundProfile'",
+    )
     source: Optional[SourceTypeEnum] = None
     speaker_group_id: Optional[StrictStr] = Field(default=None, alias="speakerGroupId")
     stand_position: Optional[StandPosition] = Field(default=None, alias="standPosition")
@@ -101,6 +107,7 @@ class Action(BaseModel):
         "queueItem",
         "queueSettings",
         "radioStationId",
+        "soundProfile",
         "source",
         "speakerGroupId",
         "standPosition",
@@ -154,9 +161,10 @@ class Action(BaseModel):
             "listeningMode",
             "stand",
             "sourceGain",
+            "soundProfile",
         ):
             raise ValueError(
-                "must be one of enum values ('standby', 'tone', 'radio', 'sourcePreset', 'deezerFlow', 'activateSource', 'playQueue', 'buttonShortPress', 'allStandby', 'touchToJoin', 'fallback', 'volume', 'stop', 'triggerContent', 'speakerGroup', 'listeningMode', 'stand', 'sourceGain')"
+                "must be one of enum values ('standby', 'tone', 'radio', 'sourcePreset', 'deezerFlow', 'activateSource', 'playQueue', 'buttonShortPress', 'allStandby', 'touchToJoin', 'fallback', 'volume', 'stop', 'triggerContent', 'speakerGroup', 'listeningMode', 'stand', 'sourceGain', 'soundProfile')"
             )
         return value
 
@@ -188,6 +196,13 @@ class Action(BaseModel):
         # override the default output from pydantic by calling `to_dict()` of queue_settings
         if self.queue_settings:
             _dict["queueSettings"] = self.queue_settings.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of each value in sound_profile (dict)
+        _field_dict = {}
+        if self.sound_profile:
+            for _key in self.sound_profile:
+                if self.sound_profile[_key]:
+                    _field_dict[_key] = self.sound_profile[_key].to_dict()
+            _dict["soundProfile"] = _field_dict
         # override the default output from pydantic by calling `to_dict()` of source
         if self.source:
             _dict["source"] = self.source.to_dict()
@@ -218,6 +233,11 @@ class Action(BaseModel):
         # and __fields_set__ contains the field
         if self.radio_station_id is None and "radio_station_id" in self.__fields_set__:
             _dict["radioStationId"] = None
+
+        # set to None if sound_profile (nullable) is None
+        # and __fields_set__ contains the field
+        if self.sound_profile is None and "sound_profile" in self.__fields_set__:
+            _dict["soundProfile"] = None
 
         # set to None if stop_duration (nullable) is None
         # and __fields_set__ contains the field
@@ -264,6 +284,14 @@ class Action(BaseModel):
                     else None
                 ),
                 "radio_station_id": obj.get("radioStationId"),
+                "sound_profile": (
+                    dict(
+                        (_k, ActionSoundProfile.from_dict(_v))
+                        for _k, _v in obj.get("soundProfile").items()
+                    )
+                    if obj.get("soundProfile") is not None
+                    else None
+                ),
                 "source": (
                     SourceTypeEnum.from_dict(obj.get("source"))
                     if obj.get("source") is not None

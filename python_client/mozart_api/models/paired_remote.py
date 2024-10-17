@@ -18,13 +18,29 @@ import pprint
 import re  # noqa: F401
 import json
 
-
+from datetime import datetime
 from typing import List, Optional
 
 try:
-    from pydantic.v1 import BaseModel, Field, StrictStr, conint, conlist, validator
+    from pydantic.v1 import (
+        BaseModel,
+        Field,
+        StrictBool,
+        StrictStr,
+        conint,
+        conlist,
+        validator,
+    )
 except ImportError:
-    from pydantic import BaseModel, Field, StrictStr, conint, conlist, validator
+    from pydantic import (
+        BaseModel,
+        Field,
+        StrictBool,
+        StrictStr,
+        conint,
+        conlist,
+        validator,
+    )
 
 
 class PairedRemote(BaseModel):
@@ -37,7 +53,9 @@ class PairedRemote(BaseModel):
     battery_level: Optional[conint(strict=True, le=100, ge=0)] = Field(
         default=None, alias="batteryLevel"
     )
+    connected: Optional[StrictBool] = None
     db_version: Optional[StrictStr] = Field(default=None, alias="dbVersion")
+    last_seen: Optional[datetime] = Field(default=None, alias="lastSeen")
     name: StrictStr = Field(...)
     serial_number: Optional[StrictStr] = Field(default=None, alias="serialNumber")
     updated: Optional[conlist(StrictStr)] = None
@@ -45,7 +63,9 @@ class PairedRemote(BaseModel):
         "address",
         "appVersion",
         "batteryLevel",
+        "connected",
         "dbVersion",
+        "lastSeen",
         "name",
         "serialNumber",
         "updated",
@@ -100,7 +120,9 @@ class PairedRemote(BaseModel):
                 "address": obj.get("address"),
                 "app_version": obj.get("appVersion"),
                 "battery_level": obj.get("batteryLevel"),
+                "connected": obj.get("connected"),
                 "db_version": obj.get("dbVersion"),
+                "last_seen": obj.get("lastSeen"),
                 "name": obj.get("name"),
                 "serial_number": obj.get("serialNumber"),
                 "updated": obj.get("updated"),

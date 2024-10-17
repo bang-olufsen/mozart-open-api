@@ -19,23 +19,33 @@ import re  # noqa: F401
 import json
 
 
+from typing import Optional
+
 try:
-    from pydantic.v1 import BaseModel, Field, StrictStr
+    from pydantic.v1 import BaseModel, StrictStr, validator
 except ImportError:
-    from pydantic import BaseModel, Field, StrictStr
+    from pydantic import BaseModel, StrictStr, validator
 
 
-class BeolinkPeer(BaseModel):
+class PowerlinkConnectionStateEnum(BaseModel):
     """
-    BeolinkPeer
+    Indicated the state of the connection with powerlink  # noqa: E501
     """
 
-    friendly_name: StrictStr = Field(default=..., alias="friendlyName")
-    ip_address: StrictStr = Field(
-        default=..., alias="ipAddress", description="IP address"
-    )
-    jid: StrictStr = Field(default=..., description="Beolink peer ID")
-    __properties = ["friendlyName", "ipAddress", "jid"]
+    value: Optional[StrictStr] = None
+    __properties = ["value"]
+
+    @validator("value")
+    def value_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in ("disabled", "enabledPendingData", "enabledWithData"):
+            raise ValueError(
+                "must be one of enum values ('disabled', 'enabledPendingData', 'enabledWithData')"
+            )
+        return value
 
     class Config:
         """Pydantic configuration"""
@@ -52,8 +62,8 @@ class BeolinkPeer(BaseModel):
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a JSON string"""
+    def from_json(cls, json_str: str) -> PowerlinkConnectionStateEnum:
+        """Create an instance of PowerlinkConnectionStateEnum from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self):
@@ -62,19 +72,13 @@ class BeolinkPeer(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a dict"""
+    def from_dict(cls, obj: dict) -> PowerlinkConnectionStateEnum:
+        """Create an instance of PowerlinkConnectionStateEnum from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return BeolinkPeer.parse_obj(obj)
+            return PowerlinkConnectionStateEnum.parse_obj(obj)
 
-        _obj = BeolinkPeer.parse_obj(
-            {
-                "friendly_name": obj.get("friendlyName"),
-                "ip_address": obj.get("ipAddress"),
-                "jid": obj.get("jid"),
-            }
-        )
+        _obj = PowerlinkConnectionStateEnum.parse_obj({"value": obj.get("value")})
         return _obj
