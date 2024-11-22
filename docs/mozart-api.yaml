@@ -2888,7 +2888,7 @@ components:
                 async def receive_active_hdmi_input_signal_notifications():
                     """React on WebSocketEventActiveHdmiInputSignal events."""
 
-                    def active_hdmi_input_signal_notifications(notification: WebSocketEventActiveHdmiInputSignal):
+                    def active_hdmi_input_signal_notifications(notification: HdmiInput):
                         """ActiveHdmiInputSignal notification handler."""
                         print(notification)
 
@@ -2964,7 +2964,7 @@ components:
                 async def receive_active_listening_mode_notifications():
                     """React on WebSocketEventActiveListeningMode events."""
 
-                    def active_listening_mode_notifications(notification: WebSocketEventActiveListeningMode):
+                    def active_listening_mode_notifications(notification: ListeningModeProps):
                         """ActiveListeningMode notification handler."""
                         print(notification)
 
@@ -3040,7 +3040,7 @@ components:
                 async def receive_active_speaker_group_notifications():
                     """React on WebSocketEventActiveSpeakerGroup events."""
 
-                    def active_speaker_group_notifications(notification: WebSocketEventActiveSpeakerGroup):
+                    def active_speaker_group_notifications(notification: SpeakerGroupOverview):
                         """ActiveSpeakerGroup notification handler."""
                         print(notification)
 
@@ -3116,7 +3116,7 @@ components:
                 async def receive_alarm_timer_notifications():
                     """React on WebSocketEventAlarmTimer events."""
 
-                    def alarm_timer_notifications(notification: WebSocketEventAlarmTimer):
+                    def alarm_timer_notifications(notification: AlarmTimerEventData):
                         """AlarmTimer notification handler."""
                         print(notification)
 
@@ -3192,7 +3192,7 @@ components:
                 async def receive_alarm_triggered_notifications():
                     """React on WebSocketEventAlarmTriggered events."""
 
-                    def alarm_triggered_notifications(notification: WebSocketEventAlarmTriggered):
+                    def alarm_triggered_notifications(notification: AlarmTriggeredInfo):
                         """AlarmTriggered notification handler."""
                         print(notification)
 
@@ -3268,7 +3268,7 @@ components:
                 async def receive_battery_notifications():
                     """React on WebSocketEventBattery events."""
 
-                    def battery_notifications(notification: WebSocketEventBattery):
+                    def battery_notifications(notification: BatteryState):
                         """Battery notification handler."""
                         print(notification)
 
@@ -3344,7 +3344,7 @@ components:
                 async def receive_beo_remote_button_notifications():
                     """React on WebSocketEventBeoRemoteButton events."""
 
-                    def beo_remote_button_notifications(notification: WebSocketEventBeoRemoteButton):
+                    def beo_remote_button_notifications(notification: BeoRemoteButton):
                         """BeoRemoteButton notification handler."""
                         print(notification)
 
@@ -3420,7 +3420,7 @@ components:
                 async def receive_beolink_experiences_result_notifications():
                     """React on WebSocketEventBeolinkExperiencesResult events."""
 
-                    def beolink_experiences_result_notifications(notification: WebSocketEventBeolinkExperiencesResult):
+                    def beolink_experiences_result_notifications(notification: BeolinkExperiencesResult):
                         """BeolinkExperiencesResult notification handler."""
                         print(notification)
 
@@ -3499,7 +3499,7 @@ components:
                 async def receive_beolink_join_result_notifications():
                     """React on WebSocketEventBeolinkJoinResult events."""
 
-                    def beolink_join_result_notifications(notification: WebSocketEventBeolinkJoinResult):
+                    def beolink_join_result_notifications(notification: BeolinkJoinResult):
                         """BeolinkJoinResult notification handler."""
                         print(notification)
 
@@ -3578,7 +3578,7 @@ components:
                 async def receive_button_notifications():
                     """React on WebSocketEventButton events."""
 
-                    def button_notifications(notification: WebSocketEventButton):
+                    def button_notifications(notification: ButtonEvent):
                         """Button notification handler."""
                         print(notification)
 
@@ -3654,7 +3654,7 @@ components:
                 async def receive_curtains_notifications():
                     """React on WebSocketEventCurtains events."""
 
-                    def curtains_notifications(notification: WebSocketEventCurtains):
+                    def curtains_notifications(notification: ProductCurtainStatus):
                         """Curtains notification handler."""
                         print(notification)
 
@@ -3730,7 +3730,7 @@ components:
                 async def receive_hdmi_video_format_signal_notifications():
                     """React on WebSocketEventHdmiVideoFormatSignal events."""
 
-                    def hdmi_video_format_signal_notifications(notification: WebSocketEventHdmiVideoFormatSignal):
+                    def hdmi_video_format_signal_notifications(notification: HdmiVideoFormat):
                         """HdmiVideoFormatSignal notification handler."""
                         print(notification)
 
@@ -3807,7 +3807,7 @@ components:
                 async def receive_notification_notifications():
                     """React on WebSocketEventNotification events."""
 
-                    def notification_notifications(notification: WebSocketEventNotification):
+                    def notification_notifications(notification: WebsocketNotificationTag):
                         """Notification notification handler."""
                         print(notification)
 
@@ -3883,7 +3883,7 @@ components:
                 async def receive_playback_error_notifications():
                     """React on WebSocketEventPlaybackError events."""
 
-                    def playback_error_notifications(notification: WebSocketEventPlaybackError):
+                    def playback_error_notifications(notification: PlaybackError):
                         """PlaybackError notification handler."""
                         print(notification)
 
@@ -3959,7 +3959,7 @@ components:
                 async def receive_playback_metadata_notifications():
                     """React on WebSocketEventPlaybackMetadata events."""
 
-                    def playback_metadata_notifications(notification: WebSocketEventPlaybackMetadata):
+                    def playback_metadata_notifications(notification: PlaybackContentMetadata):
                         """PlaybackMetadata notification handler."""
                         print(notification)
 
@@ -4035,7 +4035,7 @@ components:
                 async def receive_playback_progress_notifications():
                     """React on WebSocketEventPlaybackProgress events."""
 
-                    def playback_progress_notifications(notification: WebSocketEventPlaybackProgress):
+                    def playback_progress_notifications(notification: PlaybackProgress):
                         """PlaybackProgress notification handler."""
                         print(notification)
 
@@ -4111,7 +4111,7 @@ components:
                 async def receive_playback_source_notifications():
                     """React on WebSocketEventPlaybackSource events."""
 
-                    def playback_source_notifications(notification: WebSocketEventPlaybackSource):
+                    def playback_source_notifications(notification: Source):
                         """PlaybackSource notification handler."""
                         print(notification)
 
@@ -4187,7 +4187,7 @@ components:
                 async def receive_playback_state_notifications():
                     """React on WebSocketEventPlaybackState events."""
 
-                    def playback_state_notifications(notification: WebSocketEventPlaybackState):
+                    def playback_state_notifications(notification: RenderingState):
                         """PlaybackState notification handler."""
                         print(notification)
 
@@ -4263,7 +4263,7 @@ components:
                 async def receive_power_state_notifications():
                     """React on WebSocketEventPowerState events."""
 
-                    def power_state_notifications(notification: WebSocketEventPowerState):
+                    def power_state_notifications(notification: PowerStateEnum):
                         """PowerState notification handler."""
                         print(notification)
 
@@ -4339,7 +4339,7 @@ components:
                 async def receive_powerlink_connection_state_notifications():
                     """React on WebSocketEventPowerlinkConnectionState events."""
 
-                    def powerlink_connection_state_notifications(notification: WebSocketEventPowerlinkConnectionState):
+                    def powerlink_connection_state_notifications(notification: PowerlinkConnectionStateEnum):
                         """PowerlinkConnectionState notification handler."""
                         print(notification)
 
@@ -4415,7 +4415,7 @@ components:
                 async def receive_puc_install_remote_id_status_notifications():
                     """React on WebSocketEventPucInstallRemoteIdStatus events."""
 
-                    def puc_install_remote_id_status_notifications(notification: WebSocketEventPucInstallRemoteIdStatus):
+                    def puc_install_remote_id_status_notifications(notification: InstallRecordIdState):
                         """PucInstallRemoteIdStatus notification handler."""
                         print(notification)
 
@@ -4491,7 +4491,7 @@ components:
                 async def receive_role_notifications():
                     """React on WebSocketEventRole events."""
 
-                    def role_notifications(notification: WebSocketEventRole):
+                    def role_notifications(notification: SpeakerRoleEnum):
                         """Role notification handler."""
                         print(notification)
 
@@ -4570,7 +4570,7 @@ components:
                 async def receive_room_compensation_current_measurement_event_notifications():
                     """React on WebSocketEventRoomCompensationCurrentMeasurementEvent events."""
 
-                    def room_compensation_current_measurement_event_notifications(notification: WebSocketEventRoomCompensationCurrentMeasurementEvent):
+                    def room_compensation_current_measurement_event_notifications(notification: RoomCompensationCurrentMeasurement):
                         """RoomCompensationCurrentMeasurementEvent notification handler."""
                         print(notification)
 
@@ -4646,7 +4646,7 @@ components:
                 async def receive_room_compensation_state_notifications():
                     """React on WebSocketEventRoomCompensationState events."""
 
-                    def room_compensation_state_notifications(notification: WebSocketEventRoomCompensationState):
+                    def room_compensation_state_notifications(notification: RoomCompensationStateValue):
                         """RoomCompensationState notification handler."""
                         print(notification)
 
@@ -4722,7 +4722,7 @@ components:
                 async def receive_software_update_state_notifications():
                     """React on WebSocketEventSoftwareUpdateState events."""
 
-                    def software_update_state_notifications(notification: WebSocketEventSoftwareUpdateState):
+                    def software_update_state_notifications(notification: SoftwareUpdateState):
                         """SoftwareUpdateState notification handler."""
                         print(notification)
 
@@ -4798,7 +4798,7 @@ components:
                 async def receive_sound_settings_notifications():
                     """React on WebSocketEventSoundSettings events."""
 
-                    def sound_settings_notifications(notification: WebSocketEventSoundSettings):
+                    def sound_settings_notifications(notification: SoundSettings):
                         """SoundSettings notification handler."""
                         print(notification)
 
@@ -4874,7 +4874,7 @@ components:
                 async def receive_source_change_notifications():
                     """React on WebSocketEventSourceChange events."""
 
-                    def source_change_notifications(notification: WebSocketEventSourceChange):
+                    def source_change_notifications(notification: Source):
                         """SourceChange notification handler."""
                         print(notification)
 
@@ -4950,7 +4950,7 @@ components:
                 async def receive_speaker_group_changed_notifications():
                     """React on WebSocketEventSpeakerGroupChanged events."""
 
-                    def speaker_group_changed_notifications(notification: WebSocketEventSpeakerGroupChanged):
+                    def speaker_group_changed_notifications(notification: str):
                         """SpeakerGroupChanged notification handler."""
                         print(notification)
 
@@ -5026,7 +5026,7 @@ components:
                 async def receive_speaker_link_status_changed_notifications():
                     """React on WebSocketEventSpeakerLinkStatusChanged events."""
 
-                    def speaker_link_status_changed_notifications(notification: WebSocketEventSpeakerLinkStatusChanged):
+                    def speaker_link_status_changed_notifications(notification: SpeakerLinkStatus):
                         """SpeakerLinkStatusChanged notification handler."""
                         print(notification)
 
@@ -5102,7 +5102,7 @@ components:
                 async def receive_stand_connected_notifications():
                     """React on WebSocketEventStandConnected events."""
 
-                    def stand_connected_notifications(notification: WebSocketEventStandConnected):
+                    def stand_connected_notifications(notification: StandConnected):
                         """StandConnected notification handler."""
                         print(notification)
 
@@ -5178,7 +5178,7 @@ components:
                 async def receive_stand_position_notifications():
                     """React on WebSocketEventStandPosition events."""
 
-                    def stand_position_notifications(notification: WebSocketEventStandPosition):
+                    def stand_position_notifications(notification: StandPosition):
                         """StandPosition notification handler."""
                         print(notification)
 
@@ -5254,7 +5254,7 @@ components:
                 async def receive_tv_info_notifications():
                     """React on WebSocketEventTvInfo events."""
 
-                    def tv_info_notifications(notification: WebSocketEventTvInfo):
+                    def tv_info_notifications(notification: TvInfoEventData):
                         """TvInfo notification handler."""
                         print(notification)
 
@@ -5330,7 +5330,7 @@ components:
                 async def receive_volume_notifications():
                     """React on WebSocketEventVolume events."""
 
-                    def volume_notifications(notification: WebSocketEventVolume):
+                    def volume_notifications(notification: VolumeState):
                         """Volume notification handler."""
                         print(notification)
 
@@ -5407,7 +5407,7 @@ components:
                 async def receive_wisa_out_state_notifications():
                     """React on WebSocketEventWisaOutState events."""
 
-                    def wisa_out_state_notifications(notification: WebSocketEventWisaOutState):
+                    def wisa_out_state_notifications(notification: WisaOutState):
                         """WisaOutState notification handler."""
                         print(notification)
 
@@ -5520,7 +5520,7 @@ info:
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
         \n\nThis API documentation has been generated for version 4.1.1.116 of the\
-        \ Mozart platform and API generation version 4.1.1.116.1.\n\n## Python API\n\
+        \ Mozart platform and API generation version 4.1.1.116.2.\n\n## Python API\n\
         \nThe Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
         \ version 7.10.0. On top of the generated API, a helper file, mozart_client.py,\
         \ has been made that makes the API more pythonic. We recommend using this.\n\
