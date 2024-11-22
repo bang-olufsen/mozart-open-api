@@ -6,7 +6,7 @@ import json
 import logging
 import re
 from collections import defaultdict
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
 from datetime import time
@@ -261,11 +261,11 @@ class MozartClient(MozartApi):
         self._on_connection_lost: Callable | None = None
         self._on_connection: Callable | None = None
 
-        self._on_all_notifications: Callable[[WebSocketEventType, str], None] | None = (
-            None
-        )
+        self._on_all_notifications: (
+            Callable[[WebSocketEventType, str], Awaitable[None] | None] | None
+        ) = None
         self._on_all_notifications_raw: (
-            Callable[[BaseWebSocketResponse], None] | None
+            Callable[[BaseWebSocketResponse], Awaitable[None] | None] | None
         ) = None
 
         self._notification_callbacks: dict[str, Callable | None] = defaultdict()
@@ -550,14 +550,18 @@ class MozartClient(MozartApi):
 
     def get_all_notifications(
         self,
-        on_all_notifications: Callable[[WebSocketEventType, str], None],
+        on_all_notifications: Callable[
+            [WebSocketEventType, str], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for all notifications."""
         self._on_all_notifications = on_all_notifications
 
     def get_all_notifications_raw(
         self,
-        on_all_notifications_raw: Callable[[BaseWebSocketResponse], None],
+        on_all_notifications_raw: Callable[
+            [BaseWebSocketResponse], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for all notifications as dict."""
         self._on_all_notifications_raw = on_all_notifications_raw
@@ -565,7 +569,10 @@ class MozartClient(MozartApi):
     # Generated section start
 
     def get_active_hdmi_input_signal_notifications(
-        self, on_active_hdmi_input_signal_notification: Callable[[HdmiInput], None]
+        self,
+        on_active_hdmi_input_signal_notification: Callable[
+            [HdmiInput], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventActiveHdmiInputSignal notifications."""
         self._notification_callbacks["WebSocketEventActiveHdmiInputSignal"] = (
@@ -574,7 +581,9 @@ class MozartClient(MozartApi):
 
     def get_active_listening_mode_notifications(
         self,
-        on_active_listening_mode_notification: Callable[[ListeningModeProps], None],
+        on_active_listening_mode_notification: Callable[
+            [ListeningModeProps], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventActiveListeningMode notifications."""
         self._notification_callbacks["WebSocketEventActiveListeningMode"] = (
@@ -583,7 +592,9 @@ class MozartClient(MozartApi):
 
     def get_active_speaker_group_notifications(
         self,
-        on_active_speaker_group_notification: Callable[[SpeakerGroupOverview], None],
+        on_active_speaker_group_notification: Callable[
+            [SpeakerGroupOverview], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventActiveSpeakerGroup notifications."""
         self._notification_callbacks["WebSocketEventActiveSpeakerGroup"] = (
@@ -591,7 +602,10 @@ class MozartClient(MozartApi):
         )
 
     def get_alarm_timer_notifications(
-        self, on_alarm_timer_notification: Callable[[AlarmTimerEventData], None]
+        self,
+        on_alarm_timer_notification: Callable[
+            [AlarmTimerEventData], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventAlarmTimer notifications."""
         self._notification_callbacks["WebSocketEventAlarmTimer"] = (
@@ -599,7 +613,10 @@ class MozartClient(MozartApi):
         )
 
     def get_alarm_triggered_notifications(
-        self, on_alarm_triggered_notification: Callable[[AlarmTriggeredInfo], None]
+        self,
+        on_alarm_triggered_notification: Callable[
+            [AlarmTriggeredInfo], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventAlarmTriggered notifications."""
         self._notification_callbacks["WebSocketEventAlarmTriggered"] = (
@@ -607,13 +624,16 @@ class MozartClient(MozartApi):
         )
 
     def get_battery_notifications(
-        self, on_battery_notification: Callable[[BatteryState], None]
+        self, on_battery_notification: Callable[[BatteryState], Awaitable[None] | None]
     ) -> None:
         """Set callback for WebSocketEventBattery notifications."""
         self._notification_callbacks["WebSocketEventBattery"] = on_battery_notification
 
     def get_beo_remote_button_notifications(
-        self, on_beo_remote_button_notification: Callable[[BeoRemoteButton], None]
+        self,
+        on_beo_remote_button_notification: Callable[
+            [BeoRemoteButton], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventBeoRemoteButton notifications."""
         self._notification_callbacks["WebSocketEventBeoRemoteButton"] = (
@@ -623,7 +643,7 @@ class MozartClient(MozartApi):
     def get_beolink_experiences_result_notifications(
         self,
         on_beolink_experiences_result_notification: Callable[
-            [BeolinkExperiencesResult], None
+            [BeolinkExperiencesResult], Awaitable[None] | None
         ],
     ) -> None:
         """Set callback for WebSocketEventBeolinkExperiencesResult notifications."""
@@ -632,7 +652,10 @@ class MozartClient(MozartApi):
         )
 
     def get_beolink_join_result_notifications(
-        self, on_beolink_join_result_notification: Callable[[BeolinkJoinResult], None]
+        self,
+        on_beolink_join_result_notification: Callable[
+            [BeolinkJoinResult], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventBeolinkJoinResult notifications."""
         self._notification_callbacks["WebSocketEventBeolinkJoinResult"] = (
@@ -640,13 +663,16 @@ class MozartClient(MozartApi):
         )
 
     def get_button_notifications(
-        self, on_button_notification: Callable[[ButtonEvent], None]
+        self, on_button_notification: Callable[[ButtonEvent], Awaitable[None] | None]
     ) -> None:
         """Set callback for WebSocketEventButton notifications."""
         self._notification_callbacks["WebSocketEventButton"] = on_button_notification
 
     def get_curtains_notifications(
-        self, on_curtains_notification: Callable[[ProductCurtainStatus], None]
+        self,
+        on_curtains_notification: Callable[
+            [ProductCurtainStatus], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventCurtains notifications."""
         self._notification_callbacks["WebSocketEventCurtains"] = (
@@ -655,7 +681,9 @@ class MozartClient(MozartApi):
 
     def get_hdmi_video_format_signal_notifications(
         self,
-        on_hdmi_video_format_signal_notification: Callable[[HdmiVideoFormat], None],
+        on_hdmi_video_format_signal_notification: Callable[
+            [HdmiVideoFormat], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventHdmiVideoFormatSignal notifications."""
         self._notification_callbacks["WebSocketEventHdmiVideoFormatSignal"] = (
@@ -663,7 +691,10 @@ class MozartClient(MozartApi):
         )
 
     def get_notification_notifications(
-        self, on_notification_notification: Callable[[WebsocketNotificationTag], None]
+        self,
+        on_notification_notification: Callable[
+            [WebsocketNotificationTag], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventNotification notifications."""
         self._notification_callbacks["WebSocketEventNotification"] = (
@@ -671,7 +702,10 @@ class MozartClient(MozartApi):
         )
 
     def get_playback_error_notifications(
-        self, on_playback_error_notification: Callable[[PlaybackError], None]
+        self,
+        on_playback_error_notification: Callable[
+            [PlaybackError], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventPlaybackError notifications."""
         self._notification_callbacks["WebSocketEventPlaybackError"] = (
@@ -680,7 +714,9 @@ class MozartClient(MozartApi):
 
     def get_playback_metadata_notifications(
         self,
-        on_playback_metadata_notification: Callable[[PlaybackContentMetadata], None],
+        on_playback_metadata_notification: Callable[
+            [PlaybackContentMetadata], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventPlaybackMetadata notifications."""
         self._notification_callbacks["WebSocketEventPlaybackMetadata"] = (
@@ -688,7 +724,10 @@ class MozartClient(MozartApi):
         )
 
     def get_playback_progress_notifications(
-        self, on_playback_progress_notification: Callable[[PlaybackProgress], None]
+        self,
+        on_playback_progress_notification: Callable[
+            [PlaybackProgress], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventPlaybackProgress notifications."""
         self._notification_callbacks["WebSocketEventPlaybackProgress"] = (
@@ -696,7 +735,8 @@ class MozartClient(MozartApi):
         )
 
     def get_playback_source_notifications(
-        self, on_playback_source_notification: Callable[[Source], None]
+        self,
+        on_playback_source_notification: Callable[[Source], Awaitable[None] | None],
     ) -> None:
         """Set callback for WebSocketEventPlaybackSource notifications."""
         self._notification_callbacks["WebSocketEventPlaybackSource"] = (
@@ -704,7 +744,10 @@ class MozartClient(MozartApi):
         )
 
     def get_playback_state_notifications(
-        self, on_playback_state_notification: Callable[[RenderingState], None]
+        self,
+        on_playback_state_notification: Callable[
+            [RenderingState], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventPlaybackState notifications."""
         self._notification_callbacks["WebSocketEventPlaybackState"] = (
@@ -712,7 +755,8 @@ class MozartClient(MozartApi):
         )
 
     def get_power_state_notifications(
-        self, on_power_state_notification: Callable[[PowerStateEnum], None]
+        self,
+        on_power_state_notification: Callable[[PowerStateEnum], Awaitable[None] | None],
     ) -> None:
         """Set callback for WebSocketEventPowerState notifications."""
         self._notification_callbacks["WebSocketEventPowerState"] = (
@@ -722,7 +766,7 @@ class MozartClient(MozartApi):
     def get_powerlink_connection_state_notifications(
         self,
         on_powerlink_connection_state_notification: Callable[
-            [PowerlinkConnectionStateEnum], None
+            [PowerlinkConnectionStateEnum], Awaitable[None] | None
         ],
     ) -> None:
         """Set callback for WebSocketEventPowerlinkConnectionState notifications."""
@@ -733,7 +777,7 @@ class MozartClient(MozartApi):
     def get_puc_install_remote_id_status_notifications(
         self,
         on_puc_install_remote_id_status_notification: Callable[
-            [InstallRecordIdState], None
+            [InstallRecordIdState], Awaitable[None] | None
         ],
     ) -> None:
         """Set callback for WebSocketEventPucInstallRemoteIdStatus notifications."""
@@ -742,7 +786,7 @@ class MozartClient(MozartApi):
         )
 
     def get_role_notifications(
-        self, on_role_notification: Callable[[SpeakerRoleEnum], None]
+        self, on_role_notification: Callable[[SpeakerRoleEnum], Awaitable[None] | None]
     ) -> None:
         """Set callback for WebSocketEventRole notifications."""
         self._notification_callbacks["WebSocketEventRole"] = on_role_notification
@@ -750,7 +794,7 @@ class MozartClient(MozartApi):
     def get_room_compensation_current_measurement_event_notifications(
         self,
         on_room_compensation_current_measurement_event_notification: Callable[
-            [RoomCompensationCurrentMeasurement], None
+            [RoomCompensationCurrentMeasurement], Awaitable[None] | None
         ],
     ) -> None:
         """Set callback for WebSocketEventRoomCompensationCurrentMeasurementEvent notifications."""
@@ -761,7 +805,7 @@ class MozartClient(MozartApi):
     def get_room_compensation_state_notifications(
         self,
         on_room_compensation_state_notification: Callable[
-            [RoomCompensationStateValue], None
+            [RoomCompensationStateValue], Awaitable[None] | None
         ],
     ) -> None:
         """Set callback for WebSocketEventRoomCompensationState notifications."""
@@ -771,7 +815,9 @@ class MozartClient(MozartApi):
 
     def get_software_update_state_notifications(
         self,
-        on_software_update_state_notification: Callable[[SoftwareUpdateState], None],
+        on_software_update_state_notification: Callable[
+            [SoftwareUpdateState], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventSoftwareUpdateState notifications."""
         self._notification_callbacks["WebSocketEventSoftwareUpdateState"] = (
@@ -779,7 +825,10 @@ class MozartClient(MozartApi):
         )
 
     def get_sound_settings_notifications(
-        self, on_sound_settings_notification: Callable[[SoundSettings], None]
+        self,
+        on_sound_settings_notification: Callable[
+            [SoundSettings], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventSoundSettings notifications."""
         self._notification_callbacks["WebSocketEventSoundSettings"] = (
@@ -787,7 +836,7 @@ class MozartClient(MozartApi):
         )
 
     def get_source_change_notifications(
-        self, on_source_change_notification: Callable[[Source], None]
+        self, on_source_change_notification: Callable[[Source], Awaitable[None] | None]
     ) -> None:
         """Set callback for WebSocketEventSourceChange notifications."""
         self._notification_callbacks["WebSocketEventSourceChange"] = (
@@ -795,7 +844,8 @@ class MozartClient(MozartApi):
         )
 
     def get_speaker_group_changed_notifications(
-        self, on_speaker_group_changed_notification: Callable[[str], None]
+        self,
+        on_speaker_group_changed_notification: Callable[[str], Awaitable[None] | None],
     ) -> None:
         """Set callback for WebSocketEventSpeakerGroupChanged notifications."""
         self._notification_callbacks["WebSocketEventSpeakerGroupChanged"] = (
@@ -805,7 +855,7 @@ class MozartClient(MozartApi):
     def get_speaker_link_status_changed_notifications(
         self,
         on_speaker_link_status_changed_notification: Callable[
-            [SpeakerLinkStatus], None
+            [SpeakerLinkStatus], Awaitable[None] | None
         ],
     ) -> None:
         """Set callback for WebSocketEventSpeakerLinkStatusChanged notifications."""
@@ -814,7 +864,10 @@ class MozartClient(MozartApi):
         )
 
     def get_stand_connected_notifications(
-        self, on_stand_connected_notification: Callable[[StandConnected], None]
+        self,
+        on_stand_connected_notification: Callable[
+            [StandConnected], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventStandConnected notifications."""
         self._notification_callbacks["WebSocketEventStandConnected"] = (
@@ -822,7 +875,10 @@ class MozartClient(MozartApi):
         )
 
     def get_stand_position_notifications(
-        self, on_stand_position_notification: Callable[[StandPosition], None]
+        self,
+        on_stand_position_notification: Callable[
+            [StandPosition], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventStandPosition notifications."""
         self._notification_callbacks["WebSocketEventStandPosition"] = (
@@ -830,19 +886,23 @@ class MozartClient(MozartApi):
         )
 
     def get_tv_info_notifications(
-        self, on_tv_info_notification: Callable[[TvInfoEventData], None]
+        self,
+        on_tv_info_notification: Callable[[TvInfoEventData], Awaitable[None] | None],
     ) -> None:
         """Set callback for WebSocketEventTvInfo notifications."""
         self._notification_callbacks["WebSocketEventTvInfo"] = on_tv_info_notification
 
     def get_volume_notifications(
-        self, on_volume_notification: Callable[[VolumeState], None]
+        self, on_volume_notification: Callable[[VolumeState], Awaitable[None] | None]
     ) -> None:
         """Set callback for WebSocketEventVolume notifications."""
         self._notification_callbacks["WebSocketEventVolume"] = on_volume_notification
 
     def get_wisa_out_state_notifications(
-        self, on_wisa_out_state_notification: Callable[[WisaOutState], None]
+        self,
+        on_wisa_out_state_notification: Callable[
+            [WisaOutState], Awaitable[None] | None
+        ],
     ) -> None:
         """Set callback for WebSocketEventWisaOutState notifications."""
         self._notification_callbacks["WebSocketEventWisaOutState"] = (
