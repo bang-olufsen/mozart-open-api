@@ -2866,33 +2866,75 @@ components:
                     $ref: '#/components/schemas/VolumeMute'
             type: object
         WebSocketEventActiveHdmiInputSignal:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_active_hdmi_input_signal_notifications()` method\
-                \ in the Python package to get notifications of this type.\n\n<!--\
-                \ title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_active_hdmi_input_signal_notifications():\n  \
-                \  \"\"\"React on WebSocketEventActiveHdmiInputSignal events.\"\"\"\
-                \n\n    def active_hdmi_input_signal_notifications(notification: object):\n\
-                \        \"\"\"ActiveHdmiInputSignal notification handler.\"\"\"\n\
-                \        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_active_hdmi_input_signal_notifications(active_hdmi_input_signal_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_active_hdmi_input_signal_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_active_hdmi_input_signal_notifications():\n\
-                \    \"\"\"React on WebSocketEventActiveHdmiInputSignal events.\"\"\
-                \"\n    async with ClientSession() as session:\n        async with\
-                \ session.ws_connect(url=\"ws://192.168.0.1:9339/\") as websocket:\n\
-                \            async for notification in websocket:\n              \
-                \  notification = notification.json()\n\n                if notification[\"\
-                eventType\"] == \"WebSocketEventActiveHdmiInputSignal\":\n       \
-                \             print(notification[\"eventData\"])\n\n             \
-                \       \nasyncio.run(receive_active_hdmi_input_signal_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_active_hdmi_input_signal_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_active_hdmi_input_signal_notifications():
+                    """React on WebSocketEventActiveHdmiInputSignal events."""
+
+                    def active_hdmi_input_signal_notifications(notification: WebSocketEventActiveHdmiInputSignal):
+                        """ActiveHdmiInputSignal notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_active_hdmi_input_signal_notifications(active_hdmi_input_signal_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_active_hdmi_input_signal_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_active_hdmi_input_signal_notifications():
+                    """React on WebSocketEventActiveHdmiInputSignal events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventActiveHdmiInputSignal":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_active_hdmi_input_signal_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/HdmiInput'
@@ -2900,32 +2942,75 @@ components:
                     type: string
             type: object
         WebSocketEventActiveListeningMode:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_active_listening_mode_notifications()` method\
-                \ in the Python package to get notifications of this type.\n\n<!--\
-                \ title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_active_listening_mode_notifications():\n    \"\
-                \"\"React on WebSocketEventActiveListeningMode events.\"\"\"\n\n \
-                \   def active_listening_mode_notifications(notification: object):\n\
-                \        \"\"\"ActiveListeningMode notification handler.\"\"\"\n \
-                \       print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_active_listening_mode_notifications(active_listening_mode_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_active_listening_mode_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_active_listening_mode_notifications():\n\
-                \    \"\"\"React on WebSocketEventActiveListeningMode events.\"\"\"\
-                \n    async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventActiveListeningMode\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_active_listening_mode_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_active_listening_mode_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_active_listening_mode_notifications():
+                    """React on WebSocketEventActiveListeningMode events."""
+
+                    def active_listening_mode_notifications(notification: WebSocketEventActiveListeningMode):
+                        """ActiveListeningMode notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_active_listening_mode_notifications(active_listening_mode_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_active_listening_mode_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_active_listening_mode_notifications():
+                    """React on WebSocketEventActiveListeningMode events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventActiveListeningMode":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_active_listening_mode_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/ListeningModeProps'
@@ -2933,32 +3018,75 @@ components:
                     type: string
             type: object
         WebSocketEventActiveSpeakerGroup:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_active_speaker_group_notifications()` method in\
-                \ the Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_active_speaker_group_notifications():\n    \"\"\"\
-                React on WebSocketEventActiveSpeakerGroup events.\"\"\"\n\n    def\
-                \ active_speaker_group_notifications(notification: object):\n    \
-                \    \"\"\"ActiveSpeakerGroup notification handler.\"\"\"\n      \
-                \  print(notification)\n\n    async with MozartClient(host=\"192.168.0.1\"\
-                ) as mozart_client:\n        mozart_client.get_active_speaker_group_notifications(active_speaker_group_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_active_speaker_group_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_active_speaker_group_notifications():\n\
-                \    \"\"\"React on WebSocketEventActiveSpeakerGroup events.\"\"\"\
-                \n    async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventActiveSpeakerGroup\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_active_speaker_group_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_active_speaker_group_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_active_speaker_group_notifications():
+                    """React on WebSocketEventActiveSpeakerGroup events."""
+
+                    def active_speaker_group_notifications(notification: WebSocketEventActiveSpeakerGroup):
+                        """ActiveSpeakerGroup notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_active_speaker_group_notifications(active_speaker_group_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_active_speaker_group_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_active_speaker_group_notifications():
+                    """React on WebSocketEventActiveSpeakerGroup events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventActiveSpeakerGroup":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_active_speaker_group_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SpeakerGroupOverview'
@@ -2966,31 +3094,75 @@ components:
                     type: string
             type: object
         WebSocketEventAlarmTimer:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_alarm_timer_notifications()` method in the Python\
-                \ package to get notifications of this type.\n\n<!-- title: \"Python\
-                \ API usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom mozart_api.mozart_client import MozartClient\n\nasync def receive_alarm_timer_notifications():\n\
-                \    \"\"\"React on WebSocketEventAlarmTimer events.\"\"\"\n\n   \
-                \ def alarm_timer_notifications(notification: object):\n        \"\
-                \"\"AlarmTimer notification handler.\"\"\"\n        print(notification)\n\
-                \n    async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_alarm_timer_notifications(alarm_timer_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_alarm_timer_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_alarm_timer_notifications():\n\
-                \    \"\"\"React on WebSocketEventAlarmTimer events.\"\"\"\n    async\
-                \ with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventAlarmTimer\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_alarm_timer_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_alarm_timer_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_alarm_timer_notifications():
+                    """React on WebSocketEventAlarmTimer events."""
+
+                    def alarm_timer_notifications(notification: WebSocketEventAlarmTimer):
+                        """AlarmTimer notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_alarm_timer_notifications(alarm_timer_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_alarm_timer_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_alarm_timer_notifications():
+                    """React on WebSocketEventAlarmTimer events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventAlarmTimer":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_alarm_timer_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/AlarmTimerEventData'
@@ -2998,31 +3170,75 @@ components:
                     type: string
             type: object
         WebSocketEventAlarmTriggered:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_alarm_triggered_notifications()` method in the\
-                \ Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_alarm_triggered_notifications():\n    \"\"\"React\
-                \ on WebSocketEventAlarmTriggered events.\"\"\"\n\n    def alarm_triggered_notifications(notification:\
-                \ object):\n        \"\"\"AlarmTriggered notification handler.\"\"\
-                \"\n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_alarm_triggered_notifications(alarm_triggered_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_alarm_triggered_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_alarm_triggered_notifications():\n\
-                \    \"\"\"React on WebSocketEventAlarmTriggered events.\"\"\"\n \
-                \   async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventAlarmTriggered\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_alarm_triggered_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_alarm_triggered_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_alarm_triggered_notifications():
+                    """React on WebSocketEventAlarmTriggered events."""
+
+                    def alarm_triggered_notifications(notification: WebSocketEventAlarmTriggered):
+                        """AlarmTriggered notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_alarm_triggered_notifications(alarm_triggered_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_alarm_triggered_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_alarm_triggered_notifications():
+                    """React on WebSocketEventAlarmTriggered events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventAlarmTriggered":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_alarm_triggered_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/AlarmTriggeredInfo'
@@ -3030,31 +3246,75 @@ components:
                     type: string
             type: object
         WebSocketEventBattery:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_battery_notifications()` method in the Python\
-                \ package to get notifications of this type.\n\n<!-- title: \"Python\
-                \ API usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom mozart_api.mozart_client import MozartClient\n\nasync def receive_battery_notifications():\n\
-                \    \"\"\"React on WebSocketEventBattery events.\"\"\"\n\n    def\
-                \ battery_notifications(notification: object):\n        \"\"\"Battery\
-                \ notification handler.\"\"\"\n        print(notification)\n\n   \
-                \ async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_battery_notifications(battery_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_battery_notifications())\n```\n\
-                \n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP library\
-                \ to get notifications of this type.\n\n<!-- title: \"Python AIOHTTP\
-                \ usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\n\
-                from aiohttp import ClientSession\n\n\nasync def receive_battery_notifications():\n\
-                \    \"\"\"React on WebSocketEventBattery events.\"\"\"\n    async\
-                \ with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventBattery\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_battery_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_battery_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_battery_notifications():
+                    """React on WebSocketEventBattery events."""
+
+                    def battery_notifications(notification: WebSocketEventBattery):
+                        """Battery notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_battery_notifications(battery_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_battery_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_battery_notifications():
+                    """React on WebSocketEventBattery events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventBattery":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_battery_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/BatteryState'
@@ -3062,31 +3322,75 @@ components:
                     type: string
             type: object
         WebSocketEventBeoRemoteButton:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_beo_remote_button_notifications()` method in the\
-                \ Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_beo_remote_button_notifications():\n    \"\"\"React\
-                \ on WebSocketEventBeoRemoteButton events.\"\"\"\n\n    def beo_remote_button_notifications(notification:\
-                \ object):\n        \"\"\"BeoRemoteButton notification handler.\"\"\
-                \"\n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_beo_remote_button_notifications(beo_remote_button_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_beo_remote_button_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_beo_remote_button_notifications():\n\
-                \    \"\"\"React on WebSocketEventBeoRemoteButton events.\"\"\"\n\
-                \    async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/remoteControl\") as websocket:\n           \
-                \ async for notification in websocket:\n                notification\
-                \ = notification.json()\n\n                if notification[\"eventType\"\
-                ] == \"WebSocketEventBeoRemoteButton\":\n                    print(notification[\"\
-                eventData\"])\n\n                    \nasyncio.run(receive_beo_remote_button_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_beo_remote_button_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_beo_remote_button_notifications():
+                    """React on WebSocketEventBeoRemoteButton events."""
+
+                    def beo_remote_button_notifications(notification: WebSocketEventBeoRemoteButton):
+                        """BeoRemoteButton notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_beo_remote_button_notifications(beo_remote_button_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_beo_remote_button_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_beo_remote_button_notifications():
+                    """React on WebSocketEventBeoRemoteButton events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/remoteControl") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventBeoRemoteButton":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_beo_remote_button_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/BeoRemoteButton'
@@ -3094,33 +3398,75 @@ components:
                     type: string
             type: object
         WebSocketEventBeolinkExperiencesResult:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_beolink_experiences_result_notifications()` method\
-                \ in the Python package to get notifications of this type.\n\n<!--\
-                \ title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_beolink_experiences_result_notifications():\n\
-                \    \"\"\"React on WebSocketEventBeolinkExperiencesResult events.\"\
-                \"\"\n\n    def beolink_experiences_result_notifications(notification:\
-                \ object):\n        \"\"\"BeolinkExperiencesResult notification handler.\"\
-                \"\"\n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_beolink_experiences_result_notifications(beolink_experiences_result_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_beolink_experiences_result_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_beolink_experiences_result_notifications():\n\
-                \    \"\"\"React on WebSocketEventBeolinkExperiencesResult events.\"\
-                \"\"\n    async with ClientSession() as session:\n        async with\
-                \ session.ws_connect(url=\"ws://192.168.0.1:9339/\") as websocket:\n\
-                \            async for notification in websocket:\n              \
-                \  notification = notification.json()\n\n                if notification[\"\
-                eventType\"] == \"WebSocketEventBeolinkExperiencesResult\":\n    \
-                \                print(notification[\"eventData\"])\n\n          \
-                \          \nasyncio.run(receive_beolink_experiences_result_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_beolink_experiences_result_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_beolink_experiences_result_notifications():
+                    """React on WebSocketEventBeolinkExperiencesResult events."""
+
+                    def beolink_experiences_result_notifications(notification: WebSocketEventBeolinkExperiencesResult):
+                        """BeolinkExperiencesResult notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_beolink_experiences_result_notifications(beolink_experiences_result_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_beolink_experiences_result_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_beolink_experiences_result_notifications():
+                    """React on WebSocketEventBeolinkExperiencesResult events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventBeolinkExperiencesResult":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_beolink_experiences_result_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/BeolinkExperiencesResult'
@@ -3131,32 +3477,75 @@ components:
             - eventData
             type: object
         WebSocketEventBeolinkJoinResult:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_beolink_join_result_notifications()` method in\
-                \ the Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_beolink_join_result_notifications():\n    \"\"\"\
-                React on WebSocketEventBeolinkJoinResult events.\"\"\"\n\n    def\
-                \ beolink_join_result_notifications(notification: object):\n     \
-                \   \"\"\"BeolinkJoinResult notification handler.\"\"\"\n        print(notification)\n\
-                \n    async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_beolink_join_result_notifications(beolink_join_result_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_beolink_join_result_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_beolink_join_result_notifications():\n\
-                \    \"\"\"React on WebSocketEventBeolinkJoinResult events.\"\"\"\n\
-                \    async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventBeolinkJoinResult\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_beolink_join_result_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_beolink_join_result_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_beolink_join_result_notifications():
+                    """React on WebSocketEventBeolinkJoinResult events."""
+
+                    def beolink_join_result_notifications(notification: WebSocketEventBeolinkJoinResult):
+                        """BeolinkJoinResult notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_beolink_join_result_notifications(beolink_join_result_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_beolink_join_result_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_beolink_join_result_notifications():
+                    """React on WebSocketEventBeolinkJoinResult events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventBeolinkJoinResult":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_beolink_join_result_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/BeolinkJoinResult'
@@ -3167,31 +3556,75 @@ components:
             - eventData
             type: object
         WebSocketEventButton:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_button_notifications()` method in the Python package\
-                \ to get notifications of this type.\n\n<!-- title: \"Python API usage\"\
-                \nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\nfrom mozart_api.mozart_client\
-                \ import MozartClient\n\nasync def receive_button_notifications():\n\
-                \    \"\"\"React on WebSocketEventButton events.\"\"\"\n\n    def\
-                \ button_notifications(notification: object):\n        \"\"\"Button\
-                \ notification handler.\"\"\"\n        print(notification)\n\n   \
-                \ async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_button_notifications(button_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_button_notifications())\n```\n\
-                \n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP library\
-                \ to get notifications of this type.\n\n<!-- title: \"Python AIOHTTP\
-                \ usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\n\
-                from aiohttp import ClientSession\n\n\nasync def receive_button_notifications():\n\
-                \    \"\"\"React on WebSocketEventButton events.\"\"\"\n    async\
-                \ with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventButton\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_button_notifications())\n```\n\
-                <!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_button_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_button_notifications():
+                    """React on WebSocketEventButton events."""
+
+                    def button_notifications(notification: WebSocketEventButton):
+                        """Button notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_button_notifications(button_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_button_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_button_notifications():
+                    """React on WebSocketEventButton events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventButton":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_button_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/ButtonEvent'
@@ -3199,31 +3632,75 @@ components:
                     type: string
             type: object
         WebSocketEventCurtains:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_curtains_notifications()` method in the Python\
-                \ package to get notifications of this type.\n\n<!-- title: \"Python\
-                \ API usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom mozart_api.mozart_client import MozartClient\n\nasync def receive_curtains_notifications():\n\
-                \    \"\"\"React on WebSocketEventCurtains events.\"\"\"\n\n    def\
-                \ curtains_notifications(notification: object):\n        \"\"\"Curtains\
-                \ notification handler.\"\"\"\n        print(notification)\n\n   \
-                \ async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_curtains_notifications(curtains_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_curtains_notifications())\n```\n\
-                \n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP library\
-                \ to get notifications of this type.\n\n<!-- title: \"Python AIOHTTP\
-                \ usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\n\
-                from aiohttp import ClientSession\n\n\nasync def receive_curtains_notifications():\n\
-                \    \"\"\"React on WebSocketEventCurtains events.\"\"\"\n    async\
-                \ with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventCurtains\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_curtains_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_curtains_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_curtains_notifications():
+                    """React on WebSocketEventCurtains events."""
+
+                    def curtains_notifications(notification: WebSocketEventCurtains):
+                        """Curtains notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_curtains_notifications(curtains_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_curtains_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_curtains_notifications():
+                    """React on WebSocketEventCurtains events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventCurtains":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_curtains_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/ProductCurtainStatus'
@@ -3231,33 +3708,75 @@ components:
                     type: string
             type: object
         WebSocketEventHdmiVideoFormatSignal:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_hdmi_video_format_signal_notifications()` method\
-                \ in the Python package to get notifications of this type.\n\n<!--\
-                \ title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_hdmi_video_format_signal_notifications():\n  \
-                \  \"\"\"React on WebSocketEventHdmiVideoFormatSignal events.\"\"\"\
-                \n\n    def hdmi_video_format_signal_notifications(notification: object):\n\
-                \        \"\"\"HdmiVideoFormatSignal notification handler.\"\"\"\n\
-                \        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_hdmi_video_format_signal_notifications(hdmi_video_format_signal_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_hdmi_video_format_signal_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_hdmi_video_format_signal_notifications():\n\
-                \    \"\"\"React on WebSocketEventHdmiVideoFormatSignal events.\"\"\
-                \"\n    async with ClientSession() as session:\n        async with\
-                \ session.ws_connect(url=\"ws://192.168.0.1:9339/\") as websocket:\n\
-                \            async for notification in websocket:\n              \
-                \  notification = notification.json()\n\n                if notification[\"\
-                eventType\"] == \"WebSocketEventHdmiVideoFormatSignal\":\n       \
-                \             print(notification[\"eventData\"])\n\n             \
-                \       \nasyncio.run(receive_hdmi_video_format_signal_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_hdmi_video_format_signal_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_hdmi_video_format_signal_notifications():
+                    """React on WebSocketEventHdmiVideoFormatSignal events."""
+
+                    def hdmi_video_format_signal_notifications(notification: WebSocketEventHdmiVideoFormatSignal):
+                        """HdmiVideoFormatSignal notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_hdmi_video_format_signal_notifications(hdmi_video_format_signal_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_hdmi_video_format_signal_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_hdmi_video_format_signal_notifications():
+                    """React on WebSocketEventHdmiVideoFormatSignal events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventHdmiVideoFormatSignal":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_hdmi_video_format_signal_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/HdmiVideoFormat'
@@ -3265,32 +3784,76 @@ components:
                     type: string
             type: object
         WebSocketEventNotification:
-            description: "This telegram is used to send a tagged notification.\nUsage\
-                \ examples:\n\n<!--\ntype: tab\ntitle: Python API\n-->\n\nUse the\
-                \ `get_notification_notifications()` method in the Python package\
-                \ to get notifications of this type.\n\n<!-- title: \"Python API usage\"\
-                \nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\nfrom mozart_api.mozart_client\
-                \ import MozartClient\n\nasync def receive_notification_notifications():\n\
-                \    \"\"\"React on WebSocketEventNotification events.\"\"\"\n\n \
-                \   def notification_notifications(notification: object):\n      \
-                \  \"\"\"Notification notification handler.\"\"\"\n        print(notification)\n\
-                \n    async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_notification_notifications(notification_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_notification_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_notification_notifications():\n\
-                \    \"\"\"React on WebSocketEventNotification events.\"\"\"\n   \
-                \ async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventNotification\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_notification_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                This telegram is used to send a tagged notification.
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_notification_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_notification_notifications():
+                    """React on WebSocketEventNotification events."""
+
+                    def notification_notifications(notification: WebSocketEventNotification):
+                        """Notification notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_notification_notifications(notification_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_notification_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_notification_notifications():
+                    """React on WebSocketEventNotification events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventNotification":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_notification_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/WebsocketNotificationTag'
@@ -3298,31 +3861,75 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackError:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_playback_error_notifications()` method in the\
-                \ Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_playback_error_notifications():\n    \"\"\"React\
-                \ on WebSocketEventPlaybackError events.\"\"\"\n\n    def playback_error_notifications(notification:\
-                \ object):\n        \"\"\"PlaybackError notification handler.\"\"\"\
-                \n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_playback_error_notifications(playback_error_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_playback_error_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_playback_error_notifications():\n\
-                \    \"\"\"React on WebSocketEventPlaybackError events.\"\"\"\n  \
-                \  async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventPlaybackError\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_playback_error_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_playback_error_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_playback_error_notifications():
+                    """React on WebSocketEventPlaybackError events."""
+
+                    def playback_error_notifications(notification: WebSocketEventPlaybackError):
+                        """PlaybackError notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_playback_error_notifications(playback_error_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_playback_error_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_playback_error_notifications():
+                    """React on WebSocketEventPlaybackError events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventPlaybackError":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_playback_error_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/PlaybackError'
@@ -3330,31 +3937,75 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackMetadata:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_playback_metadata_notifications()` method in the\
-                \ Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_playback_metadata_notifications():\n    \"\"\"React\
-                \ on WebSocketEventPlaybackMetadata events.\"\"\"\n\n    def playback_metadata_notifications(notification:\
-                \ object):\n        \"\"\"PlaybackMetadata notification handler.\"\
-                \"\"\n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_playback_metadata_notifications(playback_metadata_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_playback_metadata_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_playback_metadata_notifications():\n\
-                \    \"\"\"React on WebSocketEventPlaybackMetadata events.\"\"\"\n\
-                \    async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventPlaybackMetadata\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_playback_metadata_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_playback_metadata_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_playback_metadata_notifications():
+                    """React on WebSocketEventPlaybackMetadata events."""
+
+                    def playback_metadata_notifications(notification: WebSocketEventPlaybackMetadata):
+                        """PlaybackMetadata notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_playback_metadata_notifications(playback_metadata_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_playback_metadata_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_playback_metadata_notifications():
+                    """React on WebSocketEventPlaybackMetadata events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventPlaybackMetadata":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_playback_metadata_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/PlaybackContentMetadata'
@@ -3362,31 +4013,75 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackProgress:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_playback_progress_notifications()` method in the\
-                \ Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_playback_progress_notifications():\n    \"\"\"React\
-                \ on WebSocketEventPlaybackProgress events.\"\"\"\n\n    def playback_progress_notifications(notification:\
-                \ object):\n        \"\"\"PlaybackProgress notification handler.\"\
-                \"\"\n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_playback_progress_notifications(playback_progress_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_playback_progress_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_playback_progress_notifications():\n\
-                \    \"\"\"React on WebSocketEventPlaybackProgress events.\"\"\"\n\
-                \    async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventPlaybackProgress\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_playback_progress_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_playback_progress_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_playback_progress_notifications():
+                    """React on WebSocketEventPlaybackProgress events."""
+
+                    def playback_progress_notifications(notification: WebSocketEventPlaybackProgress):
+                        """PlaybackProgress notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_playback_progress_notifications(playback_progress_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_playback_progress_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_playback_progress_notifications():
+                    """React on WebSocketEventPlaybackProgress events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventPlaybackProgress":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_playback_progress_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/PlaybackProgress'
@@ -3394,31 +4089,75 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackSource:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_playback_source_notifications()` method in the\
-                \ Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_playback_source_notifications():\n    \"\"\"React\
-                \ on WebSocketEventPlaybackSource events.\"\"\"\n\n    def playback_source_notifications(notification:\
-                \ object):\n        \"\"\"PlaybackSource notification handler.\"\"\
-                \"\n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_playback_source_notifications(playback_source_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_playback_source_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_playback_source_notifications():\n\
-                \    \"\"\"React on WebSocketEventPlaybackSource events.\"\"\"\n \
-                \   async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventPlaybackSource\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_playback_source_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_playback_source_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_playback_source_notifications():
+                    """React on WebSocketEventPlaybackSource events."""
+
+                    def playback_source_notifications(notification: WebSocketEventPlaybackSource):
+                        """PlaybackSource notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_playback_source_notifications(playback_source_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_playback_source_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_playback_source_notifications():
+                    """React on WebSocketEventPlaybackSource events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventPlaybackSource":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_playback_source_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/Source'
@@ -3426,31 +4165,75 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackState:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_playback_state_notifications()` method in the\
-                \ Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_playback_state_notifications():\n    \"\"\"React\
-                \ on WebSocketEventPlaybackState events.\"\"\"\n\n    def playback_state_notifications(notification:\
-                \ object):\n        \"\"\"PlaybackState notification handler.\"\"\"\
-                \n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_playback_state_notifications(playback_state_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_playback_state_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_playback_state_notifications():\n\
-                \    \"\"\"React on WebSocketEventPlaybackState events.\"\"\"\n  \
-                \  async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventPlaybackState\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_playback_state_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_playback_state_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_playback_state_notifications():
+                    """React on WebSocketEventPlaybackState events."""
+
+                    def playback_state_notifications(notification: WebSocketEventPlaybackState):
+                        """PlaybackState notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_playback_state_notifications(playback_state_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_playback_state_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_playback_state_notifications():
+                    """React on WebSocketEventPlaybackState events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventPlaybackState":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_playback_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/RenderingState'
@@ -3458,31 +4241,75 @@ components:
                     type: string
             type: object
         WebSocketEventPowerState:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_power_state_notifications()` method in the Python\
-                \ package to get notifications of this type.\n\n<!-- title: \"Python\
-                \ API usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom mozart_api.mozart_client import MozartClient\n\nasync def receive_power_state_notifications():\n\
-                \    \"\"\"React on WebSocketEventPowerState events.\"\"\"\n\n   \
-                \ def power_state_notifications(notification: object):\n        \"\
-                \"\"PowerState notification handler.\"\"\"\n        print(notification)\n\
-                \n    async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_power_state_notifications(power_state_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_power_state_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_power_state_notifications():\n\
-                \    \"\"\"React on WebSocketEventPowerState events.\"\"\"\n    async\
-                \ with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventPowerState\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_power_state_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_power_state_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_power_state_notifications():
+                    """React on WebSocketEventPowerState events."""
+
+                    def power_state_notifications(notification: WebSocketEventPowerState):
+                        """PowerState notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_power_state_notifications(power_state_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_power_state_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_power_state_notifications():
+                    """React on WebSocketEventPowerState events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventPowerState":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_power_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/PowerStateEnum'
@@ -3490,33 +4317,75 @@ components:
                     type: string
             type: object
         WebSocketEventPowerlinkConnectionState:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_powerlink_connection_state_notifications()` method\
-                \ in the Python package to get notifications of this type.\n\n<!--\
-                \ title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_powerlink_connection_state_notifications():\n\
-                \    \"\"\"React on WebSocketEventPowerlinkConnectionState events.\"\
-                \"\"\n\n    def powerlink_connection_state_notifications(notification:\
-                \ object):\n        \"\"\"PowerlinkConnectionState notification handler.\"\
-                \"\"\n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_powerlink_connection_state_notifications(powerlink_connection_state_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_powerlink_connection_state_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_powerlink_connection_state_notifications():\n\
-                \    \"\"\"React on WebSocketEventPowerlinkConnectionState events.\"\
-                \"\"\n    async with ClientSession() as session:\n        async with\
-                \ session.ws_connect(url=\"ws://192.168.0.1:9339/\") as websocket:\n\
-                \            async for notification in websocket:\n              \
-                \  notification = notification.json()\n\n                if notification[\"\
-                eventType\"] == \"WebSocketEventPowerlinkConnectionState\":\n    \
-                \                print(notification[\"eventData\"])\n\n          \
-                \          \nasyncio.run(receive_powerlink_connection_state_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_powerlink_connection_state_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_powerlink_connection_state_notifications():
+                    """React on WebSocketEventPowerlinkConnectionState events."""
+
+                    def powerlink_connection_state_notifications(notification: WebSocketEventPowerlinkConnectionState):
+                        """PowerlinkConnectionState notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_powerlink_connection_state_notifications(powerlink_connection_state_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_powerlink_connection_state_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_powerlink_connection_state_notifications():
+                    """React on WebSocketEventPowerlinkConnectionState events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventPowerlinkConnectionState":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_powerlink_connection_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/PowerlinkConnectionStateEnum'
@@ -3524,33 +4393,75 @@ components:
                     type: string
             type: object
         WebSocketEventPucInstallRemoteIdStatus:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_puc_install_remote_id_status_notifications()`\
-                \ method in the Python package to get notifications of this type.\n\
-                \n<!-- title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_puc_install_remote_id_status_notifications():\n\
-                \    \"\"\"React on WebSocketEventPucInstallRemoteIdStatus events.\"\
-                \"\"\n\n    def puc_install_remote_id_status_notifications(notification:\
-                \ object):\n        \"\"\"PucInstallRemoteIdStatus notification handler.\"\
-                \"\"\n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_puc_install_remote_id_status_notifications(puc_install_remote_id_status_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_puc_install_remote_id_status_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_puc_install_remote_id_status_notifications():\n\
-                \    \"\"\"React on WebSocketEventPucInstallRemoteIdStatus events.\"\
-                \"\"\n    async with ClientSession() as session:\n        async with\
-                \ session.ws_connect(url=\"ws://192.168.0.1:9339/\") as websocket:\n\
-                \            async for notification in websocket:\n              \
-                \  notification = notification.json()\n\n                if notification[\"\
-                eventType\"] == \"WebSocketEventPucInstallRemoteIdStatus\":\n    \
-                \                print(notification[\"eventData\"])\n\n          \
-                \          \nasyncio.run(receive_puc_install_remote_id_status_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_puc_install_remote_id_status_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_puc_install_remote_id_status_notifications():
+                    """React on WebSocketEventPucInstallRemoteIdStatus events."""
+
+                    def puc_install_remote_id_status_notifications(notification: WebSocketEventPucInstallRemoteIdStatus):
+                        """PucInstallRemoteIdStatus notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_puc_install_remote_id_status_notifications(puc_install_remote_id_status_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_puc_install_remote_id_status_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_puc_install_remote_id_status_notifications():
+                    """React on WebSocketEventPucInstallRemoteIdStatus events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventPucInstallRemoteIdStatus":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_puc_install_remote_id_status_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/InstallRecordIdState'
@@ -3558,30 +4469,75 @@ components:
                     type: string
             type: object
         WebSocketEventRole:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_role_notifications()` method in the Python package\
-                \ to get notifications of this type.\n\n<!-- title: \"Python API usage\"\
-                \nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\nfrom mozart_api.mozart_client\
-                \ import MozartClient\n\nasync def receive_role_notifications():\n\
-                \    \"\"\"React on WebSocketEventRole events.\"\"\"\n\n    def role_notifications(notification:\
-                \ object):\n        \"\"\"Role notification handler.\"\"\"\n     \
-                \   print(notification)\n\n    async with MozartClient(host=\"192.168.0.1\"\
-                ) as mozart_client:\n        mozart_client.get_role_notifications(role_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_role_notifications())\n```\n\n\
-                <!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP library\
-                \ to get notifications of this type.\n\n<!-- title: \"Python AIOHTTP\
-                \ usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\n\
-                from aiohttp import ClientSession\n\n\nasync def receive_role_notifications():\n\
-                \    \"\"\"React on WebSocketEventRole events.\"\"\"\n    async with\
-                \ ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventRole\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_role_notifications())\n```\n\
-                <!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_role_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_role_notifications():
+                    """React on WebSocketEventRole events."""
+
+                    def role_notifications(notification: WebSocketEventRole):
+                        """Role notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_role_notifications(role_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_role_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_role_notifications():
+                    """React on WebSocketEventRole events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventRole":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_role_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SpeakerRoleEnum'
@@ -3589,35 +4545,78 @@ components:
                     type: string
             type: object
         WebSocketEventRoomCompensationCurrentMeasurementEvent:
-            description: "Sent when a room compensation measurement is started/done.\n\
-                Is only sent when room compensation type is advanced.\n\nUsage examples:\n\
-                \n<!--\ntype: tab\ntitle: Python API\n-->\n\nUse the `get_room_compensation_current_measurement_event_notifications()`\
-                \ method in the Python package to get notifications of this type.\n\
-                \n<!-- title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_room_compensation_current_measurement_event_notifications():\n\
-                \    \"\"\"React on WebSocketEventRoomCompensationCurrentMeasurementEvent\
-                \ events.\"\"\"\n\n    def room_compensation_current_measurement_event_notifications(notification:\
-                \ object):\n        \"\"\"RoomCompensationCurrentMeasurementEvent\
-                \ notification handler.\"\"\"\n        print(notification)\n\n   \
-                \ async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_room_compensation_current_measurement_event_notifications(room_compensation_current_measurement_event_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_room_compensation_current_measurement_event_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_room_compensation_current_measurement_event_notifications():\n\
-                \    \"\"\"React on WebSocketEventRoomCompensationCurrentMeasurementEvent\
-                \ events.\"\"\"\n    async with ClientSession() as session:\n    \
-                \    async with session.ws_connect(url=\"ws://192.168.0.1:9339/\"\
-                ) as websocket:\n            async for notification in websocket:\n\
-                \                notification = notification.json()\n\n          \
-                \      if notification[\"eventType\"] == \"WebSocketEventRoomCompensationCurrentMeasurementEvent\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_room_compensation_current_measurement_event_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Sent when a room compensation measurement is started/done.
+                Is only sent when room compensation type is advanced.
+
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_room_compensation_current_measurement_event_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_room_compensation_current_measurement_event_notifications():
+                    """React on WebSocketEventRoomCompensationCurrentMeasurementEvent events."""
+
+                    def room_compensation_current_measurement_event_notifications(notification: WebSocketEventRoomCompensationCurrentMeasurementEvent):
+                        """RoomCompensationCurrentMeasurementEvent notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_room_compensation_current_measurement_event_notifications(room_compensation_current_measurement_event_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_room_compensation_current_measurement_event_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_room_compensation_current_measurement_event_notifications():
+                    """React on WebSocketEventRoomCompensationCurrentMeasurementEvent events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventRoomCompensationCurrentMeasurementEvent":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_room_compensation_current_measurement_event_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/RoomCompensationCurrentMeasurement'
@@ -3625,33 +4624,75 @@ components:
                     type: string
             type: object
         WebSocketEventRoomCompensationState:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_room_compensation_state_notifications()` method\
-                \ in the Python package to get notifications of this type.\n\n<!--\
-                \ title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_room_compensation_state_notifications():\n   \
-                \ \"\"\"React on WebSocketEventRoomCompensationState events.\"\"\"\
-                \n\n    def room_compensation_state_notifications(notification: object):\n\
-                \        \"\"\"RoomCompensationState notification handler.\"\"\"\n\
-                \        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_room_compensation_state_notifications(room_compensation_state_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_room_compensation_state_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_room_compensation_state_notifications():\n\
-                \    \"\"\"React on WebSocketEventRoomCompensationState events.\"\"\
-                \"\n    async with ClientSession() as session:\n        async with\
-                \ session.ws_connect(url=\"ws://192.168.0.1:9339/\") as websocket:\n\
-                \            async for notification in websocket:\n              \
-                \  notification = notification.json()\n\n                if notification[\"\
-                eventType\"] == \"WebSocketEventRoomCompensationState\":\n       \
-                \             print(notification[\"eventData\"])\n\n             \
-                \       \nasyncio.run(receive_room_compensation_state_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_room_compensation_state_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_room_compensation_state_notifications():
+                    """React on WebSocketEventRoomCompensationState events."""
+
+                    def room_compensation_state_notifications(notification: WebSocketEventRoomCompensationState):
+                        """RoomCompensationState notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_room_compensation_state_notifications(room_compensation_state_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_room_compensation_state_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_room_compensation_state_notifications():
+                    """React on WebSocketEventRoomCompensationState events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventRoomCompensationState":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_room_compensation_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/RoomCompensationStateValue'
@@ -3659,32 +4700,75 @@ components:
                     type: string
             type: object
         WebSocketEventSoftwareUpdateState:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_software_update_state_notifications()` method\
-                \ in the Python package to get notifications of this type.\n\n<!--\
-                \ title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_software_update_state_notifications():\n    \"\
-                \"\"React on WebSocketEventSoftwareUpdateState events.\"\"\"\n\n \
-                \   def software_update_state_notifications(notification: object):\n\
-                \        \"\"\"SoftwareUpdateState notification handler.\"\"\"\n \
-                \       print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_software_update_state_notifications(software_update_state_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_software_update_state_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_software_update_state_notifications():\n\
-                \    \"\"\"React on WebSocketEventSoftwareUpdateState events.\"\"\"\
-                \n    async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventSoftwareUpdateState\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_software_update_state_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_software_update_state_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_software_update_state_notifications():
+                    """React on WebSocketEventSoftwareUpdateState events."""
+
+                    def software_update_state_notifications(notification: WebSocketEventSoftwareUpdateState):
+                        """SoftwareUpdateState notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_software_update_state_notifications(software_update_state_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_software_update_state_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_software_update_state_notifications():
+                    """React on WebSocketEventSoftwareUpdateState events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventSoftwareUpdateState":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_software_update_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SoftwareUpdateState'
@@ -3692,31 +4776,75 @@ components:
                     type: string
             type: object
         WebSocketEventSoundSettings:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_sound_settings_notifications()` method in the\
-                \ Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_sound_settings_notifications():\n    \"\"\"React\
-                \ on WebSocketEventSoundSettings events.\"\"\"\n\n    def sound_settings_notifications(notification:\
-                \ object):\n        \"\"\"SoundSettings notification handler.\"\"\"\
-                \n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_sound_settings_notifications(sound_settings_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_sound_settings_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_sound_settings_notifications():\n\
-                \    \"\"\"React on WebSocketEventSoundSettings events.\"\"\"\n  \
-                \  async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventSoundSettings\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_sound_settings_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_sound_settings_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_sound_settings_notifications():
+                    """React on WebSocketEventSoundSettings events."""
+
+                    def sound_settings_notifications(notification: WebSocketEventSoundSettings):
+                        """SoundSettings notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_sound_settings_notifications(sound_settings_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_sound_settings_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_sound_settings_notifications():
+                    """React on WebSocketEventSoundSettings events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventSoundSettings":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_sound_settings_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SoundSettings'
@@ -3724,31 +4852,75 @@ components:
                     type: string
             type: object
         WebSocketEventSourceChange:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_source_change_notifications()` method in the Python\
-                \ package to get notifications of this type.\n\n<!-- title: \"Python\
-                \ API usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom mozart_api.mozart_client import MozartClient\n\nasync def receive_source_change_notifications():\n\
-                \    \"\"\"React on WebSocketEventSourceChange events.\"\"\"\n\n \
-                \   def source_change_notifications(notification: object):\n     \
-                \   \"\"\"SourceChange notification handler.\"\"\"\n        print(notification)\n\
-                \n    async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_source_change_notifications(source_change_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_source_change_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_source_change_notifications():\n\
-                \    \"\"\"React on WebSocketEventSourceChange events.\"\"\"\n   \
-                \ async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventSourceChange\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_source_change_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_source_change_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_source_change_notifications():
+                    """React on WebSocketEventSourceChange events."""
+
+                    def source_change_notifications(notification: WebSocketEventSourceChange):
+                        """SourceChange notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_source_change_notifications(source_change_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_source_change_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_source_change_notifications():
+                    """React on WebSocketEventSourceChange events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventSourceChange":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_source_change_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/Source'
@@ -3756,32 +4928,75 @@ components:
                     type: string
             type: object
         WebSocketEventSpeakerGroupChanged:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_speaker_group_changed_notifications()` method\
-                \ in the Python package to get notifications of this type.\n\n<!--\
-                \ title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_speaker_group_changed_notifications():\n    \"\
-                \"\"React on WebSocketEventSpeakerGroupChanged events.\"\"\"\n\n \
-                \   def speaker_group_changed_notifications(notification: object):\n\
-                \        \"\"\"SpeakerGroupChanged notification handler.\"\"\"\n \
-                \       print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_speaker_group_changed_notifications(speaker_group_changed_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_speaker_group_changed_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_speaker_group_changed_notifications():\n\
-                \    \"\"\"React on WebSocketEventSpeakerGroupChanged events.\"\"\"\
-                \n    async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventSpeakerGroupChanged\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_speaker_group_changed_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_speaker_group_changed_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_speaker_group_changed_notifications():
+                    """React on WebSocketEventSpeakerGroupChanged events."""
+
+                    def speaker_group_changed_notifications(notification: WebSocketEventSpeakerGroupChanged):
+                        """SpeakerGroupChanged notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_speaker_group_changed_notifications(speaker_group_changed_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_speaker_group_changed_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_speaker_group_changed_notifications():
+                    """React on WebSocketEventSpeakerGroupChanged events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventSpeakerGroupChanged":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_speaker_group_changed_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SpeakerGroupId'
@@ -3789,33 +5004,75 @@ components:
                     type: string
             type: object
         WebSocketEventSpeakerLinkStatusChanged:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_speaker_link_status_changed_notifications()` method\
-                \ in the Python package to get notifications of this type.\n\n<!--\
-                \ title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_speaker_link_status_changed_notifications():\n\
-                \    \"\"\"React on WebSocketEventSpeakerLinkStatusChanged events.\"\
-                \"\"\n\n    def speaker_link_status_changed_notifications(notification:\
-                \ object):\n        \"\"\"SpeakerLinkStatusChanged notification handler.\"\
-                \"\"\n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_speaker_link_status_changed_notifications(speaker_link_status_changed_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_speaker_link_status_changed_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_speaker_link_status_changed_notifications():\n\
-                \    \"\"\"React on WebSocketEventSpeakerLinkStatusChanged events.\"\
-                \"\"\n    async with ClientSession() as session:\n        async with\
-                \ session.ws_connect(url=\"ws://192.168.0.1:9339/\") as websocket:\n\
-                \            async for notification in websocket:\n              \
-                \  notification = notification.json()\n\n                if notification[\"\
-                eventType\"] == \"WebSocketEventSpeakerLinkStatusChanged\":\n    \
-                \                print(notification[\"eventData\"])\n\n          \
-                \          \nasyncio.run(receive_speaker_link_status_changed_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_speaker_link_status_changed_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_speaker_link_status_changed_notifications():
+                    """React on WebSocketEventSpeakerLinkStatusChanged events."""
+
+                    def speaker_link_status_changed_notifications(notification: WebSocketEventSpeakerLinkStatusChanged):
+                        """SpeakerLinkStatusChanged notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_speaker_link_status_changed_notifications(speaker_link_status_changed_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_speaker_link_status_changed_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_speaker_link_status_changed_notifications():
+                    """React on WebSocketEventSpeakerLinkStatusChanged events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventSpeakerLinkStatusChanged":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_speaker_link_status_changed_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/SpeakerLinkStatus'
@@ -3823,31 +5080,75 @@ components:
                     type: string
             type: object
         WebSocketEventStandConnected:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_stand_connected_notifications()` method in the\
-                \ Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_stand_connected_notifications():\n    \"\"\"React\
-                \ on WebSocketEventStandConnected events.\"\"\"\n\n    def stand_connected_notifications(notification:\
-                \ object):\n        \"\"\"StandConnected notification handler.\"\"\
-                \"\n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_stand_connected_notifications(stand_connected_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_stand_connected_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_stand_connected_notifications():\n\
-                \    \"\"\"React on WebSocketEventStandConnected events.\"\"\"\n \
-                \   async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventStandConnected\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_stand_connected_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_stand_connected_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_stand_connected_notifications():
+                    """React on WebSocketEventStandConnected events."""
+
+                    def stand_connected_notifications(notification: WebSocketEventStandConnected):
+                        """StandConnected notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_stand_connected_notifications(stand_connected_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_stand_connected_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_stand_connected_notifications():
+                    """React on WebSocketEventStandConnected events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventStandConnected":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_stand_connected_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/StandConnected'
@@ -3855,31 +5156,75 @@ components:
                     type: string
             type: object
         WebSocketEventStandPosition:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_stand_position_notifications()` method in the\
-                \ Python package to get notifications of this type.\n\n<!-- title:\
-                \ \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\nimport\
-                \ asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\n\
-                async def receive_stand_position_notifications():\n    \"\"\"React\
-                \ on WebSocketEventStandPosition events.\"\"\"\n\n    def stand_position_notifications(notification:\
-                \ object):\n        \"\"\"StandPosition notification handler.\"\"\"\
-                \n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_stand_position_notifications(stand_position_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_stand_position_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_stand_position_notifications():\n\
-                \    \"\"\"React on WebSocketEventStandPosition events.\"\"\"\n  \
-                \  async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventStandPosition\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_stand_position_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_stand_position_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_stand_position_notifications():
+                    """React on WebSocketEventStandPosition events."""
+
+                    def stand_position_notifications(notification: WebSocketEventStandPosition):
+                        """StandPosition notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_stand_position_notifications(stand_position_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_stand_position_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_stand_position_notifications():
+                    """React on WebSocketEventStandPosition events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventStandPosition":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_stand_position_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/StandPosition'
@@ -3887,31 +5232,75 @@ components:
                     type: string
             type: object
         WebSocketEventTvInfo:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_tv_info_notifications()` method in the Python\
-                \ package to get notifications of this type.\n\n<!-- title: \"Python\
-                \ API usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom mozart_api.mozart_client import MozartClient\n\nasync def receive_tv_info_notifications():\n\
-                \    \"\"\"React on WebSocketEventTvInfo events.\"\"\"\n\n    def\
-                \ tv_info_notifications(notification: object):\n        \"\"\"TvInfo\
-                \ notification handler.\"\"\"\n        print(notification)\n\n   \
-                \ async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_tv_info_notifications(tv_info_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_tv_info_notifications())\n```\n\
-                \n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP library\
-                \ to get notifications of this type.\n\n<!-- title: \"Python AIOHTTP\
-                \ usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\n\
-                from aiohttp import ClientSession\n\n\nasync def receive_tv_info_notifications():\n\
-                \    \"\"\"React on WebSocketEventTvInfo events.\"\"\"\n    async\
-                \ with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventTvInfo\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_tv_info_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_tv_info_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_tv_info_notifications():
+                    """React on WebSocketEventTvInfo events."""
+
+                    def tv_info_notifications(notification: WebSocketEventTvInfo):
+                        """TvInfo notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_tv_info_notifications(tv_info_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_tv_info_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_tv_info_notifications():
+                    """React on WebSocketEventTvInfo events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventTvInfo":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_tv_info_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/TvInfoEventData'
@@ -3919,31 +5308,75 @@ components:
                     type: string
             type: object
         WebSocketEventVolume:
-            description: "Usage examples:\n\n<!--\ntype: tab\ntitle: Python API\n\
-                -->\n\nUse the `get_volume_notifications()` method in the Python package\
-                \ to get notifications of this type.\n\n<!-- title: \"Python API usage\"\
-                \nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\nfrom mozart_api.mozart_client\
-                \ import MozartClient\n\nasync def receive_volume_notifications():\n\
-                \    \"\"\"React on WebSocketEventVolume events.\"\"\"\n\n    def\
-                \ volume_notifications(notification: object):\n        \"\"\"Volume\
-                \ notification handler.\"\"\"\n        print(notification)\n\n   \
-                \ async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
-                \        mozart_client.get_volume_notifications(volume_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_volume_notifications())\n```\n\
-                \n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP library\
-                \ to get notifications of this type.\n\n<!-- title: \"Python AIOHTTP\
-                \ usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\n\
-                from aiohttp import ClientSession\n\n\nasync def receive_volume_notifications():\n\
-                \    \"\"\"React on WebSocketEventVolume events.\"\"\"\n    async\
-                \ with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventVolume\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_volume_notifications())\n```\n\
-                <!-- type: tab-end -->\n"
+            description: |
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_volume_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_volume_notifications():
+                    """React on WebSocketEventVolume events."""
+
+                    def volume_notifications(notification: WebSocketEventVolume):
+                        """Volume notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_volume_notifications(volume_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_volume_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_volume_notifications():
+                    """React on WebSocketEventVolume events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventVolume":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_volume_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/VolumeState'
@@ -3951,31 +5384,76 @@ components:
                     type: string
             type: object
         WebSocketEventWisaOutState:
-            description: "Speaker Discovery State changed\nUsage examples:\n\n<!--\n\
-                type: tab\ntitle: Python API\n-->\n\nUse the `get_wisa_out_state_notifications()`\
-                \ method in the Python package to get notifications of this type.\n\
-                \n<!-- title: \"Python API usage\"\nlineNumbers: true\n-->\n\n```python\n\
-                import asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-                \nasync def receive_wisa_out_state_notifications():\n    \"\"\"React\
-                \ on WebSocketEventWisaOutState events.\"\"\"\n\n    def wisa_out_state_notifications(notification:\
-                \ object):\n        \"\"\"WisaOutState notification handler.\"\"\"\
-                \n        print(notification)\n\n    async with MozartClient(host=\"\
-                192.168.0.1\") as mozart_client:\n        mozart_client.get_wisa_out_state_notifications(wisa_out_state_notifications)\n\
-                \        await mozart_client.connect_notifications()\n\n        #\
-                \ Receive notifications\n        while True:\n            await asyncio.sleep(0)\n\
-                \n            \nasyncio.run(receive_wisa_out_state_notifications())\n\
-                ```\n\n<!--\ntype: tab\ntitle: Python AIOHTTP\n-->\n\nUse the AIOHTTP\
-                \ library to get notifications of this type.\n\n<!-- title: \"Python\
-                \ AIOHTTP usage\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-                \nfrom aiohttp import ClientSession\n\n\nasync def receive_wisa_out_state_notifications():\n\
-                \    \"\"\"React on WebSocketEventWisaOutState events.\"\"\"\n   \
-                \ async with ClientSession() as session:\n        async with session.ws_connect(url=\"\
-                ws://192.168.0.1:9339/\") as websocket:\n            async for notification\
-                \ in websocket:\n                notification = notification.json()\n\
-                \n                if notification[\"eventType\"] == \"WebSocketEventWisaOutState\"\
-                :\n                    print(notification[\"eventData\"])\n\n    \
-                \                \nasyncio.run(receive_wisa_out_state_notifications())\n\
-                ```\n<!-- type: tab-end -->\n"
+            description: |
+                Speaker Discovery State changed
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_wisa_out_state_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_wisa_out_state_notifications():
+                    """React on WebSocketEventWisaOutState events."""
+
+                    def wisa_out_state_notifications(notification: WebSocketEventWisaOutState):
+                        """WisaOutState notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_wisa_out_state_notifications(wisa_out_state_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_wisa_out_state_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_wisa_out_state_notifications():
+                    """React on WebSocketEventWisaOutState events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventWisaOutState":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_wisa_out_state_notifications())
+                ```
+                <!-- type: tab-end -->
             properties:
                 eventData:
                     $ref: '#/components/schemas/WisaOutState'
@@ -4030,7 +5508,7 @@ info:
         The Mozart API is an async REST API with WebSocket notification channel for\
         \ immediate state information from Mozart devices. Currently the API is distributed\
         \ as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI\
-        \ document that can be found in the [Github releases](https://github.com/bang-olufsen/mozart-open-api/releases).\n\
+        \ document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-4.1.1.116.yaml).\n\
         \n\nSupported by:\n- [Beoconnect Core](https://www.bang-olufsen.com/en/dk/accessories/beoconnect-core)\n\
         - [Beolab 8](https://www.bang-olufsen.com/en/dk/speakers/beolab-8)\n- [Beolab\
         \ 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)\n- [Beosound\
@@ -4042,9 +5520,9 @@ info:
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
         \n\nThis API documentation has been generated for version 4.1.1.116 of the\
-        \ Mozart platform and API generation version 4.1.1.116.0.\n\n## Python API\n\
+        \ Mozart platform and API generation version 4.1.1.116.1.\n\n## Python API\n\
         \nThe Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
-        \ version 7.8.0. On top of the generated API, a helper file, mozart_client.py,\
+        \ version 7.10.0. On top of the generated API, a helper file, mozart_client.py,\
         \ has been made that makes the API more pythonic. We recommend using this.\n\
         \nAnother file, mozart_cli.py, has been made for using the Mozart API in a\
         \ simple CLI program. This has been set as the \"entry point\" for the Python\
@@ -4056,36 +5534,38 @@ info:
         \ channel (if needed)\n- Use any of the endpoints\n\n#### Example\n\n<!--\n\
         type: tab\ntitle: API usage example\n-->\n\n<!-- title: \"API usage example\"\
         \nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\nfrom mozart_api.models\
-        \ import VolumeLevel\nfrom mozart_api.mozart_client import MozartClient\n\n\
-        \ndef all_notifications(notification: object, notification_type: str):\n \
-        \   \"\"\"Notification handler.\"\"\"\n    print(f\"{notification_type} :\
-        \ {notification}\")\n\n\nasync def volume_notifications(notification: object):\n\
-        \    \"\"\"Volume notification handler.\"\"\"\n    print(notification)\n\n\
-        \nasync def test_api():\n    \"\"\"Test Mozart API.\"\"\"\n    mozart_client\
-        \ = MozartClient(host=\"192.168.0.1\")\n\n    mozart_client.get_all_notifications(all_notifications)\n\
-        \    mozart_client.get_volume_notifications(volume_notifications)\n\n    await\
-        \ mozart_client.connect_notifications(remote_control=True)\n\n    await mozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50))\n\
+        \ import VolumeLevel, VolumeState\nfrom mozart_api.mozart_client import MozartClient,\
+        \ WebSocketEventType\n\n\ndef all_notifications(notification: WebSocketEventType,\
+        \ notification_type: str) -> None:\n    \"\"\"Notification handler.\"\"\"\n\
+        \    print(f\"{notification_type} : {notification}\")\n\n\nasync def volume_notifications(notification:\
+        \ VolumeState) -> None:\n    \"\"\"Volume notification handler.\"\"\"\n  \
+        \  print(notification)\n\n\nasync def test_api() -> None:\n    \"\"\"Test\
+        \ Mozart API.\"\"\"\n\n    mozart_client = MozartClient(host=\"192.168.0.1\"\
+        )\n\n    mozart_client.get_all_notifications(all_notifications)\n    mozart_client.get_volume_notifications(volume_notifications)\n\
+        \n    await mozart_client.connect_notifications(remote_control=True)\n\n \
+        \   await mozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50))\n\
         \    await mozart_client.activate_preset(id=2)\n    await mozart_client.post_beolink_expand(\n\
-        \        jid=\"1234.1234567.12345678@products.bang-olufsen.com\"\n    )\n\n\
-        \    listeners = await mozart_client.get_beolink_listeners()\n    print(listeners)\n\
+        \        jid=\"1234.1234567.12345678@products.bang-olufsen.com\",\n    )\n\
+        \n    listeners = await mozart_client.get_beolink_listeners()\n    print(listeners)\n\
         \n    # Close aiohttp ClientSession\n    await mozart_client.close_api_client()\n\
         \n    # Receive notifications\n    while True:\n        await asyncio.sleep(0)\n\
         \n\nasyncio.run(test_api())\n```\n\n<!--\ntype: tab\ntitle: API usage example\
         \ with async context manager\n-->\n\n<!-- title: \"API usage example with\
         \ async context manager\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\
-        \nfrom mozart_api.models import VolumeLevel\nfrom mozart_api.mozart_client\
-        \ import MozartClient\n\n\ndef all_notifications(notification: object, notification_type:\
-        \ str):\n    \"\"\"Notification handler.\"\"\"\n    print(f\"{notification_type}\
-        \ : {notification}\")\n\n\nasync def volume_notifications(notification: object):\n\
-        \    \"\"\"Volume notification handler.\"\"\"\n    print(notification)\n\n\
-        \nasync def test_api():\n    \"\"\"Test Mozart API.\"\"\"\n\n    async with\
-        \ MozartClient(host=\"192.168.0.1\") as mozart_client:\n        mozart_client.get_all_notifications(all_notifications)\n\
+        \nfrom mozart_api.models import VolumeLevel, VolumeState\nfrom mozart_api.mozart_client\
+        \ import MozartClient, WebSocketEventType\n\n\ndef all_notifications(notification:\
+        \ WebSocketEventType, notification_type: str) -> None:\n    \"\"\"Notification\
+        \ handler.\"\"\"\n    print(f\"{notification_type} : {notification}\")\n\n\
+        \nasync def volume_notifications(notification: VolumeState) -> None:\n   \
+        \ \"\"\"Volume notification handler.\"\"\"\n    print(notification)\n\n\n\
+        async def test_api() -> None:\n    \"\"\"Test Mozart API.\"\"\"\n\n    async\
+        \ with MozartClient(host=\"192.168.0.1\") as mozart_client:\n        mozart_client.get_all_notifications(all_notifications)\n\
         \        mozart_client.get_volume_notifications(volume_notifications)\n\n\
         \        await mozart_client.connect_notifications(remote_control=True)\n\n\
         \        await mozart_client.set_current_volume_level(volume_level=VolumeLevel(level=50))\n\
         \        await mozart_client.activate_preset(id=2)\n        await mozart_client.post_beolink_expand(\n\
-        \            jid=\"1234.1234567.12345678@products.bang-olufsen.com\"\n   \
-        \     )\n\n        listeners = await mozart_client.get_beolink_listeners()\n\
+        \            jid=\"1234.1234567.12345678@products.bang-olufsen.com\",\n  \
+        \      )\n\n        listeners = await mozart_client.get_beolink_listeners()\n\
         \        print(listeners)\n\n    # Receive notifications\n    while True:\n\
         \        await asyncio.sleep(0)\n\n\nasyncio.run(test_api())\n```\n\n<!--\
         \ type: tab-end -->\n\nWhere `192.168.0.1` is a Mozart device's IP-address.\n\
@@ -4107,34 +5587,35 @@ info:
         \ lost\n-->\n\nThe `get_on_connection_lost` method will set a callback when\
         \ the WebSocket listener loses connection.\n\n<!-- title: \"On connection\
         \ lost example\"\nlineNumbers: true\n-->\n\n```python\nimport asyncio\n\n\
-        from mozart_api.mozart_client import MozartClient\n\n\nasync def test_api():\n\
-        \    \"\"\"Test Mozart API.\"\"\"\n\n    def on_connection_lost():\n     \
-        \   \"\"\"Notification handler.\"\"\"\n        print(\"Connection lost\")\n\
-        \n    async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n  \
-        \      mozart_client.get_on_connection_lost(on_connection_lost)\n        await\
-        \ mozart_client.connect_notifications()\n\n        # Receive notifications\n\
+        from mozart_api.mozart_client import MozartClient\n\n\nasync def test_api()\
+        \ -> None:\n    \"\"\"Test Mozart API.\"\"\"\n\n    def on_connection_lost()\
+        \ -> None:\n        \"\"\"Notification handler.\"\"\"\n        print(\"Connection\
+        \ lost\")\n\n    async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n\
+        \        mozart_client.get_on_connection_lost(on_connection_lost)\n      \
+        \  await mozart_client.connect_notifications()\n\n        # Receive notifications\n\
         \        while True:\n            await asyncio.sleep(0)\n\n\nasyncio.run(test_api())\n\
         ```\n\n<!--\ntype: tab\ntitle: On connection\n-->\n\nThe `get_on_connection`\
         \ method will set a callback when the WebSocket listener successfully establishes\
         \ a connection.\n\n<!-- title: \"On connection example\"\nlineNumbers: true\n\
         -->\n\n```python\nimport asyncio\n\nfrom mozart_api.mozart_client import MozartClient\n\
-        \n\nasync def test_api():\n    \"\"\"Test Mozart API.\"\"\"\n\n    def on_connection():\n\
-        \        \"\"\"Notification handler.\"\"\"\n        print(\"Connected\")\n\
-        \n    async with MozartClient(host=\"192.168.0.1\") as mozart_client:\n  \
-        \      mozart_client.get_on_connection(on_connection)\n        await mozart_client.connect_notifications()\n\
-        \n        # Receive notifications\n        while True:\n            await\
-        \ asyncio.sleep(0)\n\n\nasyncio.run(test_api())\n```\n\n<!--\ntype: tab\n\
-        title: All notifications\n-->\n\nThe `get_all_notifications` method will set\
-        \ a callback on all WebSocket notifications received.\n\nThe notification_type\
-        \ will return the name of the event with the `WebSocketEvent` prefix removed\
-        \ and the rest converted to snake_case: `WebSocketEventAlarmTriggered` \u279E\
-        \ `alarm_triggered`\n\n<!-- title: \"All notifications example\"\nlineNumbers:\
-        \ true\n-->\n\n```python\nimport asyncio\n\nfrom mozart_api.mozart_client\
-        \ import MozartClient\n\n\nasync def test_api():\n    \"\"\"Test Mozart API.\"\
-        \"\"\n\n    def all_notifications(notification: object, notification_type:\
-        \ str):\n        \"\"\"Notification handler.\"\"\"\n        print(f\"{notification_type}\
-        \ : {notification}\")\n\n    async with MozartClient(host=\"192.168.0.1\"\
-        ) as mozart_client:\n        mozart_client.get_all_notifications(all_notifications)\n\
+        \n\nasync def test_api() -> None:\n    \"\"\"Test Mozart API.\"\"\"\n\n  \
+        \  def on_connection() -> None:\n        \"\"\"Notification handler.\"\"\"\
+        \n        print(\"Connected\")\n\n    async with MozartClient(host=\"192.168.0.1\"\
+        ) as mozart_client:\n        mozart_client.get_on_connection(on_connection)\n\
+        \        await mozart_client.connect_notifications()\n\n        # Receive\
+        \ notifications\n        while True:\n            await asyncio.sleep(0)\n\
+        \n\nasyncio.run(test_api())\n```\n\n<!--\ntype: tab\ntitle: All notifications\n\
+        -->\n\nThe `get_all_notifications` method will set a callback on all WebSocket\
+        \ notifications received.\n\nThe notification_type will return the name of\
+        \ the event with the `WebSocketEvent` prefix removed and the rest converted\
+        \ to snake_case: `WebSocketEventAlarmTriggered` \u279E `alarm_triggered`\n\
+        \n<!-- title: \"All notifications example\"\nlineNumbers: true\n-->\n\n```python\n\
+        import asyncio\n\nfrom mozart_api.mozart_client import MozartClient, WebSocketEventType\n\
+        \n\nasync def test_api() -> None:\n    \"\"\"Test Mozart API.\"\"\"\n\n  \
+        \  def all_notifications(notification: WebSocketEventType, notification_type:\
+        \ str) -> None:\n        \"\"\"Notification handler.\"\"\"\n        print(f\"\
+        {notification_type} : {notification}\")\n\n    async with MozartClient(host=\"\
+        192.168.0.1\") as mozart_client:\n        mozart_client.get_all_notifications(all_notifications)\n\
         \        await mozart_client.connect_notifications()\n\n        # Receive\
         \ notifications\n        while True:\n            await asyncio.sleep(0)\n\
         \n\nasyncio.run(test_api())\n```\n\n<!--\ntype: tab\ntitle: All notifications\
@@ -4142,10 +5623,11 @@ info:
         \ on all WebSocket notifications received and will not deserialize the received\
         \ JSON or dict.\n\n<!-- title: \"All notifications \"raw\" example\"\nlineNumbers:\
         \ true\n-->\n\n```python\nimport asyncio\n\nfrom mozart_api.mozart_client\
-        \ import MozartClient\n\n\nasync def test_api():\n    \"\"\"Test Mozart API.\"\
-        \"\"\n\n    def all_notifications_raw(notification: dict):\n        \"\"\"\
-        Notification handler.\"\"\"\n        print(notification)\n\n    async with\
-        \ MozartClient(host=\"192.168.0.1\") as mozart_client:\n        mozart_client.get_all_notifications_raw(all_notifications_raw)\n\
+        \ import BaseWebSocketResponse, MozartClient\n\n\nasync def test_api() ->\
+        \ None:\n    \"\"\"Test Mozart API.\"\"\"\n\n    def all_notifications_raw(notification:\
+        \ BaseWebSocketResponse) -> None:\n        \"\"\"Notification handler.\"\"\
+        \"\n        print(notification)\n\n    async with MozartClient(host=\"192.168.0.1\"\
+        ) as mozart_client:\n        mozart_client.get_all_notifications_raw(all_notifications_raw)\n\
         \        await mozart_client.connect_notifications()\n\n        # Receive\
         \ notifications\n        while True:\n            await asyncio.sleep(0)\n\
         \n\nasyncio.run(test_api())\n```\n\n<!-- type: tab-end -->\n\n#### Discovering\

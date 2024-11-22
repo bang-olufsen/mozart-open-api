@@ -1,33 +1,72 @@
 """Helper classes for using auto-generated API."""
 
-# pylint: disable=line-too-long too-many-instance-attributes too-many-public-methods
-
 import asyncio
 import contextlib
 import json
 import logging
 import re
 from collections import defaultdict
+from collections.abc import Callable
+from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
 from datetime import time
 from ssl import SSLContext
-from typing import Callable, Literal
+from types import TracebackType
+from typing import Literal, TypedDict
 
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientTimeout
 from aiohttp.client_exceptions import (
     ClientConnectorError,
     ClientOSError,
     ServerTimeoutError,
 )
 from inflection import underscore
+
 from mozart_api.api.mozart_api import MozartApi
 from mozart_api.api_client import ApiClient
-from mozart_api.rest import RESTClientObject
 from mozart_api.configuration import Configuration
 from mozart_api.exceptions import ApiException
-from mozart_api.models import Art, PlaybackContentMetadata
-
-WEBSOCKET_TIMEOUT = 5.0
+from mozart_api.models import (
+    Art,
+    PlaybackContentMetadata,
+    # Generated section start
+    WebSocketEventActiveHdmiInputSignal,
+    WebSocketEventActiveListeningMode,
+    WebSocketEventActiveSpeakerGroup,
+    WebSocketEventAlarmTimer,
+    WebSocketEventAlarmTriggered,
+    WebSocketEventBattery,
+    WebSocketEventBeolinkExperiencesResult,
+    WebSocketEventBeolinkJoinResult,
+    WebSocketEventBeoRemoteButton,
+    WebSocketEventButton,
+    WebSocketEventCurtains,
+    WebSocketEventHdmiVideoFormatSignal,
+    WebSocketEventNotification,
+    WebSocketEventPlaybackError,
+    WebSocketEventPlaybackMetadata,
+    WebSocketEventPlaybackProgress,
+    WebSocketEventPlaybackSource,
+    WebSocketEventPlaybackState,
+    WebSocketEventPowerlinkConnectionState,
+    WebSocketEventPowerState,
+    WebSocketEventPucInstallRemoteIdStatus,
+    WebSocketEventRole,
+    WebSocketEventRoomCompensationCurrentMeasurementEvent,
+    WebSocketEventRoomCompensationState,
+    WebSocketEventSoftwareUpdateState,
+    WebSocketEventSoundSettings,
+    WebSocketEventSourceChange,
+    WebSocketEventSpeakerGroupChanged,
+    WebSocketEventSpeakerLinkStatusChanged,
+    WebSocketEventStandConnected,
+    WebSocketEventStandPosition,
+    WebSocketEventTvInfo,
+    WebSocketEventVolume,
+    WebSocketEventWisaOutState,
+    # Generated section end
+)
+from mozart_api.rest import RESTClientObject
 
 # Generated section start
 
@@ -68,7 +107,46 @@ NOTIFICATION_TYPES = {
     "wisa_out_state",
 }
 
+WebSocketEventType = type[
+    WebSocketEventActiveHdmiInputSignal
+    | WebSocketEventActiveListeningMode
+    | WebSocketEventActiveSpeakerGroup
+    | WebSocketEventAlarmTimer
+    | WebSocketEventAlarmTriggered
+    | WebSocketEventBattery
+    | WebSocketEventBeoRemoteButton
+    | WebSocketEventBeolinkExperiencesResult
+    | WebSocketEventBeolinkJoinResult
+    | WebSocketEventButton
+    | WebSocketEventCurtains
+    | WebSocketEventHdmiVideoFormatSignal
+    | WebSocketEventNotification
+    | WebSocketEventPlaybackError
+    | WebSocketEventPlaybackMetadata
+    | WebSocketEventPlaybackProgress
+    | WebSocketEventPlaybackSource
+    | WebSocketEventPlaybackState
+    | WebSocketEventPowerState
+    | WebSocketEventPowerlinkConnectionState
+    | WebSocketEventPucInstallRemoteIdStatus
+    | WebSocketEventRole
+    | WebSocketEventRoomCompensationCurrentMeasurementEvent
+    | WebSocketEventRoomCompensationState
+    | WebSocketEventSoftwareUpdateState
+    | WebSocketEventSoundSettings
+    | WebSocketEventSourceChange
+    | WebSocketEventSpeakerGroupChanged
+    | WebSocketEventSpeakerLinkStatusChanged
+    | WebSocketEventStandConnected
+    | WebSocketEventStandPosition
+    | WebSocketEventTvInfo
+    | WebSocketEventVolume
+    | WebSocketEventWisaOutState
+]
+
 # Generated section end
+
+WEBSOCKET_TIMEOUT = 5.0
 
 logger = logging.getLogger(__name__)
 
@@ -87,10 +165,7 @@ def check_valid_jid(jid: str) -> bool:
     """Check if a JID is valid."""
     pattern = re.compile(r"(^\d{4})[.](\d{7})[.](\d{8})(@products\.bang-olufsen\.com)$")
 
-    if pattern.fullmatch(jid) is not None:
-        return True
-
-    return False
+    return pattern.fullmatch(jid) is not None
 
 
 def check_valid_serial_number(serial_number: str) -> bool:
@@ -100,10 +175,9 @@ def check_valid_serial_number(serial_number: str) -> bool:
 
 def get_highest_resolution_artwork(metadata: PlaybackContentMetadata) -> Art:
     """Get the highest resolution Art from provided PlaybackContentMetadata."""
-
     # Return an empty Art if no artwork is in metadata to ensure no stale artwork
     if not metadata.art:
-        return Art()  # type: ignore
+        return Art()
 
     # Dict for sorting images that have size defined by a string
     art_size = {"small": 1, "medium": 2, "large": 3}
@@ -124,10 +198,17 @@ def get_highest_resolution_artwork(metadata: PlaybackContentMetadata) -> Art:
 
     # Check if only invalid images were provided
     if not images:
-        return Art()  # type: ignore
+        return Art()
 
     # Choose the largest image.
     return metadata.art[images.index(max(images))]
+
+
+class BaseWebSocketResponse(TypedDict):
+    """Base class for serialized WebSocket notifications."""
+
+    eventType: str
+    eventDate: dict
 
 
 class MozartClient(MozartApi):
@@ -144,11 +225,15 @@ class MozartClient(MozartApi):
         self._websocket_listeners_active = False
         self._websocket_tasks: set[asyncio.Task] = set()
 
-        self._on_connection_lost = None
-        self._on_connection = None
+        self._on_connection_lost: Callable | None = None
+        self._on_connection: Callable | None = None
 
-        self._on_all_notifications = None
-        self._on_all_notifications_raw = None
+        self._on_all_notifications: Callable[[WebSocketEventType, str], None] | None = (
+            None
+        )
+        self._on_all_notifications_raw: (
+            Callable[[BaseWebSocketResponse], None] | None
+        ) = None
 
         self._notification_callbacks: dict[str, Callable | None] = defaultdict()
         self._notification_callbacks.default_factory = lambda: None
@@ -164,38 +249,48 @@ class MozartClient(MozartApi):
                 ApiClient(
                     self.configuration,
                     rest_client=RESTClientObject(
-                        configuration=self.configuration, ssl_context=ssl_context
+                        configuration=self.configuration,
+                        ssl_context=ssl_context,
                     ),
-                )
+                ),
             )
 
     async def close_api_client(self) -> None:
         """Close the API ClientSession."""
         await self.api_client.close()
 
-    async def __aenter__(self):
-        """Context entry"""
+    async def __aenter__(self) -> AbstractAsyncContextManager:
+        """Context entry."""
         if self.api_client.rest_client.pool_manager.closed:
             self.api_client = ApiClient(self.configuration)
         return self
 
-    async def __aexit__(self, exc_type, exc_value, traceback):
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         """Context exit."""
         await self.close_api_client()
 
     async def _check_websocket_connection(
         self,
     ) -> Literal[True] | ClientConnectorError | ClientOSError | ServerTimeoutError:
-        """Check if a connection can be made to the device's WebSocket notification channel."""
+        """Try to connect to the device's WebSocket notification channel."""
         try:
-            async with ClientSession(conn_timeout=WEBSOCKET_TIMEOUT) as session:
-                async with session.ws_connect(
+            async with (
+                ClientSession(
+                    timeout=ClientTimeout(total=WEBSOCKET_TIMEOUT),
+                ) as session,
+                session.ws_connect(
                     f"ws://{self.host}:9339/",
                     timeout=WEBSOCKET_TIMEOUT,
                     receive_timeout=WEBSOCKET_TIMEOUT,
-                ) as websocket:
-                    if await websocket.receive():
-                        return True
+                ) as websocket,
+            ):
+                if await websocket.receive():
+                    return True
 
         except (ClientConnectorError, ClientOSError, ServerTimeoutError) as error:
             return error
@@ -211,7 +306,7 @@ class MozartClient(MozartApi):
 
         return True
 
-    async def check_device_connection(self, raise_error=False) -> bool:
+    async def check_device_connection(self, raise_error: bool = False) -> bool:
         """Check API and WebSocket connection."""
         # Don't use a taskgroup as both tasks should always be checked
         tasks: tuple[
@@ -240,23 +335,21 @@ class MozartClient(MozartApi):
             | ServerTimeoutError
             | ApiException
             | TimeoutError
-        ] = []
-
-        # Check status
-        for task in tasks:
-            if (result := task.result()) is not True:
-                errors.append(result)
+        ] = [result for task in tasks if (result := task.result()) is not True]
 
         connection_available = bool(len(errors) == 0)
 
         # Raise any exceptions
         if not connection_available and raise_error:
-            raise ExceptionGroup(f"Can't connect to {self.host}", tuple(errors))
+            msg = f"Can't connect to {self.host}"
+            raise ExceptionGroup(msg, tuple(errors))
 
         return connection_available
 
     async def connect_notifications(
-        self, remote_control=False, reconnect=False
+        self,
+        remote_control: bool = False,
+        reconnect: bool = False,
     ) -> None:
         """Start the WebSocket listener task(s)."""
         self.websocket_reconnect = reconnect
@@ -267,7 +360,7 @@ class MozartClient(MozartApi):
                 asyncio.create_task(
                     coro=self._websocket_listener(f"ws://{self.host}:9339/"),
                     name=f"{self.host} - listener task",
-                )
+                ),
             )
 
             self._websocket_listener_active = True
@@ -277,10 +370,10 @@ class MozartClient(MozartApi):
             self._websocket_tasks.add(
                 asyncio.create_task(
                     coro=self._websocket_listener(
-                        f"ws://{self.host}:9339/remoteControl"
+                        f"ws://{self.host}:9339/remoteControl",
                     ),
                     name=f"{self.host} - remote listener task",
-                )
+                ),
             )
             self._websocket_listener_remote_listener_active = True
 
@@ -301,33 +394,40 @@ class MozartClient(MozartApi):
         """WebSocket listener."""
         while True:
             try:
-                async with ClientSession(conn_timeout=WEBSOCKET_TIMEOUT) as session:
-                    async with session.ws_connect(
-                        url=host, heartbeat=WEBSOCKET_TIMEOUT
-                    ) as websocket:
-                        self.websocket_connected = True
+                async with (
+                    ClientSession(
+                        timeout=ClientTimeout(total=WEBSOCKET_TIMEOUT),
+                    ) as session,
+                    session.ws_connect(
+                        url=host,
+                        heartbeat=WEBSOCKET_TIMEOUT,
+                    ) as websocket,
+                ):
+                    self.websocket_connected = True
 
-                        if self._on_connection:
-                            await self._trigger_callback(self._on_connection)
+                    if self._on_connection:
+                        await self._trigger_callback(self._on_connection)
 
-                        while self._websocket_listeners_active:
-                            with contextlib.suppress(asyncio.TimeoutError):
-                                # Receive JSON in order to get the Websocket notification name for deserialization
-                                notification = await asyncio.wait_for(
-                                    websocket.receive_json(),
-                                    timeout=WEBSOCKET_TIMEOUT,
-                                )
+                    while self._websocket_listeners_active:
+                        with contextlib.suppress(asyncio.TimeoutError):
+                            # Receive JSON in order to get the
+                            # Websocket notification name for deserialization
+                            notification = await asyncio.wait_for(
+                                websocket.receive_json(),
+                                timeout=WEBSOCKET_TIMEOUT,
+                            )
 
-                                # Ensure that any notifications received after the disconnect command has been executed are not processed
-                                if not self._websocket_listeners_active:
-                                    break
+                            # Ensure that any notifications received after the
+                            # disconnect command has been executed are not processed
+                            if not self._websocket_listeners_active:
+                                break
 
-                                await self._on_message(notification)
+                            await self._on_message(notification)
 
-                        # Disconnect
-                        self.websocket_connected = False
-                        await websocket.close()
-                        return
+                    # Disconnect
+                    self.websocket_connected = False
+                    await websocket.close()
+                    return
 
             except (
                 ClientConnectorError,
@@ -343,7 +443,7 @@ class MozartClient(MozartApi):
                         await self._trigger_callback(self._on_connection_lost)
 
                 if not self.websocket_reconnect:
-                    logger.error("%s : %s - %s", host, type(error), error)
+                    logger.exception("%s", host)
                     self.disconnect_notifications()
                     return
 
@@ -355,25 +455,23 @@ class MozartClient(MozartApi):
 
         data: str
 
-    async def _on_message(self, notification) -> None:
+    async def _on_message(self, notification: BaseWebSocketResponse) -> None:
         """Handle WebSocket notifications."""
-
         # Get the object type and deserialized object.
         try:
             notification_type = notification["eventType"]
 
             deserialized_data = self.api_client.deserialize(
-                self._ResponseWrapper(json.dumps(notification)), notification_type
+                self._ResponseWrapper(json.dumps(notification)),
+                notification_type,
             ).event_data
 
-        except (ValueError, AttributeError) as error:
-            logger.error(
-                "%s unable to deserialize WebSocket notification: (%s : %s) with error: (%s : %s)",
+        except (ValueError, AttributeError):
+            logger.exception(
+                "%s unable to deserialize WebSocket notification: (%s : %s)",
                 self.host,
                 notification_type,
                 notification,
-                type(error),
-                error,
             )
             return
 
@@ -398,259 +496,356 @@ class MozartClient(MozartApi):
         if triggered_notification:
             await self._trigger_callback(triggered_notification, deserialized_data)
 
-    async def _trigger_callback(self, callback, *args):
+    async def _trigger_callback(
+        self,
+        callback: Callable,
+        *args: BaseWebSocketResponse | dict | str | WebSocketEventType,
+    ) -> None:
         """Trigger async or sync callback correctly."""
         if asyncio.iscoroutinefunction(callback):
             await callback(*args)
         else:
             callback(*args)
 
-    def get_on_connection_lost(self, on_connection_lost) -> None:
-        """Callback for WebSocket connection lost."""
+    def get_on_connection_lost(self, on_connection_lost: Callable) -> None:
+        """Set callback for WebSocket connection lost."""
         self._on_connection_lost = on_connection_lost
 
-    def get_on_connection(self, on_connection) -> None:
-        """Callback for WebSocket connection."""
+    def get_on_connection(self, on_connection: Callable) -> None:
+        """Set callback for WebSocket connection."""
         self._on_connection = on_connection
 
-    def get_all_notifications(self, on_all_notifications) -> None:
-        """Callback for all notifications."""
+    def get_all_notifications(
+        self,
+        on_all_notifications: Callable[[WebSocketEventType, str], None],
+    ) -> None:
+        """Set callback for all notifications."""
         self._on_all_notifications = on_all_notifications
 
-    def get_all_notifications_raw(self, on_all_notifications_raw) -> None:
-        """Callback for all notifications as dict."""
+    def get_all_notifications_raw(
+        self,
+        on_all_notifications_raw: Callable[[BaseWebSocketResponse], None],
+    ) -> None:
+        """Set callback for all notifications as dict."""
         self._on_all_notifications_raw = on_all_notifications_raw
 
     # Generated section start
 
     def get_active_hdmi_input_signal_notifications(
-        self, on_active_hdmi_input_signal_notification
+        self,
+        on_active_hdmi_input_signal_notification: Callable[
+            [WebSocketEventActiveHdmiInputSignal], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventActiveHdmiInputSignal notifications."""
+        """Set callback for WebSocketEventActiveHdmiInputSignal notifications."""
         self._notification_callbacks["WebSocketEventActiveHdmiInputSignal"] = (
             on_active_hdmi_input_signal_notification
         )
 
     def get_active_listening_mode_notifications(
-        self, on_active_listening_mode_notification
+        self,
+        on_active_listening_mode_notification: Callable[
+            [WebSocketEventActiveListeningMode], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventActiveListeningMode notifications."""
+        """Set callback for WebSocketEventActiveListeningMode notifications."""
         self._notification_callbacks["WebSocketEventActiveListeningMode"] = (
             on_active_listening_mode_notification
         )
 
     def get_active_speaker_group_notifications(
-        self, on_active_speaker_group_notification
+        self,
+        on_active_speaker_group_notification: Callable[
+            [WebSocketEventActiveSpeakerGroup], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventActiveSpeakerGroup notifications."""
+        """Set callback for WebSocketEventActiveSpeakerGroup notifications."""
         self._notification_callbacks["WebSocketEventActiveSpeakerGroup"] = (
             on_active_speaker_group_notification
         )
 
-    def get_alarm_timer_notifications(self, on_alarm_timer_notification) -> None:
-        """Callback for WebSocketEventAlarmTimer notifications."""
+    def get_alarm_timer_notifications(
+        self, on_alarm_timer_notification: Callable[[WebSocketEventAlarmTimer], None]
+    ) -> None:
+        """Set callback for WebSocketEventAlarmTimer notifications."""
         self._notification_callbacks["WebSocketEventAlarmTimer"] = (
             on_alarm_timer_notification
         )
 
     def get_alarm_triggered_notifications(
-        self, on_alarm_triggered_notification
+        self,
+        on_alarm_triggered_notification: Callable[[WebSocketEventAlarmTriggered], None],
     ) -> None:
-        """Callback for WebSocketEventAlarmTriggered notifications."""
+        """Set callback for WebSocketEventAlarmTriggered notifications."""
         self._notification_callbacks["WebSocketEventAlarmTriggered"] = (
             on_alarm_triggered_notification
         )
 
-    def get_battery_notifications(self, on_battery_notification) -> None:
-        """Callback for WebSocketEventBattery notifications."""
+    def get_battery_notifications(
+        self, on_battery_notification: Callable[[WebSocketEventBattery], None]
+    ) -> None:
+        """Set callback for WebSocketEventBattery notifications."""
         self._notification_callbacks["WebSocketEventBattery"] = on_battery_notification
 
     def get_beo_remote_button_notifications(
-        self, on_beo_remote_button_notification
+        self,
+        on_beo_remote_button_notification: Callable[
+            [WebSocketEventBeoRemoteButton], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventBeoRemoteButton notifications."""
+        """Set callback for WebSocketEventBeoRemoteButton notifications."""
         self._notification_callbacks["WebSocketEventBeoRemoteButton"] = (
             on_beo_remote_button_notification
         )
 
     def get_beolink_experiences_result_notifications(
-        self, on_beolink_experiences_result_notification
+        self,
+        on_beolink_experiences_result_notification: Callable[
+            [WebSocketEventBeolinkExperiencesResult], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventBeolinkExperiencesResult notifications."""
+        """Set callback for WebSocketEventBeolinkExperiencesResult notifications."""
         self._notification_callbacks["WebSocketEventBeolinkExperiencesResult"] = (
             on_beolink_experiences_result_notification
         )
 
     def get_beolink_join_result_notifications(
-        self, on_beolink_join_result_notification
+        self,
+        on_beolink_join_result_notification: Callable[
+            [WebSocketEventBeolinkJoinResult], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventBeolinkJoinResult notifications."""
+        """Set callback for WebSocketEventBeolinkJoinResult notifications."""
         self._notification_callbacks["WebSocketEventBeolinkJoinResult"] = (
             on_beolink_join_result_notification
         )
 
-    def get_button_notifications(self, on_button_notification) -> None:
-        """Callback for WebSocketEventButton notifications."""
+    def get_button_notifications(
+        self, on_button_notification: Callable[[WebSocketEventButton], None]
+    ) -> None:
+        """Set callback for WebSocketEventButton notifications."""
         self._notification_callbacks["WebSocketEventButton"] = on_button_notification
 
-    def get_curtains_notifications(self, on_curtains_notification) -> None:
-        """Callback for WebSocketEventCurtains notifications."""
+    def get_curtains_notifications(
+        self, on_curtains_notification: Callable[[WebSocketEventCurtains], None]
+    ) -> None:
+        """Set callback for WebSocketEventCurtains notifications."""
         self._notification_callbacks["WebSocketEventCurtains"] = (
             on_curtains_notification
         )
 
     def get_hdmi_video_format_signal_notifications(
-        self, on_hdmi_video_format_signal_notification
+        self,
+        on_hdmi_video_format_signal_notification: Callable[
+            [WebSocketEventHdmiVideoFormatSignal], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventHdmiVideoFormatSignal notifications."""
+        """Set callback for WebSocketEventHdmiVideoFormatSignal notifications."""
         self._notification_callbacks["WebSocketEventHdmiVideoFormatSignal"] = (
             on_hdmi_video_format_signal_notification
         )
 
-    def get_notification_notifications(self, on_notification_notification) -> None:
-        """Callback for WebSocketEventNotification notifications."""
+    def get_notification_notifications(
+        self, on_notification_notification: Callable[[WebSocketEventNotification], None]
+    ) -> None:
+        """Set callback for WebSocketEventNotification notifications."""
         self._notification_callbacks["WebSocketEventNotification"] = (
             on_notification_notification
         )
 
-    def get_playback_error_notifications(self, on_playback_error_notification) -> None:
-        """Callback for WebSocketEventPlaybackError notifications."""
+    def get_playback_error_notifications(
+        self,
+        on_playback_error_notification: Callable[[WebSocketEventPlaybackError], None],
+    ) -> None:
+        """Set callback for WebSocketEventPlaybackError notifications."""
         self._notification_callbacks["WebSocketEventPlaybackError"] = (
             on_playback_error_notification
         )
 
     def get_playback_metadata_notifications(
-        self, on_playback_metadata_notification
+        self,
+        on_playback_metadata_notification: Callable[
+            [WebSocketEventPlaybackMetadata], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventPlaybackMetadata notifications."""
+        """Set callback for WebSocketEventPlaybackMetadata notifications."""
         self._notification_callbacks["WebSocketEventPlaybackMetadata"] = (
             on_playback_metadata_notification
         )
 
     def get_playback_progress_notifications(
-        self, on_playback_progress_notification
+        self,
+        on_playback_progress_notification: Callable[
+            [WebSocketEventPlaybackProgress], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventPlaybackProgress notifications."""
+        """Set callback for WebSocketEventPlaybackProgress notifications."""
         self._notification_callbacks["WebSocketEventPlaybackProgress"] = (
             on_playback_progress_notification
         )
 
     def get_playback_source_notifications(
-        self, on_playback_source_notification
+        self,
+        on_playback_source_notification: Callable[[WebSocketEventPlaybackSource], None],
     ) -> None:
-        """Callback for WebSocketEventPlaybackSource notifications."""
+        """Set callback for WebSocketEventPlaybackSource notifications."""
         self._notification_callbacks["WebSocketEventPlaybackSource"] = (
             on_playback_source_notification
         )
 
-    def get_playback_state_notifications(self, on_playback_state_notification) -> None:
-        """Callback for WebSocketEventPlaybackState notifications."""
+    def get_playback_state_notifications(
+        self,
+        on_playback_state_notification: Callable[[WebSocketEventPlaybackState], None],
+    ) -> None:
+        """Set callback for WebSocketEventPlaybackState notifications."""
         self._notification_callbacks["WebSocketEventPlaybackState"] = (
             on_playback_state_notification
         )
 
-    def get_power_state_notifications(self, on_power_state_notification) -> None:
-        """Callback for WebSocketEventPowerState notifications."""
+    def get_power_state_notifications(
+        self, on_power_state_notification: Callable[[WebSocketEventPowerState], None]
+    ) -> None:
+        """Set callback for WebSocketEventPowerState notifications."""
         self._notification_callbacks["WebSocketEventPowerState"] = (
             on_power_state_notification
         )
 
     def get_powerlink_connection_state_notifications(
-        self, on_powerlink_connection_state_notification
+        self,
+        on_powerlink_connection_state_notification: Callable[
+            [WebSocketEventPowerlinkConnectionState], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventPowerlinkConnectionState notifications."""
+        """Set callback for WebSocketEventPowerlinkConnectionState notifications."""
         self._notification_callbacks["WebSocketEventPowerlinkConnectionState"] = (
             on_powerlink_connection_state_notification
         )
 
     def get_puc_install_remote_id_status_notifications(
-        self, on_puc_install_remote_id_status_notification
+        self,
+        on_puc_install_remote_id_status_notification: Callable[
+            [WebSocketEventPucInstallRemoteIdStatus], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventPucInstallRemoteIdStatus notifications."""
+        """Set callback for WebSocketEventPucInstallRemoteIdStatus notifications."""
         self._notification_callbacks["WebSocketEventPucInstallRemoteIdStatus"] = (
             on_puc_install_remote_id_status_notification
         )
 
-    def get_role_notifications(self, on_role_notification) -> None:
-        """Callback for WebSocketEventRole notifications."""
+    def get_role_notifications(
+        self, on_role_notification: Callable[[WebSocketEventRole], None]
+    ) -> None:
+        """Set callback for WebSocketEventRole notifications."""
         self._notification_callbacks["WebSocketEventRole"] = on_role_notification
 
     def get_room_compensation_current_measurement_event_notifications(
-        self, on_room_compensation_current_measurement_event_notification
+        self,
+        on_room_compensation_current_measurement_event_notification: Callable[
+            [WebSocketEventRoomCompensationCurrentMeasurementEvent], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventRoomCompensationCurrentMeasurementEvent notifications."""
+        """Set callback for WebSocketEventRoomCompensationCurrentMeasurementEvent notifications."""
         self._notification_callbacks[
             "WebSocketEventRoomCompensationCurrentMeasurementEvent"
         ] = on_room_compensation_current_measurement_event_notification
 
     def get_room_compensation_state_notifications(
-        self, on_room_compensation_state_notification
+        self,
+        on_room_compensation_state_notification: Callable[
+            [WebSocketEventRoomCompensationState], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventRoomCompensationState notifications."""
+        """Set callback for WebSocketEventRoomCompensationState notifications."""
         self._notification_callbacks["WebSocketEventRoomCompensationState"] = (
             on_room_compensation_state_notification
         )
 
     def get_software_update_state_notifications(
-        self, on_software_update_state_notification
+        self,
+        on_software_update_state_notification: Callable[
+            [WebSocketEventSoftwareUpdateState], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventSoftwareUpdateState notifications."""
+        """Set callback for WebSocketEventSoftwareUpdateState notifications."""
         self._notification_callbacks["WebSocketEventSoftwareUpdateState"] = (
             on_software_update_state_notification
         )
 
-    def get_sound_settings_notifications(self, on_sound_settings_notification) -> None:
-        """Callback for WebSocketEventSoundSettings notifications."""
+    def get_sound_settings_notifications(
+        self,
+        on_sound_settings_notification: Callable[[WebSocketEventSoundSettings], None],
+    ) -> None:
+        """Set callback for WebSocketEventSoundSettings notifications."""
         self._notification_callbacks["WebSocketEventSoundSettings"] = (
             on_sound_settings_notification
         )
 
-    def get_source_change_notifications(self, on_source_change_notification) -> None:
-        """Callback for WebSocketEventSourceChange notifications."""
+    def get_source_change_notifications(
+        self,
+        on_source_change_notification: Callable[[WebSocketEventSourceChange], None],
+    ) -> None:
+        """Set callback for WebSocketEventSourceChange notifications."""
         self._notification_callbacks["WebSocketEventSourceChange"] = (
             on_source_change_notification
         )
 
     def get_speaker_group_changed_notifications(
-        self, on_speaker_group_changed_notification
+        self,
+        on_speaker_group_changed_notification: Callable[
+            [WebSocketEventSpeakerGroupChanged], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventSpeakerGroupChanged notifications."""
+        """Set callback for WebSocketEventSpeakerGroupChanged notifications."""
         self._notification_callbacks["WebSocketEventSpeakerGroupChanged"] = (
             on_speaker_group_changed_notification
         )
 
     def get_speaker_link_status_changed_notifications(
-        self, on_speaker_link_status_changed_notification
+        self,
+        on_speaker_link_status_changed_notification: Callable[
+            [WebSocketEventSpeakerLinkStatusChanged], None
+        ],
     ) -> None:
-        """Callback for WebSocketEventSpeakerLinkStatusChanged notifications."""
+        """Set callback for WebSocketEventSpeakerLinkStatusChanged notifications."""
         self._notification_callbacks["WebSocketEventSpeakerLinkStatusChanged"] = (
             on_speaker_link_status_changed_notification
         )
 
     def get_stand_connected_notifications(
-        self, on_stand_connected_notification
+        self,
+        on_stand_connected_notification: Callable[[WebSocketEventStandConnected], None],
     ) -> None:
-        """Callback for WebSocketEventStandConnected notifications."""
+        """Set callback for WebSocketEventStandConnected notifications."""
         self._notification_callbacks["WebSocketEventStandConnected"] = (
             on_stand_connected_notification
         )
 
-    def get_stand_position_notifications(self, on_stand_position_notification) -> None:
-        """Callback for WebSocketEventStandPosition notifications."""
+    def get_stand_position_notifications(
+        self,
+        on_stand_position_notification: Callable[[WebSocketEventStandPosition], None],
+    ) -> None:
+        """Set callback for WebSocketEventStandPosition notifications."""
         self._notification_callbacks["WebSocketEventStandPosition"] = (
             on_stand_position_notification
         )
 
-    def get_tv_info_notifications(self, on_tv_info_notification) -> None:
-        """Callback for WebSocketEventTvInfo notifications."""
+    def get_tv_info_notifications(
+        self, on_tv_info_notification: Callable[[WebSocketEventTvInfo], None]
+    ) -> None:
+        """Set callback for WebSocketEventTvInfo notifications."""
         self._notification_callbacks["WebSocketEventTvInfo"] = on_tv_info_notification
 
-    def get_volume_notifications(self, on_volume_notification) -> None:
-        """Callback for WebSocketEventVolume notifications."""
+    def get_volume_notifications(
+        self, on_volume_notification: Callable[[WebSocketEventVolume], None]
+    ) -> None:
+        """Set callback for WebSocketEventVolume notifications."""
         self._notification_callbacks["WebSocketEventVolume"] = on_volume_notification
 
-    def get_wisa_out_state_notifications(self, on_wisa_out_state_notification) -> None:
-        """Callback for WebSocketEventWisaOutState notifications."""
+    def get_wisa_out_state_notifications(
+        self,
+        on_wisa_out_state_notification: Callable[[WebSocketEventWisaOutState], None],
+    ) -> None:
+        """Set callback for WebSocketEventWisaOutState notifications."""
         self._notification_callbacks["WebSocketEventWisaOutState"] = (
             on_wisa_out_state_notification
         )

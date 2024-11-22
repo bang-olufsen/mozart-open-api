@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mozart_api"
-version = "4.1.1.116.0"
+version = "4.1.1.116.1"
 description = "Mozart platform API"
 authors = [
     "BangOlufsen <support@bang-olufsen.dk>",
@@ -32,14 +32,13 @@ exclude = [
 [tool.poetry.dependencies]
 urllib3 = ">= 1.25.3"
 python-dateutil = ">=2.8.2"
-aiohttp = ">=3.8.3"
+aiohttp = "<4,>=3.8.3"
 pydantic = ">=1.10"
 aenum = ">=3.1.11"
 aioconsole = ">=0.4.1"
 inflection = ">=0.5.1"
 typing-extensions = ">=4.7.1"
 zeroconf = ">=0.25.1"
-websockets = ">=12.0"
 python = ">=3.11"
 
 [tool.poetry.dev-dependencies]
