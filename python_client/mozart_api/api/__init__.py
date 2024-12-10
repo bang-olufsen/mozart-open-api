@@ -18,3 +18,24 @@ from mozart_api.api.sound_api import SoundApi
 from mozart_api.api.speaker_group_api import SpeakerGroupApi
 from mozart_api.api.stand_api import StandApi
 from mozart_api.api.mozart_api import MozartApi
+
+
+__all__ = [
+    "BeolinkApi",
+    "BluetoothApi",
+    "ContentApi",
+    "DeezerApi",
+    "OutputApi",
+    "OverlayApi",
+    "PlaybackApi",
+    "PowerApi",
+    "ProductApi",
+    "RemoteApi",
+    "ScenesApi",
+    "SettingsApi",
+    "SoftwareUpdateApi",
+    "SoundApi",
+    "SpeakerGroupApi",
+    "StandApi",
+    "MozartApi",
+]

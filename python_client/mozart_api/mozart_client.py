@@ -7,18 +7,18 @@ import logging
 import re
 from collections import defaultdict
 from collections.abc import Awaitable, Callable
-from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
 from datetime import time
 from ssl import SSLContext
 from types import TracebackType
-from typing import Literal, TypedDict
+from typing import Literal, Self, TypedDict
 
 from aiohttp import ClientSession, ClientTimeout
 from aiohttp.client_exceptions import (
     ClientConnectorError,
     ClientOSError,
     ServerTimeoutError,
+    WSMessageTypeError,
 )
 from inflection import underscore
 
@@ -258,8 +258,8 @@ class MozartClient(MozartApi):
         self._websocket_listeners_active = False
         self._websocket_tasks: set[asyncio.Task] = set()
 
-        self._on_connection_lost: Callable | None = None
-        self._on_connection: Callable | None = None
+        self._on_connection_lost: Callable[[None], Awaitable[None] | None] | None = None
+        self._on_connection: Callable[[None], Awaitable[None] | None] | None = None
 
         self._on_all_notifications: (
             Callable[[WebSocketEventType, str], Awaitable[None] | None] | None
@@ -292,7 +292,7 @@ class MozartClient(MozartApi):
         """Close the API ClientSession."""
         await self.api_client.close()
 
-    async def __aenter__(self) -> AbstractAsyncContextManager:
+    async def __aenter__(self) -> Self:
         """Context entry."""
         if self.api_client.rest_client.pool_manager.closed:
             self.api_client = ApiClient(self.configuration)
@@ -309,18 +309,21 @@ class MozartClient(MozartApi):
 
     async def _check_websocket_connection(
         self,
-    ) -> Literal[True] | ClientConnectorError | ClientOSError | ServerTimeoutError:
+    ) -> (
+        Literal[True]
+        | ClientConnectorError
+        | ClientOSError
+        | ServerTimeoutError
+        | WSMessageTypeError
+        | TimeoutError
+    ):
         """Try to connect to the device's WebSocket notification channel."""
         try:
             async with (
                 ClientSession(
                     timeout=ClientTimeout(total=WEBSOCKET_TIMEOUT),
                 ) as session,
-                session.ws_connect(
-                    f"ws://{self.host}:9339/",
-                    timeout=WEBSOCKET_TIMEOUT,
-                    receive_timeout=WEBSOCKET_TIMEOUT,
-                ) as websocket,
+                session.ws_connect(f"ws://{self.host}:9339/") as websocket,
             ):
                 if await websocket.receive():
                     return True
@@ -341,26 +344,21 @@ class MozartClient(MozartApi):
 
     async def check_device_connection(self, raise_error: bool = False) -> bool:
         """Check API and WebSocket connection."""
-        # Don't use a taskgroup as both tasks should always be checked
-        tasks: tuple[
-            asyncio.Task[
-                Literal[True]
-                | ClientConnectorError
-                | ClientOSError
-                | ServerTimeoutError
-            ],
-            asyncio.Task[
-                Literal[True] | ApiException | ClientConnectorError | TimeoutError
-            ],
-        ] = (
-            asyncio.create_task(self._check_websocket_connection(), name="websocket"),
-            asyncio.create_task(self._check_api_connection(), name="REST API"),
+        results: tuple[
+            # WebSocket exceptions
+            Literal[True]
+            | ClientConnectorError
+            | ClientOSError
+            | ServerTimeoutError
+            | TimeoutError
+            | WSMessageTypeError,
+            # REST exceptions
+            Literal[True] | ApiException | ClientConnectorError | TimeoutError,
+        ] = await asyncio.gather(
+            self._check_websocket_connection(),
+            self._check_api_connection(),
+            return_exceptions=True,
         )
-
-        # Wait for tasks to complete
-        for task in tasks:
-            while not task.done():
-                await asyncio.sleep(0)
 
         errors: list[
             ClientConnectorError
@@ -368,7 +366,8 @@ class MozartClient(MozartApi):
             | ServerTimeoutError
             | ApiException
             | TimeoutError
-        ] = [result for task in tasks if (result := task.result()) is not True]
+            | WSMessageTypeError
+        ] = [result for result in results if result is not True]
 
         connection_available = bool(len(errors) == 0)
 
@@ -445,9 +444,8 @@ class MozartClient(MozartApi):
                         with contextlib.suppress(asyncio.TimeoutError):
                             # Receive JSON in order to get the
                             # Websocket notification name for deserialization
-                            notification = await asyncio.wait_for(
-                                websocket.receive_json(),
-                                timeout=WEBSOCKET_TIMEOUT,
+                            notification = await websocket.receive_json(
+                                timeout=WEBSOCKET_TIMEOUT
                             )
 
                             # Ensure that any notifications received after the
@@ -465,8 +463,9 @@ class MozartClient(MozartApi):
             except (
                 ClientConnectorError,
                 ClientOSError,
-                TypeError,
                 ServerTimeoutError,
+                TimeoutError,
+                WSMessageTypeError,
             ) as error:
                 if self.websocket_connected:
                     logger.debug("%s : %s - %s", host, type(error), error)
@@ -526,7 +525,7 @@ class MozartClient(MozartApi):
         # Handle specific notifications if defined
         triggered_notification = self._notification_callbacks[notification_type]
 
-        if triggered_notification:
+        if triggered_notification is not None:
             await self._trigger_callback(triggered_notification, deserialized_data)
 
     async def _trigger_callback(
