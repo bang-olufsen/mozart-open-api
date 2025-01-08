@@ -179,7 +179,7 @@ WebSocketEventType = type[
 
 # Generated section end
 
-WEBSOCKET_TIMEOUT = 5.0
+TIMEOUT = 5.0
 
 logger = logging.getLogger(__name__)
 
@@ -321,14 +321,19 @@ class MozartClient(MozartApi):
         try:
             async with (
                 ClientSession(
-                    timeout=ClientTimeout(total=WEBSOCKET_TIMEOUT),
+                    timeout=ClientTimeout(total=TIMEOUT),
                 ) as session,
                 session.ws_connect(f"ws://{self.host}:9339/") as websocket,
             ):
                 if await websocket.receive():
                     return True
 
-        except (ClientConnectorError, ClientOSError, ServerTimeoutError) as error:
+        except (
+            ClientConnectorError,
+            ClientOSError,
+            ServerTimeoutError,
+            WSMessageTypeError,
+        ) as error:
             return error
 
     async def _check_api_connection(
@@ -428,11 +433,11 @@ class MozartClient(MozartApi):
             try:
                 async with (
                     ClientSession(
-                        timeout=ClientTimeout(total=WEBSOCKET_TIMEOUT),
+                        timeout=ClientTimeout(total=TIMEOUT),
                     ) as session,
                     session.ws_connect(
                         url=host,
-                        heartbeat=WEBSOCKET_TIMEOUT,
+                        heartbeat=TIMEOUT,
                     ) as websocket,
                 ):
                     self.websocket_connected = True
@@ -444,9 +449,7 @@ class MozartClient(MozartApi):
                         with contextlib.suppress(asyncio.TimeoutError):
                             # Receive JSON in order to get the
                             # Websocket notification name for deserialization
-                            notification = await websocket.receive_json(
-                                timeout=WEBSOCKET_TIMEOUT
-                            )
+                            notification = await websocket.receive_json(timeout=TIMEOUT)
 
                             # Ensure that any notifications received after the
                             # disconnect command has been executed are not processed
@@ -479,7 +482,7 @@ class MozartClient(MozartApi):
                     self.disconnect_notifications()
                     return
 
-                await asyncio.sleep(WEBSOCKET_TIMEOUT)
+                await asyncio.sleep(TIMEOUT)
 
     @dataclass
     class _ResponseWrapper:
@@ -909,3 +912,18 @@ class MozartClient(MozartApi):
         )
 
     # Generated section end
+    async def async_get_beolink_join_result(
+        self, join_request_id: str
+    ) -> BeolinkJoinResult | None:
+        """Get `get_beolink_join_result` asynchronously with a timeout."""
+        try:
+            async with asyncio.timeout(TIMEOUT):
+                while True:
+                    # get_beolink_join_result will raise ApiException
+                    # if a join result is not available
+                    try:
+                        return await self.get_beolink_join_result(join_request_id)
+                    except ApiException:
+                        await asyncio.sleep(0.1)
+        except TimeoutError:
+            return None

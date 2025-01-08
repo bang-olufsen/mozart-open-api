@@ -2,8 +2,8 @@
 
 import argparse
 import asyncio
+import contextlib
 import ipaddress
-import re
 import sys
 import threading
 from dataclasses import dataclass
@@ -14,7 +14,11 @@ from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
 
 from mozart_api import __version__
 from mozart_api.models import BeolinkJoinRequest, VolumeLevel, VolumeMute
-from mozart_api.mozart_client import MozartClient, WebSocketEventType
+from mozart_api.mozart_client import (
+    MozartClient,
+    WebSocketEventType,
+    check_valid_serial_number,
+)
 
 MOZART_MDNS_TYPE: Final[str] = "_bangolufsen._tcp.local."
 MDNS_TIMEOUT: Final[int] = 10
@@ -130,6 +134,18 @@ def discover_devices(mode: str, timeout: int, verbose: bool) -> list[MozartDevic
     return mozart_devices
 
 
+def parse_mode(mode: str) -> None:
+    """Parse mode input."""
+    # Check for valid mode, serial number or IP address
+    if (
+        mode in (DISCOVER_MODE, VERSION_MODE)
+        or check_valid_serial_number(mode)
+        or ipaddress.ip_address(mode)
+    ):
+        return mode
+    raise argparse.ArgumentTypeError
+
+
 def init_argument_parser() -> argparse.ArgumentParser:
     """Initialize  and add arguments."""
     parser = argparse.ArgumentParser(
@@ -161,7 +177,7 @@ def init_argument_parser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         "mode",
-        choices=(DISCOVER_MODE, VERSION_MODE),
+        type=parse_mode,
         help=f"""Specify the serial number or IP address for command execution
                 ,'{DISCOVER_MODE}' for Zeroconf discovery of Mozart devices or "{VERSION_MODE}" to get the API client version.""",
     )
@@ -213,17 +229,9 @@ class MozartApiCli:
             sys.exit(0)
 
         # Check if the mode defined is an ip address
-        try:
+        with contextlib.suppress(ValueError):
             ipaddress.ip_address(self.mode)
             self.host = self.mode
-        except ValueError as exception:
-            # Ensure that the mode's serial number
-            # has the correct format or 'discover' mode.
-            if self.mode != DISCOVER_MODE and re.fullmatch(r"\d{8}", self.mode) is None:
-                # Check if the mode is then an ip address
-                msg = f""""{self.mode}" has an invalid value.
-                    Must either be a serial number, ip address, "{DISCOVER_MODE}" or "{VERSION_MODE}"."""
-                raise ValueError(msg) from exception
 
         # Discover devices if host has not been defined
         if not self.host:
