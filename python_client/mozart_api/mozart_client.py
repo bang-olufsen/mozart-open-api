@@ -8,7 +8,6 @@ import re
 from collections import defaultdict
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from datetime import time
 from ssl import SSLContext
 from types import TracebackType
 from typing import Literal, Self, TypedDict
@@ -25,7 +24,7 @@ from inflection import underscore
 from mozart_api.api.mozart_api import MozartApi
 from mozart_api.api_client import ApiClient
 from mozart_api.configuration import Configuration
-from mozart_api.exceptions import ApiException
+from mozart_api.exceptions import ApiException, NotFoundException
 
 # Generated section start
 from mozart_api.models import (
@@ -184,21 +183,18 @@ TIMEOUT = 5.0
 logger = logging.getLogger(__name__)
 
 
-def refactor_name(notification_type: str) -> str:
+def refactor_notification_name(notification_type: str) -> str:
     """Remove WebSocketEvent prefix from string and convert to snake_case."""
     return underscore(notification_type.removeprefix("WebSocketEvent"))
 
 
-def time_to_seconds(time_object: time) -> int:
-    """Convert time object to number of seconds."""
-    return (time_object.hour * 60 * 60) + (time_object.minute * 60) + time_object.second
-
-
 def check_valid_jid(jid: str) -> bool:
     """Check if a JID is valid."""
-    pattern = re.compile(r"(^\d{4})[.](\d{7})[.](\d{8})(@products\.bang-olufsen\.com)$")
-
-    return pattern.fullmatch(jid) is not None
+    return bool(
+        re.fullmatch(
+            r"(^\d{4})[.](\d{7})[.](\d{8})(@products\.bang-olufsen\.com)$", jid
+        )
+    )
 
 
 def check_valid_serial_number(serial_number: str) -> bool:
@@ -519,7 +515,7 @@ class MozartClient(MozartApi):
             await self._trigger_callback(
                 self._on_all_notifications,
                 notification,
-                refactor_name(notification_type),
+                refactor_notification_name(notification_type),
             )
 
         if self._on_all_notifications_raw:
@@ -927,3 +923,25 @@ class MozartClient(MozartApi):
                         await asyncio.sleep(0.1)
         except TimeoutError:
             return None
+
+    async def async_post_beolink_expand(
+        self, jid: str
+    ) -> Literal[True] | ApiException | NotFoundException | TimeoutError:
+        """Get `post_beolink_expand` join result asynchronously with a timeout."""
+        try:
+            await self.post_beolink_expand(jid=jid)
+        except (ApiException, NotFoundException) as e:
+            return e
+
+        # Verify that the expansion was successful by checking listeners
+        try:
+            async with asyncio.timeout(TIMEOUT):
+                while True:
+                    await asyncio.sleep(0.1)
+
+                    if jid in [
+                        listener.jid for listener in await self.get_beolink_listeners()
+                    ]:
+                        return True
+        except TimeoutError as e:
+            return e
