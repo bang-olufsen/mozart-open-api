@@ -47,6 +47,7 @@ from mozart_api.models.beolink_self import BeolinkSelf
 from mozart_api.models.bluetooth_device import BluetoothDevice
 from mozart_api.models.bluetooth_device_list import BluetoothDeviceList
 from mozart_api.models.button_event import ButtonEvent
+from mozart_api.models.channel_survey_status import ChannelSurveyStatus
 from mozart_api.models.compression import Compression
 from mozart_api.models.compression_feature import CompressionFeature
 from mozart_api.models.compression_range import CompressionRange
@@ -70,7 +71,6 @@ from mozart_api.models.listening_mode import ListeningMode
 from mozart_api.models.listening_mode_features import ListeningModeFeatures
 from mozart_api.models.listening_mode_props import ListeningModeProps
 from mozart_api.models.listening_mode_ref import ListeningModeRef
-from mozart_api.models.listening_mode_trigger import ListeningModeTrigger
 from mozart_api.models.loudness import Loudness
 from mozart_api.models.microphone_state import MicrophoneState
 from mozart_api.models.microphones_state import MicrophonesState
@@ -181,6 +181,7 @@ from mozart_api.models.tone_touch_y_feature import ToneTouchYFeature
 from mozart_api.models.treble import Treble
 from mozart_api.models.treble_feature import TrebleFeature
 from mozart_api.models.treble_range import TrebleRange
+from mozart_api.models.tv_bn_o_mode_status import TvBnOModeStatus
 from mozart_api.models.tv_info_event_data import TvInfoEventData
 from mozart_api.models.tv_integration_types import TvIntegrationTypes
 from mozart_api.models.tv_properties import TvProperties
@@ -218,6 +219,9 @@ from mozart_api.models.web_socket_event_beolink_join_result import (
     WebSocketEventBeolinkJoinResult,
 )
 from mozart_api.models.web_socket_event_button import WebSocketEventButton
+from mozart_api.models.web_socket_event_channel_survey_status import (
+    WebSocketEventChannelSurveyStatus,
+)
 from mozart_api.models.web_socket_event_curtains import WebSocketEventCurtains
 from mozart_api.models.web_socket_event_hdmi_video_format_signal import (
     WebSocketEventHdmiVideoFormatSignal,
@@ -271,6 +275,7 @@ from mozart_api.models.web_socket_event_stand_connected import (
 from mozart_api.models.web_socket_event_stand_position import (
     WebSocketEventStandPosition,
 )
+from mozart_api.models.web_socket_event_tv_bn_o_mode import WebSocketEventTvBnOMode
 from mozart_api.models.web_socket_event_tv_info import WebSocketEventTvInfo
 from mozart_api.models.web_socket_event_volume import WebSocketEventVolume
 from mozart_api.models.web_socket_event_wisa_out_state import WebSocketEventWisaOutState
@@ -311,6 +316,7 @@ __all__ = [
     "BluetoothDevice",
     "BluetoothDeviceList",
     "ButtonEvent",
+    "ChannelSurveyStatus",
     "Compression",
     "CompressionFeature",
     "CompressionRange",
@@ -334,7 +340,6 @@ __all__ = [
     "ListeningModeFeatures",
     "ListeningModeProps",
     "ListeningModeRef",
-    "ListeningModeTrigger",
     "Loudness",
     "MicrophoneState",
     "MicrophonesState",
@@ -431,6 +436,7 @@ __all__ = [
     "Treble",
     "TrebleFeature",
     "TrebleRange",
+    "TvBnOModeStatus",
     "TvInfoEventData",
     "TvIntegrationTypes",
     "TvProperties",
@@ -454,6 +460,7 @@ __all__ = [
     "WebSocketEventBeolinkExperiencesResult",
     "WebSocketEventBeolinkJoinResult",
     "WebSocketEventButton",
+    "WebSocketEventChannelSurveyStatus",
     "WebSocketEventCurtains",
     "WebSocketEventHdmiVideoFormatSignal",
     "WebSocketEventNotification",
@@ -475,6 +482,7 @@ __all__ = [
     "WebSocketEventSpeakerLinkStatusChanged",
     "WebSocketEventStandConnected",
     "WebSocketEventStandPosition",
+    "WebSocketEventTvBnOMode",
     "WebSocketEventTvInfo",
     "WebSocketEventVolume",
     "WebSocketEventWisaOutState",

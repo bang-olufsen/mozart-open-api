@@ -33,7 +33,7 @@ except ImportError:
     from pydantic import BaseModel, Field, StrictStr, conint, conlist, constr, validator
 
 from mozart_api.models.listening_mode_features import ListeningModeFeatures
-from mozart_api.models.listening_mode_trigger import ListeningModeTrigger
+from mozart_api.models.power_link_trigger import PowerLinkTrigger
 
 
 class ListeningMode(BaseModel):
@@ -46,9 +46,9 @@ class ListeningMode(BaseModel):
         alias="clientCtx",
         description="An optional generic string property supplied from the client. If provided, it will be stored without changes. If not supplied, any current clientCtx will remain unchanged. ",
     )
-    features: ListeningModeFeatures = Field(...)
-    id: conint(strict=True, ge=0) = Field(...)
-    name: StrictStr = Field(default=..., description="Friendly name")
+    features: Optional[ListeningModeFeatures] = None
+    id: Optional[conint(strict=True, ge=0)] = None
+    name: Optional[StrictStr] = Field(default=None, description="Friendly name")
     origin: Optional[StrictStr] = Field(
         default=None,
         description="User created, default or an edited default listening mode",
@@ -56,7 +56,7 @@ class ListeningMode(BaseModel):
     role: Optional[StrictStr] = Field(
         default=None, description="Role a listening mode applies to"
     )
-    triggers: conlist(ListeningModeTrigger) = Field(...)
+    triggers: Optional[conlist(PowerLinkTrigger)] = None
     __properties = ["clientCtx", "features", "id", "name", "origin", "role", "triggers"]
 
     @validator("origin")
@@ -153,8 +153,7 @@ class ListeningMode(BaseModel):
                 "origin": obj.get("origin"),
                 "role": obj.get("role"),
                 "triggers": [
-                    ListeningModeTrigger.from_dict(_item)
-                    for _item in obj.get("triggers")
+                    PowerLinkTrigger.from_dict(_item) for _item in obj.get("triggers")
                 ]
                 if obj.get("triggers") is not None
                 else None,

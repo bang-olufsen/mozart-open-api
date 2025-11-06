@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mozart_api"
-version = "4.1.1.116.6"
+version = "5.1.0.247.0"
 description = "Mozart platform API"
 authors = [
     "BangOlufsen <support@bang-olufsen.dk>",

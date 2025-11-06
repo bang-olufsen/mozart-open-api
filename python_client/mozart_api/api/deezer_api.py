@@ -31,8 +31,6 @@ except ImportError:
     from pydantic import Field
 
 
-from typing import Optional
-
 from mozart_api.api_client import ApiClient
 from mozart_api.api_response import ApiResponse
 from mozart_api.exceptions import ApiTypeError, ApiValueError  # noqa: F401
@@ -54,15 +52,13 @@ class DeezerApi:
     @validate_arguments
     async def start_deezer_flow(
         self,
-        user_flow: Annotated[
-            Optional[UserFlow], Field(description="Select user")
-        ] = None,
+        user_flow: Annotated[UserFlow, Field(..., description="Select user")],
         **kwargs,
     ) -> None:  # noqa: E501
         """Play users flow. If no provided user id it will play the flow connected to the active account  # noqa: E501
 
 
-        :param user_flow: Select user
+        :param user_flow: Select user (required)
         :type user_flow: UserFlow
         :param _request_timeout: timeout setting for this request.
                If one number provided, it will be total request
@@ -82,15 +78,13 @@ class DeezerApi:
     @validate_arguments
     async def start_deezer_flow_with_http_info(
         self,
-        user_flow: Annotated[
-            Optional[UserFlow], Field(description="Select user")
-        ] = None,
+        user_flow: Annotated[UserFlow, Field(..., description="Select user")],
         **kwargs,
     ) -> ApiResponse:  # noqa: E501
         """Play users flow. If no provided user id it will play the flow connected to the active account  # noqa: E501
 
 
-        :param user_flow: Select user
+        :param user_flow: Select user (required)
         :type user_flow: UserFlow
         :param _preload_content: if False, the ApiResponse.data will
                                  be set to none and raw_data will store the

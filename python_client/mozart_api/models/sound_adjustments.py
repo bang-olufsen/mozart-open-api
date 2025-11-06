@@ -76,6 +76,11 @@ class SoundAdjustments(BaseModel):
     def to_dict(self):
         """Returns the dictionary representation of the model using alias"""
         _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+        # set to None if directivity (nullable) is None
+        # and __fields_set__ contains the field
+        if self.directivity is None and "directivity" in self.__fields_set__:
+            _dict["directivity"] = None
+
         return _dict
 
     @classmethod

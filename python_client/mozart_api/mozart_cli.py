@@ -269,7 +269,9 @@ class MozartApiCli:
         if self.websocket:
             print("Connecting to WebSocket channel")
             self.mozart_client.get_all_notifications(self.all_notifications)
-            await self.mozart_client.connect_notifications(remote_control=True)
+            await self.mozart_client.connect_notifications(
+                remote_control=True, reconnect=True
+            )
 
         # Handle command
         await self._command_handler()
@@ -311,10 +313,10 @@ class MozartApiCli:
     def all_notifications(
         self,
         notification: WebSocketEventType,
-        notification_type: str,
+        _: str,
     ) -> None:
         """Handle all notifications."""
-        print(notification_type, notification)
+        print(notification)
 
     async def _command_handler(self) -> None:
         """Handle commands."""

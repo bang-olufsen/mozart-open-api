@@ -506,6 +506,19 @@ components:
                 remainingPlayingTimeMinutes:
                     description: Remaining playing time in minutes
                     type: integer
+                state:
+                    enum:
+                    - BatteryFull
+                    - BatteryMedium
+                    - BatteryLow
+                    - BatteryVeryLow
+                    - Charging
+                    - ChargingInputError
+                    - ChargingDischargedError
+                    - ChargingTemperatureError
+                    - ChargingBatteryError
+                    - BatteryNotPresent
+                    type: string
             type: object
         BeoRemoteButton:
             properties:
@@ -765,6 +778,17 @@ components:
                     type: string
                 state:
                     description: identifies the state change
+                    type: string
+            type: object
+        ChannelSurveyStatus:
+            properties:
+                status:
+                    enum:
+                    - started
+                    - startedui
+                    - finished
+                    - aborted
+                    - failed
                     type: string
             type: object
         Compression:
@@ -1546,6 +1570,18 @@ components:
                     $ref: '#/components/schemas/SoundSettings'
                 source:
                     $ref: '#/components/schemas/Source'
+                systemState:
+                    enum:
+                    - error
+                    - booted
+                    - firmwareUpdate
+                    - idle
+                    - initializing
+                    - playback
+                    - roomCompensation
+                    - selfDiagnostics
+                    - shuttingDown
+                    type: string
                 tv:
                     $ref: '#/components/schemas/TvState'
                 volume:
@@ -2148,6 +2184,7 @@ components:
                     format: int32
                     type: integer
                 directivity:
+                    nullable: true
                     type: string
                 ecoMode:
                     type: boolean
@@ -2215,6 +2252,7 @@ components:
                     type: number
                 z:
                     format: double
+                    nullable: true
                     type: number
             type: object
         Source:
@@ -2579,7 +2617,6 @@ components:
             - health
             - serialNumber
             - updatedAt
-            - productName
             - networkType
             type: object
         SpeakerLinkStatus:
@@ -2742,6 +2779,17 @@ components:
             - default
             - range
             type: object
+        TvBnOModeStatus:
+            nullable: true
+            properties:
+                value:
+                    enum:
+                    - disabled
+                    - enabled
+                    - pendingDisable
+                    - pendingEnable
+                    type: string
+            type: object
         TvInfoEventData:
             properties:
                 integration:
@@ -2866,7 +2914,7 @@ components:
                     $ref: '#/components/schemas/VolumeMute'
             type: object
         WebSocketEventActiveHdmiInputSignal:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -2889,7 +2937,7 @@ components:
                     """React on WebSocketEventActiveHdmiInputSignal events."""
 
                     def active_hdmi_input_signal_notifications(notification: HdmiInput):
-                        """ActiveHdmiInputSignal notification handler."""
+                        """WebSocketEventActiveHdmiInputSignal notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -2942,7 +2990,7 @@ components:
                     type: string
             type: object
         WebSocketEventActiveListeningMode:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -2965,7 +3013,7 @@ components:
                     """React on WebSocketEventActiveListeningMode events."""
 
                     def active_listening_mode_notifications(notification: ListeningModeProps):
-                        """ActiveListeningMode notification handler."""
+                        """WebSocketEventActiveListeningMode notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3018,7 +3066,7 @@ components:
                     type: string
             type: object
         WebSocketEventActiveSpeakerGroup:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3041,7 +3089,7 @@ components:
                     """React on WebSocketEventActiveSpeakerGroup events."""
 
                     def active_speaker_group_notifications(notification: SpeakerGroupOverview):
-                        """ActiveSpeakerGroup notification handler."""
+                        """WebSocketEventActiveSpeakerGroup notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3094,7 +3142,7 @@ components:
                     type: string
             type: object
         WebSocketEventAlarmTimer:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3117,7 +3165,7 @@ components:
                     """React on WebSocketEventAlarmTimer events."""
 
                     def alarm_timer_notifications(notification: AlarmTimerEventData):
-                        """AlarmTimer notification handler."""
+                        """WebSocketEventAlarmTimer notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3170,7 +3218,7 @@ components:
                     type: string
             type: object
         WebSocketEventAlarmTriggered:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3193,7 +3241,7 @@ components:
                     """React on WebSocketEventAlarmTriggered events."""
 
                     def alarm_triggered_notifications(notification: AlarmTriggeredInfo):
-                        """AlarmTriggered notification handler."""
+                        """WebSocketEventAlarmTriggered notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3246,7 +3294,7 @@ components:
                     type: string
             type: object
         WebSocketEventBattery:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3269,7 +3317,7 @@ components:
                     """React on WebSocketEventBattery events."""
 
                     def battery_notifications(notification: BatteryState):
-                        """Battery notification handler."""
+                        """WebSocketEventBattery notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3322,7 +3370,7 @@ components:
                     type: string
             type: object
         WebSocketEventBeoRemoteButton:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3345,7 +3393,7 @@ components:
                     """React on WebSocketEventBeoRemoteButton events."""
 
                     def beo_remote_button_notifications(notification: BeoRemoteButton):
-                        """BeoRemoteButton notification handler."""
+                        """WebSocketEventBeoRemoteButton notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3398,7 +3446,7 @@ components:
                     type: string
             type: object
         WebSocketEventBeolinkExperiencesResult:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3421,7 +3469,7 @@ components:
                     """React on WebSocketEventBeolinkExperiencesResult events."""
 
                     def beolink_experiences_result_notifications(notification: BeolinkExperiencesResult):
-                        """BeolinkExperiencesResult notification handler."""
+                        """WebSocketEventBeolinkExperiencesResult notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3477,7 +3525,7 @@ components:
             - eventData
             type: object
         WebSocketEventBeolinkJoinResult:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3500,7 +3548,7 @@ components:
                     """React on WebSocketEventBeolinkJoinResult events."""
 
                     def beolink_join_result_notifications(notification: BeolinkJoinResult):
-                        """BeolinkJoinResult notification handler."""
+                        """WebSocketEventBeolinkJoinResult notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3556,7 +3604,7 @@ components:
             - eventData
             type: object
         WebSocketEventButton:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3579,7 +3627,7 @@ components:
                     """React on WebSocketEventButton events."""
 
                     def button_notifications(notification: ButtonEvent):
-                        """Button notification handler."""
+                        """WebSocketEventButton notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3631,8 +3679,84 @@ components:
                 eventType:
                     type: string
             type: object
+        WebSocketEventChannelSurveyStatus:
+            description: |-
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_channel_survey_status_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_channel_survey_status_notifications():
+                    """React on WebSocketEventChannelSurveyStatus events."""
+
+                    def channel_survey_status_notifications(notification: ChannelSurveyStatus):
+                        """WebSocketEventChannelSurveyStatus notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_channel_survey_status_notifications(channel_survey_status_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_channel_survey_status_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_channel_survey_status_notifications():
+                    """React on WebSocketEventChannelSurveyStatus events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventChannelSurveyStatus":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_channel_survey_status_notifications())
+                ```
+                <!-- type: tab-end -->
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/ChannelSurveyStatus'
+                eventType:
+                    type: string
+            type: object
         WebSocketEventCurtains:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3655,7 +3779,7 @@ components:
                     """React on WebSocketEventCurtains events."""
 
                     def curtains_notifications(notification: ProductCurtainStatus):
-                        """Curtains notification handler."""
+                        """WebSocketEventCurtains notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3708,7 +3832,7 @@ components:
                     type: string
             type: object
         WebSocketEventHdmiVideoFormatSignal:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3731,7 +3855,7 @@ components:
                     """React on WebSocketEventHdmiVideoFormatSignal events."""
 
                     def hdmi_video_format_signal_notifications(notification: HdmiVideoFormat):
-                        """HdmiVideoFormatSignal notification handler."""
+                        """WebSocketEventHdmiVideoFormatSignal notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3784,7 +3908,7 @@ components:
                     type: string
             type: object
         WebSocketEventNotification:
-            description: |
+            description: |-
                 This telegram is used to send a tagged notification.
                 Usage examples:
 
@@ -3808,7 +3932,7 @@ components:
                     """React on WebSocketEventNotification events."""
 
                     def notification_notifications(notification: WebsocketNotificationTag):
-                        """Notification notification handler."""
+                        """WebSocketEventNotification notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3861,7 +3985,7 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackError:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3884,7 +4008,7 @@ components:
                     """React on WebSocketEventPlaybackError events."""
 
                     def playback_error_notifications(notification: PlaybackError):
-                        """PlaybackError notification handler."""
+                        """WebSocketEventPlaybackError notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -3937,7 +4061,7 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackMetadata:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -3960,7 +4084,7 @@ components:
                     """React on WebSocketEventPlaybackMetadata events."""
 
                     def playback_metadata_notifications(notification: PlaybackContentMetadata):
-                        """PlaybackMetadata notification handler."""
+                        """WebSocketEventPlaybackMetadata notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4013,7 +4137,7 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackProgress:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4036,7 +4160,7 @@ components:
                     """React on WebSocketEventPlaybackProgress events."""
 
                     def playback_progress_notifications(notification: PlaybackProgress):
-                        """PlaybackProgress notification handler."""
+                        """WebSocketEventPlaybackProgress notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4089,7 +4213,7 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackSource:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4112,7 +4236,7 @@ components:
                     """React on WebSocketEventPlaybackSource events."""
 
                     def playback_source_notifications(notification: Source):
-                        """PlaybackSource notification handler."""
+                        """WebSocketEventPlaybackSource notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4165,7 +4289,7 @@ components:
                     type: string
             type: object
         WebSocketEventPlaybackState:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4188,7 +4312,7 @@ components:
                     """React on WebSocketEventPlaybackState events."""
 
                     def playback_state_notifications(notification: RenderingState):
-                        """PlaybackState notification handler."""
+                        """WebSocketEventPlaybackState notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4241,7 +4365,7 @@ components:
                     type: string
             type: object
         WebSocketEventPowerState:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4264,7 +4388,7 @@ components:
                     """React on WebSocketEventPowerState events."""
 
                     def power_state_notifications(notification: PowerStateEnum):
-                        """PowerState notification handler."""
+                        """WebSocketEventPowerState notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4317,7 +4441,7 @@ components:
                     type: string
             type: object
         WebSocketEventPowerlinkConnectionState:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4340,7 +4464,7 @@ components:
                     """React on WebSocketEventPowerlinkConnectionState events."""
 
                     def powerlink_connection_state_notifications(notification: PowerlinkConnectionStateEnum):
-                        """PowerlinkConnectionState notification handler."""
+                        """WebSocketEventPowerlinkConnectionState notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4393,7 +4517,7 @@ components:
                     type: string
             type: object
         WebSocketEventPucInstallRemoteIdStatus:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4416,7 +4540,7 @@ components:
                     """React on WebSocketEventPucInstallRemoteIdStatus events."""
 
                     def puc_install_remote_id_status_notifications(notification: InstallRecordIdState):
-                        """PucInstallRemoteIdStatus notification handler."""
+                        """WebSocketEventPucInstallRemoteIdStatus notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4469,7 +4593,7 @@ components:
                     type: string
             type: object
         WebSocketEventRole:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4492,7 +4616,7 @@ components:
                     """React on WebSocketEventRole events."""
 
                     def role_notifications(notification: SpeakerRoleEnum):
-                        """Role notification handler."""
+                        """WebSocketEventRole notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4545,7 +4669,7 @@ components:
                     type: string
             type: object
         WebSocketEventRoomCompensationCurrentMeasurementEvent:
-            description: |
+            description: |-
                 Sent when a room compensation measurement is started/done.
                 Is only sent when room compensation type is advanced.
 
@@ -4571,7 +4695,7 @@ components:
                     """React on WebSocketEventRoomCompensationCurrentMeasurementEvent events."""
 
                     def room_compensation_current_measurement_event_notifications(notification: RoomCompensationCurrentMeasurement):
-                        """RoomCompensationCurrentMeasurementEvent notification handler."""
+                        """WebSocketEventRoomCompensationCurrentMeasurementEvent notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4624,7 +4748,7 @@ components:
                     type: string
             type: object
         WebSocketEventRoomCompensationState:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4647,7 +4771,7 @@ components:
                     """React on WebSocketEventRoomCompensationState events."""
 
                     def room_compensation_state_notifications(notification: RoomCompensationStateValue):
-                        """RoomCompensationState notification handler."""
+                        """WebSocketEventRoomCompensationState notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4700,7 +4824,7 @@ components:
                     type: string
             type: object
         WebSocketEventSoftwareUpdateState:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4723,7 +4847,7 @@ components:
                     """React on WebSocketEventSoftwareUpdateState events."""
 
                     def software_update_state_notifications(notification: SoftwareUpdateState):
-                        """SoftwareUpdateState notification handler."""
+                        """WebSocketEventSoftwareUpdateState notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4776,7 +4900,7 @@ components:
                     type: string
             type: object
         WebSocketEventSoundSettings:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4799,7 +4923,7 @@ components:
                     """React on WebSocketEventSoundSettings events."""
 
                     def sound_settings_notifications(notification: SoundSettings):
-                        """SoundSettings notification handler."""
+                        """WebSocketEventSoundSettings notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4852,7 +4976,7 @@ components:
                     type: string
             type: object
         WebSocketEventSourceChange:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4875,7 +4999,7 @@ components:
                     """React on WebSocketEventSourceChange events."""
 
                     def source_change_notifications(notification: Source):
-                        """SourceChange notification handler."""
+                        """WebSocketEventSourceChange notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -4928,7 +5052,7 @@ components:
                     type: string
             type: object
         WebSocketEventSpeakerGroupChanged:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -4951,7 +5075,7 @@ components:
                     """React on WebSocketEventSpeakerGroupChanged events."""
 
                     def speaker_group_changed_notifications(notification: str):
-                        """SpeakerGroupChanged notification handler."""
+                        """WebSocketEventSpeakerGroupChanged notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -5004,7 +5128,7 @@ components:
                     type: string
             type: object
         WebSocketEventSpeakerLinkStatusChanged:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -5027,7 +5151,7 @@ components:
                     """React on WebSocketEventSpeakerLinkStatusChanged events."""
 
                     def speaker_link_status_changed_notifications(notification: SpeakerLinkStatus):
-                        """SpeakerLinkStatusChanged notification handler."""
+                        """WebSocketEventSpeakerLinkStatusChanged notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -5080,7 +5204,7 @@ components:
                     type: string
             type: object
         WebSocketEventStandConnected:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -5103,7 +5227,7 @@ components:
                     """React on WebSocketEventStandConnected events."""
 
                     def stand_connected_notifications(notification: StandConnected):
-                        """StandConnected notification handler."""
+                        """WebSocketEventStandConnected notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -5156,7 +5280,7 @@ components:
                     type: string
             type: object
         WebSocketEventStandPosition:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -5179,7 +5303,7 @@ components:
                     """React on WebSocketEventStandPosition events."""
 
                     def stand_position_notifications(notification: StandPosition):
-                        """StandPosition notification handler."""
+                        """WebSocketEventStandPosition notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -5231,8 +5355,84 @@ components:
                 eventType:
                     type: string
             type: object
+        WebSocketEventTvBnOMode:
+            description: |-
+                Usage examples:
+
+                <!--
+                type: tab
+                title: Python API
+                -->
+
+                Use the `get_tv_bn_o_mode_notifications()` method in the Python package to get notifications of this type.
+
+                <!-- title: "Python API usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from mozart_api.mozart_client import MozartClient
+
+                async def receive_tv_bn_o_mode_notifications():
+                    """React on WebSocketEventTvBnOMode events."""
+
+                    def tv_bn_o_mode_notifications(notification: TvBnOModeStatus):
+                        """WebSocketEventTvBnOMode notification handler."""
+                        print(notification)
+
+                    async with MozartClient(host="192.168.0.1") as mozart_client:
+                        mozart_client.get_tv_bn_o_mode_notifications(tv_bn_o_mode_notifications)
+                        await mozart_client.connect_notifications()
+
+                        # Receive notifications
+                        while True:
+                            await asyncio.sleep(0)
+
+                asyncio.run(receive_tv_bn_o_mode_notifications())
+                ```
+
+                <!--
+                type: tab
+                title: Python AIOHTTP
+                -->
+
+                Use the AIOHTTP library to get notifications of this type.
+
+                <!-- title: "Python AIOHTTP usage"
+                lineNumbers: true
+                -->
+
+                ```python
+                import asyncio
+
+                from aiohttp import ClientSession
+
+
+                async def receive_tv_bn_o_mode_notifications():
+                    """React on WebSocketEventTvBnOMode events."""
+                    async with (
+                        ClientSession() as session,
+                        session.ws_connect(url="ws://192.168.0.1:9339/") as websocket,
+                    ):
+                        async for notification in websocket:
+                            notification = notification.json()
+
+                            if notification["eventType"] == "WebSocketEventTvBnOMode":
+                                print(notification["eventData"])
+
+                asyncio.run(receive_tv_bn_o_mode_notifications())
+                ```
+                <!-- type: tab-end -->
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/TvBnOModeStatus'
+                eventType:
+                    type: string
+            type: object
         WebSocketEventTvInfo:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -5255,7 +5455,7 @@ components:
                     """React on WebSocketEventTvInfo events."""
 
                     def tv_info_notifications(notification: TvInfoEventData):
-                        """TvInfo notification handler."""
+                        """WebSocketEventTvInfo notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -5308,7 +5508,7 @@ components:
                     type: string
             type: object
         WebSocketEventVolume:
-            description: |
+            description: |-
                 Usage examples:
 
                 <!--
@@ -5331,7 +5531,7 @@ components:
                     """React on WebSocketEventVolume events."""
 
                     def volume_notifications(notification: VolumeState):
-                        """Volume notification handler."""
+                        """WebSocketEventVolume notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -5384,7 +5584,7 @@ components:
                     type: string
             type: object
         WebSocketEventWisaOutState:
-            description: |
+            description: |-
                 Speaker Discovery State changed
                 Usage examples:
 
@@ -5408,7 +5608,7 @@ components:
                     """React on WebSocketEventWisaOutState events."""
 
                     def wisa_out_state_notifications(notification: WisaOutState):
-                        """WisaOutState notification handler."""
+                        """WebSocketEventWisaOutState notification handler."""
                         print(notification)
 
                     async with MozartClient(host="192.168.0.1") as mozart_client:
@@ -5508,7 +5708,7 @@ info:
         The Mozart API is an async REST API with WebSocket notification channel for\
         \ immediate state information from Mozart devices. Currently the API is distributed\
         \ as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI\
-        \ document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-4.1.1.116.yaml).\n\
+        \ document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-5.1.0.247.yaml).\n\
         \n\nSupported by:\n- [Beoconnect Core](https://www.bang-olufsen.com/en/dk/accessories/beoconnect-core)\n\
         - [Beolab 8](https://www.bang-olufsen.com/en/dk/speakers/beolab-8)\n- [Beolab\
         \ 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)\n- [Beosound\
@@ -5518,11 +5718,12 @@ info:
         \ [Beosound Balance](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance)\n\
         - [Beosound Emerge](https://www.bang-olufsen.com/en/dk/speakers/beosound-emerge)\n\
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
+        - [Beosound Premiere](https://www.bang-olufsen.com/en/dk/soundbars/beosound-premiere)\n\
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
-        \n\nThis API documentation has been generated for version 4.1.1.116 of the\
-        \ Mozart platform and API generation version 4.1.1.116.6.\n\n## Python API\n\
-        \nThe Python package has been generated using the [OpenAPI Generator](https:/openapi-generator.tech/)\
-        \ version 7.10.0. On top of the generated API, a helper file, mozart_client.py,\
+        \n\nThis API documentation has been generated for version 5.1.0.247 of the\
+        \ Mozart platform and API generation version 5.1.0.247.0.\n\n## Python API\n\
+        The Python package has been generated using the [OpenAPI Generator](https://openapi-generator.tech/)\
+        \ version 7.17.0. On top of the generated API, a helper file, mozart_client.py,\
         \ has been made that makes the API more pythonic. We recommend using this.\n\
         \nAnother file, mozart_cli.py, has been made for using the Mozart API in a\
         \ simple CLI program. This has been set as the \"entry point\" for the Python\
@@ -6327,6 +6528,7 @@ paths:
                         schema:
                             $ref: '#/components/schemas/UserFlow'
                 description: Select user
+                required: true
             responses:
                 '201':
                     description: successful request
@@ -7306,6 +7508,12 @@ paths:
             responses:
                 '204':
                     description: Listening mode active
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Cannot activate listening mode
                 '404':
                     $ref: '#/components/responses/MissingListeningMode'
             summary: Activate a listening mode

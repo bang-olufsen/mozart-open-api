@@ -20,9 +20,16 @@ import re  # noqa: F401
 from typing import Optional
 
 try:
-    from pydantic.v1 import BaseModel, Field, StrictBool, StrictInt
+    from pydantic.v1 import (
+        BaseModel,
+        Field,
+        StrictBool,
+        StrictInt,
+        StrictStr,
+        validator,
+    )
 except ImportError:
-    from pydantic import BaseModel, Field, StrictBool, StrictInt
+    from pydantic import BaseModel, Field, StrictBool, StrictInt, StrictStr, validator
 
 
 class BatteryState(BaseModel):
@@ -44,12 +51,37 @@ class BatteryState(BaseModel):
         alias="remainingPlayingTimeMinutes",
         description="Remaining playing time in minutes",
     )
+    state: Optional[StrictStr] = None
     __properties = [
         "batteryLevel",
         "isCharging",
         "remainingChargingTimeMinutes",
         "remainingPlayingTimeMinutes",
+        "state",
     ]
+
+    @validator("state")
+    def state_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in (
+            "BatteryFull",
+            "BatteryMedium",
+            "BatteryLow",
+            "BatteryVeryLow",
+            "Charging",
+            "ChargingInputError",
+            "ChargingDischargedError",
+            "ChargingTemperatureError",
+            "ChargingBatteryError",
+            "BatteryNotPresent",
+        ):
+            raise ValueError(
+                "must be one of enum values ('BatteryFull', 'BatteryMedium', 'BatteryLow', 'BatteryVeryLow', 'Charging', 'ChargingInputError', 'ChargingDischargedError', 'ChargingTemperatureError', 'ChargingBatteryError', 'BatteryNotPresent')"
+            )
+        return value
 
     class Config:
         """Pydantic configuration"""
@@ -94,6 +126,7 @@ class BatteryState(BaseModel):
                 "remaining_playing_time_minutes": obj.get(
                     "remainingPlayingTimeMinutes"
                 ),
+                "state": obj.get("state"),
             }
         )
         return _obj

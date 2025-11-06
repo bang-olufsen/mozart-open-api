@@ -17,23 +17,39 @@ from __future__ import annotations
 import json
 import pprint
 import re  # noqa: F401
-from typing import Optional, Union
+from typing import Optional
 
 try:
-    from pydantic.v1 import BaseModel, StrictFloat, StrictInt
+    from pydantic.v1 import BaseModel, StrictStr, validator
 except ImportError:
-    from pydantic import BaseModel, StrictFloat, StrictInt
+    from pydantic import BaseModel, StrictStr, validator
 
 
-class SoundToneTouch(BaseModel):
+class ChannelSurveyStatus(BaseModel):
     """
-    SoundToneTouch
+    ChannelSurveyStatus
     """
 
-    x: Optional[Union[StrictFloat, StrictInt]] = None
-    y: Optional[Union[StrictFloat, StrictInt]] = None
-    z: Optional[Union[StrictFloat, StrictInt]] = None
-    __properties = ["x", "y", "z"]
+    status: Optional[StrictStr] = None
+    __properties = ["status"]
+
+    @validator("status")
+    def status_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in (
+            "started",
+            "startedui",
+            "finished",
+            "aborted",
+            "failed",
+        ):
+            raise ValueError(
+                "must be one of enum values ('started', 'startedui', 'finished', 'aborted', 'failed')"
+            )
+        return value
 
     class Config:
         """Pydantic configuration"""
@@ -50,30 +66,23 @@ class SoundToneTouch(BaseModel):
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> SoundToneTouch:
-        """Create an instance of SoundToneTouch from a JSON string"""
+    def from_json(cls, json_str: str) -> ChannelSurveyStatus:
+        """Create an instance of ChannelSurveyStatus from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self):
         """Returns the dictionary representation of the model using alias"""
         _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
-        # set to None if z (nullable) is None
-        # and __fields_set__ contains the field
-        if self.z is None and "z" in self.__fields_set__:
-            _dict["z"] = None
-
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> SoundToneTouch:
-        """Create an instance of SoundToneTouch from a dict"""
+    def from_dict(cls, obj: dict) -> ChannelSurveyStatus:
+        """Create an instance of ChannelSurveyStatus from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return SoundToneTouch.parse_obj(obj)
+            return ChannelSurveyStatus.parse_obj(obj)
 
-        _obj = SoundToneTouch.parse_obj(
-            {"x": obj.get("x"), "y": obj.get("y"), "z": obj.get("z")}
-        )
+        _obj = ChannelSurveyStatus.parse_obj({"status": obj.get("status")})
         return _obj

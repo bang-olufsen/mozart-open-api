@@ -20,9 +20,9 @@ import re  # noqa: F401
 from typing import Optional
 
 try:
-    from pydantic.v1 import BaseModel, Field
+    from pydantic.v1 import BaseModel, Field, StrictStr, validator
 except ImportError:
-    from pydantic import BaseModel, Field
+    from pydantic import BaseModel, Field, StrictStr, validator
 
 from mozart_api.models.microphones_state import MicrophonesState
 from mozart_api.models.playback_state import PlaybackState
@@ -47,6 +47,7 @@ class ProductState(BaseModel):
     )
     sound_settings: Optional[SoundSettings] = Field(default=None, alias="soundSettings")
     source: Optional[Source] = None
+    system_state: Optional[StrictStr] = Field(default=None, alias="systemState")
     tv: Optional[TvState] = None
     volume: Optional[VolumeState] = None
     __properties = [
@@ -56,9 +57,32 @@ class ProductState(BaseModel):
         "softwareUpdateState",
         "soundSettings",
         "source",
+        "systemState",
         "tv",
         "volume",
     ]
+
+    @validator("system_state")
+    def system_state_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in (
+            "error",
+            "booted",
+            "firmwareUpdate",
+            "idle",
+            "initializing",
+            "playback",
+            "roomCompensation",
+            "selfDiagnostics",
+            "shuttingDown",
+        ):
+            raise ValueError(
+                "must be one of enum values ('error', 'booted', 'firmwareUpdate', 'idle', 'initializing', 'playback', 'roomCompensation', 'selfDiagnostics', 'shuttingDown')"
+            )
+        return value
 
     class Config:
         """Pydantic configuration"""
@@ -139,6 +163,7 @@ class ProductState(BaseModel):
                 "source": Source.from_dict(obj.get("source"))
                 if obj.get("source") is not None
                 else None,
+                "system_state": obj.get("systemState"),
                 "tv": TvState.from_dict(obj.get("tv"))
                 if obj.get("tv") is not None
                 else None,

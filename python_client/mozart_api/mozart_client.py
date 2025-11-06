@@ -36,6 +36,7 @@ from mozart_api.models import (
     BeolinkJoinResult,
     BeoRemoteButton,
     ButtonEvent,
+    ChannelSurveyStatus,
     HdmiInput,
     HdmiVideoFormat,
     InstallRecordIdState,
@@ -57,6 +58,7 @@ from mozart_api.models import (
     SpeakerRoleEnum,
     StandConnected,
     StandPosition,
+    TvBnOModeStatus,
     TvInfoEventData,
     VolumeState,
     WebSocketEventActiveHdmiInputSignal,
@@ -69,6 +71,7 @@ from mozart_api.models import (
     WebSocketEventBeolinkJoinResult,
     WebSocketEventBeoRemoteButton,
     WebSocketEventButton,
+    WebSocketEventChannelSurveyStatus,
     WebSocketEventCurtains,
     WebSocketEventHdmiVideoFormatSignal,
     WebSocketEventNotification,
@@ -90,6 +93,7 @@ from mozart_api.models import (
     WebSocketEventSpeakerLinkStatusChanged,
     WebSocketEventStandConnected,
     WebSocketEventStandPosition,
+    WebSocketEventTvBnOMode,
     WebSocketEventTvInfo,
     WebSocketEventVolume,
     WebSocketEventWisaOutState,
@@ -113,6 +117,7 @@ NOTIFICATION_TYPES = {
     "beolink_experiences_result",
     "beolink_join_result",
     "button",
+    "channel_survey_status",
     "curtains",
     "hdmi_video_format_signal",
     "notification",
@@ -134,6 +139,7 @@ NOTIFICATION_TYPES = {
     "speaker_link_status_changed",
     "stand_connected",
     "stand_position",
+    "tv_bn_o_mode",
     "tv_info",
     "volume",
     "wisa_out_state",
@@ -150,6 +156,7 @@ WebSocketEventType = type[
     | WebSocketEventBeolinkExperiencesResult
     | WebSocketEventBeolinkJoinResult
     | WebSocketEventButton
+    | WebSocketEventChannelSurveyStatus
     | WebSocketEventCurtains
     | WebSocketEventHdmiVideoFormatSignal
     | WebSocketEventNotification
@@ -171,6 +178,7 @@ WebSocketEventType = type[
     | WebSocketEventSpeakerLinkStatusChanged
     | WebSocketEventStandConnected
     | WebSocketEventStandPosition
+    | WebSocketEventTvBnOMode
     | WebSocketEventTvInfo
     | WebSocketEventVolume
     | WebSocketEventWisaOutState
@@ -237,7 +245,7 @@ class BaseWebSocketResponse(TypedDict):
     """Base class for serialized WebSocket notifications."""
 
     eventType: str
-    eventDate: dict
+    eventData: dict
 
 
 class MozartClient(MozartApi):
@@ -666,6 +674,17 @@ class MozartClient(MozartApi):
         """Set callback for WebSocketEventButton notifications."""
         self._notification_callbacks["WebSocketEventButton"] = on_button_notification
 
+    def get_channel_survey_status_notifications(
+        self,
+        on_channel_survey_status_notification: Callable[
+            [ChannelSurveyStatus], Awaitable[None] | None
+        ],
+    ) -> None:
+        """Set callback for WebSocketEventChannelSurveyStatus notifications."""
+        self._notification_callbacks["WebSocketEventChannelSurveyStatus"] = (
+            on_channel_survey_status_notification
+        )
+
     def get_curtains_notifications(
         self,
         on_curtains_notification: Callable[
@@ -883,6 +902,17 @@ class MozartClient(MozartApi):
             on_stand_position_notification
         )
 
+    def get_tv_bn_o_mode_notifications(
+        self,
+        on_tv_bn_o_mode_notification: Callable[
+            [TvBnOModeStatus], Awaitable[None] | None
+        ],
+    ) -> None:
+        """Set callback for WebSocketEventTvBnOMode notifications."""
+        self._notification_callbacks["WebSocketEventTvBnOMode"] = (
+            on_tv_bn_o_mode_notification
+        )
+
     def get_tv_info_notifications(
         self,
         on_tv_info_notification: Callable[[TvInfoEventData], Awaitable[None] | None],
@@ -908,6 +938,7 @@ class MozartClient(MozartApi):
         )
 
     # Generated section end
+
     async def async_get_beolink_join_result(
         self, join_request_id: str
     ) -> BeolinkJoinResult | None:

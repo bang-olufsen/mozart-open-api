@@ -367,6 +367,19 @@ components:
                 remainingPlayingTimeMinutes:
                     description: Remaining playing time in minutes
                     type: integer
+                state:
+                    enum:
+                    - BatteryFull
+                    - BatteryMedium
+                    - BatteryLow
+                    - BatteryVeryLow
+                    - Charging
+                    - ChargingInputError
+                    - ChargingDischargedError
+                    - ChargingTemperatureError
+                    - ChargingBatteryError
+                    - BatteryNotPresent
+                    type: string
             type: object
         BeoRemoteButton:
             properties:
@@ -629,6 +642,17 @@ components:
                     type: string
                 state:
                     description: identifies the state change
+                    type: string
+            type: object
+        ChannelSurveyStatus:
+            properties:
+                status:
+                    enum:
+                    - started
+                    - startedui
+                    - finished
+                    - aborted
+                    - failed
                     type: string
             type: object
         Compression:
@@ -1467,6 +1491,18 @@ components:
                     $ref: '#/components/schemas/SoundSettings'
                 source:
                     $ref: '#/components/schemas/Source'
+                systemState:
+                    enum:
+                    - error
+                    - booted
+                    - firmwareUpdate
+                    - idle
+                    - initializing
+                    - playback
+                    - roomCompensation
+                    - selfDiagnostics
+                    - shuttingDown
+                    type: string
                 tv:
                     $ref: '#/components/schemas/TvState'
                 volume:
@@ -2108,6 +2144,7 @@ components:
                     format: int32
                     type: integer
                 directivity:
+                    nullable: true
                     type: string
                 ecoMode:
                     type: boolean
@@ -2175,6 +2212,7 @@ components:
                     type: number
                 z:
                     format: double
+                    nullable: true
                     type: number
             type: object
         Source:
@@ -2564,7 +2602,6 @@ components:
             - health
             - serialNumber
             - updatedAt
-            - productName
             - networkType
             type: object
         SpeakerLinkStatus:
@@ -2726,6 +2763,17 @@ components:
             required:
             - default
             - range
+            type: object
+        TvBnOModeStatus:
+            nullable: true
+            properties:
+                value:
+                    enum:
+                    - disabled
+                    - enabled
+                    - pendingDisable
+                    - pendingEnable
+                    type: string
             type: object
         TvInfoEventData:
             properties:
@@ -2926,6 +2974,13 @@ components:
                 eventType:
                     type: string
             type: object
+        WebSocketEventChannelSurveyStatus:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/ChannelSurveyStatus'
+                eventType:
+                    type: string
+            type: object
         WebSocketEventCurtains:
             properties:
                 eventData:
@@ -3076,6 +3131,13 @@ components:
             properties:
                 eventData:
                     $ref: '#/components/schemas/StandPosition'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventTvBnOMode:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/TvBnOModeStatus'
                 eventType:
                     type: string
             type: object
@@ -3580,6 +3642,7 @@ paths:
                         schema:
                             $ref: '#/components/schemas/UserFlow'
                 description: Select user
+                required: true
             responses:
                 '201':
                     description: successful request
@@ -4244,6 +4307,12 @@ paths:
             responses:
                 '204':
                     description: Listening mode active
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: Cannot activate listening mode
                 '404':
                     $ref: '#/components/responses/MissingListeningMode'
             summary: Activate a listening mode
