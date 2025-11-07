@@ -1,23 +1,21 @@
-[tool.poetry]
+[project]
 name = "mozart_api"
-version = "5.1.0.247.0"
+version = "5.1.0.247.1"
 description = "Mozart platform API"
-authors = [
-    "BangOlufsen <support@bang-olufsen.dk>",
-]
-license = "MIT"
+authors = [{ name = "BangOlufsen", email = "support@bang-olufsen.dk" }]
 readme = "README.md"
-repository = "https://github.com/bang-olufsen/mozart-open-api"
-keywords = [
-    "OpenAPI",
-    "OpenAPI-Generator",
-    "Mozart platform API",
+keywords = ["OpenAPI", "OpenAPI-Generator", "Mozart platform API"]
+requires-python = ">=3.11"
+dependencies = [
+    "python-dateutil (>=2.8.2)",
+    "aiohttp-retry (>=2.8.3)",
+    "pydantic (>=2)",
+    "typing-extensions (>=4.7.1)",
+    "aioconsole (>=0.4.1)",
+    "aiohttp (>=3.11.0)",
+    "zeroconf (>=0.25.1)",
+    "urllib3 (<3)",
 ]
-include = [
-    "mozart_api/py.typed",
-]
-homepage = "https://pypi.org/project/mozart-api/"
-documentation = "https://bang-olufsen.github.io/mozart-open-api/"
 classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -25,38 +23,19 @@ classifiers = [
     "Topic :: Multimedia",
     "Intended Audience :: Developers",
 ]
-exclude = [
-    "test",
-]
 
-[tool.poetry.dependencies]
-urllib3 = ">= 1.25.3"
-python-dateutil = ">=2.8.2"
-aiohttp = ">=3.11.0"
-pydantic = ">=1.10"
-aenum = ">=3.1.11"
-aioconsole = ">=0.4.1"
-inflection = ">=0.5.1"
-typing-extensions = ">=4.7.1"
-zeroconf = ">=0.25.1"
-python = ">=3.11"
+[project.license]
+text = "MIT"
 
-[tool.poetry.dev-dependencies]
-pytest = ">=7.2.1"
-tox = ">=3.9.0"
-flake8 = ">=4.0.0"
-
-[tool.poetry.urls]
+[project.urls]
+homepage = "https://pypi.org/project/mozart-api/"
+documentation = "https://bang-olufsen.github.io/mozart-open-api/"
+repository = "https://github.com/bang-olufsen/mozart-open-api"
 "Bug Tracker" = "https://github.com/bang-olufsen/mozart-open-api/issues"
 
-[tool.poetry.scripts]
+[project.scripts]
 mozart_api = "mozart_api.mozart_cli:MozartApiCli"
 
-[tool.pylint."MESSAGES CONTROL"]
-extension-pkg-whitelist = "pydantic"
-
 [build-system]
-requires = [
-    "poetry-core",
-]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

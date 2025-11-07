@@ -46,9 +46,9 @@ class ListeningMode(BaseModel):
         alias="clientCtx",
         description="An optional generic string property supplied from the client. If provided, it will be stored without changes. If not supplied, any current clientCtx will remain unchanged. ",
     )
-    features: Optional[ListeningModeFeatures] = None
-    id: Optional[conint(strict=True, ge=0)] = None
-    name: Optional[StrictStr] = Field(default=None, description="Friendly name")
+    features: ListeningModeFeatures = Field(...)
+    id: conint(strict=True, ge=0) = Field(...)
+    name: StrictStr = Field(default=..., description="Friendly name")
     origin: Optional[StrictStr] = Field(
         default=None,
         description="User created, default or an edited default listening mode",
@@ -56,7 +56,7 @@ class ListeningMode(BaseModel):
     role: Optional[StrictStr] = Field(
         default=None, description="Role a listening mode applies to"
     )
-    triggers: Optional[conlist(PowerLinkTrigger)] = None
+    triggers: conlist(PowerLinkTrigger) = Field(...)
     __properties = ["clientCtx", "features", "id", "name", "origin", "role", "triggers"]
 
     @validator("origin")

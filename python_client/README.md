@@ -10,6 +10,7 @@
 The Mozart API is an async REST API with WebSocket notification channel for immediate state information from Mozart devices. Currently the API is distributed as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-5.1.0.247.yaml).
 
 Supported by:
+
 - [Beoconnect Core](https://www.bang-olufsen.com/en/dk/accessories/beoconnect-core)
 - [Beolab 8](https://www.bang-olufsen.com/en/dk/speakers/beolab-8)
 - [Beolab 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)

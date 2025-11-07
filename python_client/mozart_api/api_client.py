@@ -77,17 +77,19 @@ class ApiClient:
         if configuration is None:
             configuration = Configuration.get_default()
         self.configuration = configuration
+
         # Add support for user-defined SSLContext through the RESTClientObject
         if rest_client is None:
             self.rest_client = rest.RESTClientObject(configuration)
         else:
             self.rest_client = rest_client
+
         self.default_headers = {}
         if header_name is not None:
             self.default_headers[header_name] = header_value
         self.cookie = cookie
         # Set default User-Agent.
-        self.user_agent = "OpenAPI-Generator/5.1.0.247.0/python"
+        self.user_agent = "OpenAPI-Generator/5.1.0.247.1/python"
         self.client_side_validation = configuration.client_side_validation
 
     async def __aenter__(self):

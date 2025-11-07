@@ -50,6 +50,16 @@ class MozartDevice:
     ip_address: str = ""
     sw_version: str = ""
 
+    def __str__(self) -> str:
+        """Format for easier viewing."""
+        return f"""
+friendly_name: {self.friendly_name}
+model_name: {self.model_name}
+serial_number: {self.serial_number}
+ip_address: {self.ip_address}
+sw_version: {self.sw_version}
+"""
+
 
 mozart_devices: list[MozartDevice] = []
 
@@ -81,9 +91,9 @@ class MozartListener(ServiceListener):
 
         # Create MozartDevice object from MDNS discovered information.
         ip_address = info.parsed_addresses()[0]
-        serial_number = cast(bytes, info.properties.get(b"sn")).decode("utf-8")
-        model_name = cast(str, info.server)[:-16].replace("-", " ")
-        sw_version = cast(bytes, info.properties.get(b"fv")).decode("utf-8")
+        serial_number = cast("bytes", info.properties.get(b"sn")).decode("utf-8")
+        model_name = cast("str", info.server)[:-16].replace("-", " ")
+        sw_version = cast("bytes", info.properties.get(b"fv")).decode("utf-8")
 
         friendly_name = info.properties.get(b"fn")
 
@@ -134,7 +144,7 @@ def discover_devices(mode: str, timeout: int, verbose: bool) -> list[MozartDevic
     return mozart_devices
 
 
-def parse_mode(mode: str) -> None:
+def parse_mode(mode: str) -> str:
     """Parse mode input."""
     # Check for valid mode, serial number or IP address
     if (
