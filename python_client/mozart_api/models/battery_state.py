@@ -38,7 +38,7 @@ class BatteryState(BaseModel):
     """
 
     battery_level: Optional[StrictInt] = Field(
-        default=None, alias="batteryLevel", description="Batterylevel in percent "
+        default=None, alias="batteryLevel", description="Battery level in percent "
     )
     is_charging: Optional[StrictBool] = Field(default=None, alias="isCharging")
     remaining_charging_time_minutes: Optional[StrictInt] = Field(

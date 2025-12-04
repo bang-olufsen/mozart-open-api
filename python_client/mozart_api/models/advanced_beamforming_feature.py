@@ -20,40 +20,26 @@ import re  # noqa: F401
 from typing import List
 
 try:
-    from pydantic.v1 import BaseModel, Field, StrictStr, conlist, validator
+    from pydantic.v1 import BaseModel, Field, StrictInt, conlist
 except ImportError:
-    from pydantic import BaseModel, Field, StrictStr, conlist, validator
+    from pydantic import BaseModel, Field, StrictInt, conlist
 
-from mozart_api.models.spatial_processing import SpatialProcessing
+from mozart_api.models.advanced_beamforming import AdvancedBeamforming
 
 
-class SpatialProcessingFeature(BaseModel):
+class AdvancedBeamformingFeature(BaseModel):
     """
-    SpatialProcessingFeature
+    AdvancedBeamformingFeature
     """
 
-    value: StrictStr = Field(
-        default=..., description="Selected spatial-processing value"
+    value: StrictInt = Field(
+        default=..., description="Selected Advanced Beamforming value"
     )
-    default: SpatialProcessing = Field(...)
-    range: conlist(SpatialProcessing, unique_items=True) = Field(
-        default=..., description="spatial-processing range"
+    default: AdvancedBeamforming = Field(...)
+    range: conlist(AdvancedBeamforming, unique_items=True) = Field(
+        default=..., description="Product and role specific Advanced Beamforming range"
     )
     __properties = ["value", "default", "range"]
-
-    @validator("value")
-    def value_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in (
-            "direct",
-            "trueimage",
-            "downmix",
-            "dolbymode",
-        ):
-            raise ValueError(
-                "must be one of enum values ('direct', 'trueimage', 'downmix', 'dolbymode')"
-            )
-        return value
 
     class Config:
         """Pydantic configuration"""
@@ -70,8 +56,8 @@ class SpatialProcessingFeature(BaseModel):
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> SpatialProcessingFeature:
-        """Create an instance of SpatialProcessingFeature from a JSON string"""
+    def from_json(cls, json_str: str) -> AdvancedBeamformingFeature:
+        """Create an instance of AdvancedBeamformingFeature from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self):
@@ -90,22 +76,22 @@ class SpatialProcessingFeature(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> SpatialProcessingFeature:
-        """Create an instance of SpatialProcessingFeature from a dict"""
+    def from_dict(cls, obj: dict) -> AdvancedBeamformingFeature:
+        """Create an instance of AdvancedBeamformingFeature from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return SpatialProcessingFeature.parse_obj(obj)
+            return AdvancedBeamformingFeature.parse_obj(obj)
 
-        _obj = SpatialProcessingFeature.parse_obj(
+        _obj = AdvancedBeamformingFeature.parse_obj(
             {
                 "value": obj.get("value"),
-                "default": SpatialProcessing.from_dict(obj.get("default"))
+                "default": AdvancedBeamforming.from_dict(obj.get("default"))
                 if obj.get("default") is not None
                 else None,
                 "range": [
-                    SpatialProcessing.from_dict(_item) for _item in obj.get("range")
+                    AdvancedBeamforming.from_dict(_item) for _item in obj.get("range")
                 ]
                 if obj.get("range") is not None
                 else None,

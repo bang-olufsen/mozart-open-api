@@ -507,9 +507,8 @@ class MozartClient(MozartApi):
 
         except (ValueError, AttributeError):
             logger.exception(
-                "%s unable to deserialize WebSocket notification: (%s : %s)",
+                "%s unable to deserialize WebSocket notification: %s",
                 self.host,
-                notification_type,
                 notification,
             )
             return

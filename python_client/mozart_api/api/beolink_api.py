@@ -185,7 +185,7 @@ class BeolinkApi:
         id: Annotated[StrictStr, Field(..., description="Join request ID")],
         **kwargs,
     ) -> BeolinkJoinResult:  # noqa: E501
-        """Get Beolink join result, test-endpoint  # noqa: E501
+        """(Deprecated) Get Beolink join result, test-endpoint  # noqa: E501
 
         Returns the result of a join request.  **WARNING:** This end-point is only for testing purposes. Only a limited number of results are kept, so if there are multiple API clients using the device at the same time, and you are polling this end-point, you may miss the result of your join request.   # noqa: E501
 
@@ -212,7 +212,7 @@ class BeolinkApi:
         id: Annotated[StrictStr, Field(..., description="Join request ID")],
         **kwargs,
     ) -> ApiResponse:  # noqa: E501
-        """Get Beolink join result, test-endpoint  # noqa: E501
+        """(Deprecated) Get Beolink join result, test-endpoint  # noqa: E501
 
         Returns the result of a join request.  **WARNING:** This end-point is only for testing purposes. Only a limited number of results are kept, so if there are multiple API clients using the device at the same time, and you are polling this end-point, you may miss the result of your join request.   # noqa: E501
 
@@ -240,6 +240,10 @@ class BeolinkApi:
                  returns the request thread.
         :rtype: tuple(BeolinkJoinResult, status_code(int), headers(HTTPHeaderDict))
         """
+
+        warnings.warn(
+            "GET /api/v1/beolink/join-result/{id} is deprecated.", DeprecationWarning
+        )
 
         _params = locals()
 

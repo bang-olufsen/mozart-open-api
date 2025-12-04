@@ -25,6 +25,7 @@ except ImportError:
     from pydantic import BaseModel, Field, StrictStr, conlist, validator
 
 from mozart_api.models.speaker_link_member_status import SpeakerLinkMemberStatus
+from mozart_api.models.speaker_link_role import SpeakerLinkRole
 
 
 class SpeakerLinkStatus(BaseModel):
@@ -32,9 +33,10 @@ class SpeakerLinkStatus(BaseModel):
     SpeakerLinkStatus
     """
 
+    role_info: SpeakerLinkRole = Field(default=..., alias="roleInfo")
     speakers: conlist(SpeakerLinkMemberStatus) = Field(...)
     type: StrictStr = Field(...)
-    __properties = ["speakers", "type"]
+    __properties = ["roleInfo", "speakers", "type"]
 
     @validator("type")
     def type_validate_enum(cls, value):
@@ -71,6 +73,9 @@ class SpeakerLinkStatus(BaseModel):
     def to_dict(self):
         """Returns the dictionary representation of the model using alias"""
         _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+        # override the default output from pydantic by calling `to_dict()` of role_info
+        if self.role_info:
+            _dict["roleInfo"] = self.role_info.to_dict()
         # override the default output from pydantic by calling `to_dict()` of each item in speakers (list)
         _items = []
         if self.speakers:
@@ -91,6 +96,9 @@ class SpeakerLinkStatus(BaseModel):
 
         _obj = SpeakerLinkStatus.parse_obj(
             {
+                "role_info": SpeakerLinkRole.from_dict(obj.get("roleInfo"))
+                if obj.get("roleInfo") is not None
+                else None,
                 "speakers": [
                     SpeakerLinkMemberStatus.from_dict(_item)
                     for _item in obj.get("speakers")

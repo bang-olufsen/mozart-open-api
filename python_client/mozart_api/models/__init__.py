@@ -16,6 +16,9 @@ Do not edit the class manually.
 # import models into model package
 from mozart_api.models.action import Action
 from mozart_api.models.action_sound_profile import ActionSoundProfile
+from mozart_api.models.advanced_beamforming import AdvancedBeamforming
+from mozart_api.models.advanced_beamforming_feature import AdvancedBeamformingFeature
+from mozart_api.models.advanced_beamforming_range import AdvancedBeamformingRange
 from mozart_api.models.alarm_timer_event_data import AlarmTimerEventData
 from mozart_api.models.alarm_triggered_info import AlarmTriggeredInfo
 from mozart_api.models.ambience import Ambience
@@ -71,6 +74,7 @@ from mozart_api.models.listening_mode import ListeningMode
 from mozart_api.models.listening_mode_features import ListeningModeFeatures
 from mozart_api.models.listening_mode_props import ListeningModeProps
 from mozart_api.models.listening_mode_ref import ListeningModeRef
+from mozart_api.models.listening_mode_trigger import ListeningModeTrigger
 from mozart_api.models.loudness import Loudness
 from mozart_api.models.microphone_state import MicrophoneState
 from mozart_api.models.microphones_state import MicrophonesState
@@ -165,6 +169,7 @@ from mozart_api.models.speaker_group_member import SpeakerGroupMember
 from mozart_api.models.speaker_group_member_location import SpeakerGroupMemberLocation
 from mozart_api.models.speaker_group_overview import SpeakerGroupOverview
 from mozart_api.models.speaker_link_member_status import SpeakerLinkMemberStatus
+from mozart_api.models.speaker_link_role import SpeakerLinkRole
 from mozart_api.models.speaker_link_status import SpeakerLinkStatus
 from mozart_api.models.speaker_role_enum import SpeakerRoleEnum
 from mozart_api.models.speech_enhance import SpeechEnhance
@@ -286,6 +291,9 @@ from mozart_api.models.wisa_out_state import WisaOutState
 __all__ = [
     "Action",
     "ActionSoundProfile",
+    "AdvancedBeamforming",
+    "AdvancedBeamformingFeature",
+    "AdvancedBeamformingRange",
     "AlarmTimerEventData",
     "AlarmTriggeredInfo",
     "Ambience",
@@ -341,6 +349,7 @@ __all__ = [
     "ListeningModeFeatures",
     "ListeningModeProps",
     "ListeningModeRef",
+    "ListeningModeTrigger",
     "Loudness",
     "MicrophoneState",
     "MicrophonesState",
@@ -421,6 +430,7 @@ __all__ = [
     "SpeakerGroupMemberLocation",
     "SpeakerGroupOverview",
     "SpeakerLinkMemberStatus",
+    "SpeakerLinkRole",
     "SpeakerLinkStatus",
     "SpeakerRoleEnum",
     "SpeechEnhance",

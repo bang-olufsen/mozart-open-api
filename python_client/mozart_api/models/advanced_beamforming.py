@@ -17,27 +17,22 @@ from __future__ import annotations
 import json
 import pprint
 import re  # noqa: F401
-from typing import Optional
 
 try:
-    from pydantic.v1 import BaseModel, Field, StrictStr
+    from pydantic.v1 import BaseModel, Field, StrictInt
 except ImportError:
-    from pydantic import BaseModel, Field, StrictStr
+    from pydantic import BaseModel, Field, StrictInt
 
 
-class BeolinkLeader(BaseModel):
+class AdvancedBeamforming(BaseModel):
     """
-    BeolinkLeader
+    AdvancedBeamforming
     """
 
-    audio_transport: Optional[StrictStr] = Field(
-        default=None,
-        alias="audioTransport",
-        description='Specifies the audio transport protocol in use. Can be:   - `"v1"`: Use protocol version 1.   - `"v2"`: Use protocol version 2. ',
+    value: StrictInt = Field(
+        default=..., description="Selected Advanced Beamforming value"
     )
-    friendly_name: StrictStr = Field(default=..., alias="friendlyName")
-    jid: StrictStr = Field(default=..., description="Beolink peer ID")
-    __properties = ["audioTransport", "friendlyName", "jid"]
+    __properties = ["value"]
 
     class Config:
         """Pydantic configuration"""
@@ -54,8 +49,8 @@ class BeolinkLeader(BaseModel):
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> BeolinkLeader:
-        """Create an instance of BeolinkLeader from a JSON string"""
+    def from_json(cls, json_str: str) -> AdvancedBeamforming:
+        """Create an instance of AdvancedBeamforming from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self):
@@ -64,19 +59,13 @@ class BeolinkLeader(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> BeolinkLeader:
-        """Create an instance of BeolinkLeader from a dict"""
+    def from_dict(cls, obj: dict) -> AdvancedBeamforming:
+        """Create an instance of AdvancedBeamforming from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return BeolinkLeader.parse_obj(obj)
+            return AdvancedBeamforming.parse_obj(obj)
 
-        _obj = BeolinkLeader.parse_obj(
-            {
-                "audio_transport": obj.get("audioTransport"),
-                "friendly_name": obj.get("friendlyName"),
-                "jid": obj.get("jid"),
-            }
-        )
+        _obj = AdvancedBeamforming.parse_obj({"value": obj.get("value")})
         return _obj

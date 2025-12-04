@@ -222,7 +222,7 @@ components:
                     nullable: true
                     type: string
                 gainDb:
-                    description: Only usef for 'type=sourceGain'
+                    description: Only used for 'type=sourceGain'
                     maximum: 12
                     minimum: -12
                     type: number
@@ -334,6 +334,35 @@ components:
                 directivity:
                     nullable: true
                     type: string
+            type: object
+        AdvancedBeamforming:
+            properties:
+                value:
+                    description: Selected Advanced Beamforming value
+                    format: int32
+                    type: integer
+            required:
+            - value
+            type: object
+        AdvancedBeamformingFeature:
+            allOf:
+            -   $ref: '#/components/schemas/AdvancedBeamforming'
+            -   $ref: '#/components/schemas/AdvancedBeamformingRange'
+        AdvancedBeamformingRange:
+            properties:
+                default:
+                    $ref: '#/components/schemas/AdvancedBeamforming'
+                    description: Product and role specific default Advanced Beamforming
+                        value
+                range:
+                    description: Product and role specific Advanced Beamforming range
+                    items:
+                        $ref: '#/components/schemas/AdvancedBeamforming'
+                    type: array
+                    uniqueItems: true
+            required:
+            - default
+            - range
             type: object
         AlarmId:
             format: uuid
@@ -496,7 +525,7 @@ components:
             properties:
                 batteryLevel:
                     description: |
-                        Batterylevel in percent
+                        Battery level in percent
                     type: integer
                 isCharging:
                     type: boolean
@@ -708,6 +737,13 @@ components:
             type: object
         BeolinkLeader:
             properties:
+                audioTransport:
+                    description: |
+                        Specifies the audio transport protocol in use. Can be:
+                          - `"v1"`: Use protocol version 1.
+                          - `"v2"`: Use protocol version 2.
+                    example: v2
+                    type: string
                 friendlyName:
                     type: string
                 jid:
@@ -718,6 +754,13 @@ components:
             type: object
         BeolinkListener:
             properties:
+                audioTransport:
+                    description: |
+                        Specifies the audio transport protocol in use. Can be:
+                          - `"v1"`: Use protocol version 1.
+                          - `"v2"`: Use protocol version 2.
+                    example: v2
+                    type: string
                 jid:
                     $ref: '#/components/schemas/BeolinkPeerID'
             required:
@@ -725,6 +768,13 @@ components:
             type: object
         BeolinkPeer:
             properties:
+                audioTransport:
+                    description: |
+                        Specifies the audio transport protocol in use. Can be:
+                          - `"v1"`: Use protocol version 1.
+                          - `"v2"`: Use protocol version 2.
+                    example: v2
+                    type: string
                 friendlyName:
                     type: string
                 ipAddress:
@@ -1037,7 +1087,7 @@ components:
         ListeningMode:
             allOf:
             -   $ref: '#/components/schemas/ListeningModeProps'
-            -   required:
+                required:
                 - features
                 - id
                 - name
@@ -1045,6 +1095,8 @@ components:
         ListeningModeFeatures:
             description: Sound features to apply
             properties:
+                advancedBeamforming:
+                    $ref: '#/components/schemas/AdvancedBeamforming'
                 ambience:
                     $ref: '#/components/schemas/Ambience'
                 balance:
@@ -1144,7 +1196,7 @@ components:
                 -   $ref: '#/components/schemas/ListeningMode'
             type: array
         ListeningModeTrigger:
-            oneOf:
+            allOf:
             -   $ref: '#/components/schemas/PowerLinkTrigger'
         Loudness:
             properties:
@@ -1408,6 +1460,7 @@ components:
                     - Direct
                     - Downmix
                     - TrueImage
+                    - DolbyMode
                     nullable: true
                     type: string
                 outputChannels:
@@ -1488,7 +1541,7 @@ components:
                     description: |
                         Despite the name, this preset is used anytime a speaker is used as a
                         secondary as a way for the primary to indicate which directivity
-                        (and possibly other caracteristics in the future) should be used on
+                        (and possibly other characteristics in the future) should be used on
                         a speaker by speaker basis. It is used when a speaker is a powerlink
                         speaker (hence the name), WISA speaker or a speakerlink secondary in multichannel.
                     type: integer
@@ -2177,6 +2230,9 @@ components:
             type: string
         SoundAdjustments:
             properties:
+                advancedBeamforming:
+                    format: int32
+                    type: integer
                 ambience:
                     format: double
                     type: number
@@ -2198,6 +2254,8 @@ components:
             type: object
         SoundFeatureSet:
             properties:
+                advancedBeamforming:
+                    $ref: '#/components/schemas/AdvancedBeamformingFeature'
                 ambience:
                     $ref: '#/components/schemas/AmbienceFeature'
                 balance:
@@ -2373,6 +2431,7 @@ components:
                     - direct
                     - trueimage
                     - downmix
+                    - dolbymode
                     type: string
             required:
             - value
@@ -2487,7 +2546,7 @@ components:
                     nullable: true
                 roomCompensationId:
                     description: |
-                        ID of the calculated coefficents for this group, made during advanced room compensation.
+                        ID of the calculated coefficients for this group, made during advanced room compensation.
                         When updating an existing group, an empty string will clear roomCompensationId.
                     format: uuid
                     nullable: true
@@ -2619,8 +2678,36 @@ components:
             - updatedAt
             - networkType
             type: object
+        SpeakerLinkRole:
+            properties:
+                channel:
+                    enum:
+                    - all
+                    - any
+                    - left
+                    - right
+                    type: string
+                desired:
+                    enum:
+                    - none
+                    - primary
+                    - secondary
+                    type: string
+                primary:
+                    $ref: '#/components/schemas/SerialNumber'
+                role:
+                    enum:
+                    - none
+                    - primary
+                    - secondary
+                    type: string
+            required:
+            - role
+            type: object
         SpeakerLinkStatus:
             properties:
+                roleInfo:
+                    $ref: '#/components/schemas/SpeakerLinkRole'
                 speakers:
                     items:
                         $ref: '#/components/schemas/SpeakerLinkMemberStatus'
@@ -2634,6 +2721,7 @@ components:
             required:
             - type
             - speakers
+            - roleInfo
             type: object
         SpeakerRole:
             nullable: true
@@ -5708,7 +5796,7 @@ info:
         The Mozart API is an async REST API with WebSocket notification channel for\
         \ immediate state information from Mozart devices. Currently the API is distributed\
         \ as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI\
-        \ document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-5.1.0.247.yaml).\n\
+        \ document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-5.3.1.108.yaml).\n\
         \n\nSupported by:\n\n- [Beoconnect Core](https://www.bang-olufsen.com/en/dk/accessories/beoconnect-core)\n\
         - [Beolab 8](https://www.bang-olufsen.com/en/dk/speakers/beolab-8)\n- [Beolab\
         \ 28](https://www.bang-olufsen.com/en/dk/speakers/beolab-28)\n- [Beosound\
@@ -5720,8 +5808,8 @@ info:
         - [Beosound Level](https://www.bang-olufsen.com/en/dk/speakers/beosound-level)\n\
         - [Beosound Premiere](https://www.bang-olufsen.com/en/dk/soundbars/beosound-premiere)\n\
         - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)\n\
-        \n\nThis API documentation has been generated for version 5.1.0.247 of the\
-        \ Mozart platform and API generation version 5.1.0.247.1.\n\n## Python API\n\
+        \n\nThis API documentation has been generated for version 5.3.1.108 of the\
+        \ Mozart platform and API generation version 5.3.1.108.0.\n\n## Python API\n\
         The Python package has been generated using the [OpenAPI Generator](https://openapi-generator.tech/)\
         \ version 7.13.0. On top of the generated API, a helper file, mozart_client.py,\
         \ has been made that makes the API more pythonic. We recommend using this.\n\
@@ -6087,6 +6175,7 @@ paths:
             - mozart
     /api/v1/beolink/join-result/{id}:
         get:
+            deprecated: true
             description: |-
                 Returns the result of a join request.
 
@@ -6197,8 +6286,6 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/ErrorModel'
                     description: Beolink not enabled on this device
-                '404':
-                    description: No active experience found
             summary: Leave the ongoing experience (disconnect this device from remote)
             tags:
             - Beolink
@@ -6332,8 +6419,6 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/ErrorModel'
                     description: Beolink not enabled on this device
-                '404':
-                    description: Remote device not found
             summary: Unexpand (disconnect) a device from the multiroom session
             tags:
             - Beolink
@@ -7520,6 +7605,41 @@ paths:
             tags:
             - Sound
             - mozart
+    /api/v1/sound/settings/adjustments/advancedBeamforming:
+        put:
+            description: |-
+                Use the `set-sound-settings-adjustments-advancedBeamforming` method in the Python package with one of:
+                ```mozart_client
+                await mozart_client.set_sound_settings_adjustments_advanced_beamforming()
+                ```
+                ```mozart_api
+                await mozart_api.set_sound_settings_adjustments_advanced_beamforming()
+                ```
+                ```sound_api
+                await sound_api.set_sound_settings_adjustments_advanced_beamforming()
+                ```
+            operationId: set-sound-settings-adjustments-advancedBeamforming
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AdvancedBeamforming'
+                description: the perceived width of the sound field
+                required: true
+            responses:
+                '201':
+                    description: Accepted the Advanced Beamforming sound settings
+                '400':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorModel'
+                    description: invalid request
+            summary: Update the sound settings adjustments for Advanced Beamforming
+                (marketing name is stage width)
+            tags:
+            - Sound
+            - mozart
     /api/v1/sound/settings/adjustments/bass:
         put:
             description: |-
@@ -7871,13 +7991,13 @@ paths:
                 required: true
             responses:
                 '204':
-                    description: the movement were accepted
+                    description: the movement was accepted
                 '400':
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ErrorModel'
-                    description: Stand not connected ot stand capability is not available
+                    description: Stand not connected or stand capability is not available
             summary: Set stand movement with either an angle or a movement type
             tags:
             - Stand

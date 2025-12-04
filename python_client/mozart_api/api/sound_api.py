@@ -36,6 +36,7 @@ from typing import Dict, List
 from mozart_api.api_client import ApiClient
 from mozart_api.api_response import ApiResponse
 from mozart_api.exceptions import ApiTypeError, ApiValueError  # noqa: F401
+from mozart_api.models.advanced_beamforming import AdvancedBeamforming
 from mozart_api.models.bass import Bass
 from mozart_api.models.directivity import Directivity
 from mozart_api.models.listening_mode import ListeningMode
@@ -894,6 +895,152 @@ class SoundApi:
 
         return await self.api_client.call_api(
             "/api/v1/sound/volume/level",
+            "PUT",
+            _path_params,
+            _query_params,
+            _header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            response_types_map=_response_types_map,
+            auth_settings=_auth_settings,
+            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
+            _preload_content=_params.get("_preload_content", True),
+            _request_timeout=_params.get("_request_timeout"),
+            collection_formats=_collection_formats,
+            _request_auth=_params.get("_request_auth"),
+        )
+
+    @validate_arguments
+    async def set_sound_settings_adjustments_advanced_beamforming(
+        self,
+        advanced_beamforming: Annotated[
+            AdvancedBeamforming,
+            Field(..., description="the perceived width of the sound field"),
+        ],
+        **kwargs,
+    ) -> None:  # noqa: E501
+        """Update the sound settings adjustments for Advanced Beamforming (marketing name is stage width)  # noqa: E501
+
+
+        :param advanced_beamforming: the perceived width of the sound field (required)
+        :type advanced_beamforming: AdvancedBeamforming
+        :param _request_timeout: timeout setting for this request.
+               If one number provided, it will be total request
+               timeout. It can also be a pair (tuple) of
+               (connection, read) timeouts.
+        :return: Returns the result object.
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: None
+        """
+        kwargs["_return_http_data_only"] = True
+        if "_preload_content" in kwargs:
+            message = "Error! Please call the set_sound_settings_adjustments_advanced_beamforming_with_http_info method with `_preload_content` instead and obtain raw data from ApiResponse.raw_data"  # noqa: E501
+            raise ValueError(message)
+        return await self.set_sound_settings_adjustments_advanced_beamforming_with_http_info(
+            advanced_beamforming, **kwargs
+        )  # noqa: E501
+
+    @validate_arguments
+    async def set_sound_settings_adjustments_advanced_beamforming_with_http_info(
+        self,
+        advanced_beamforming: Annotated[
+            AdvancedBeamforming,
+            Field(..., description="the perceived width of the sound field"),
+        ],
+        **kwargs,
+    ) -> ApiResponse:  # noqa: E501
+        """Update the sound settings adjustments for Advanced Beamforming (marketing name is stage width)  # noqa: E501
+
+
+        :param advanced_beamforming: the perceived width of the sound field (required)
+        :type advanced_beamforming: AdvancedBeamforming
+        :param _preload_content: if False, the ApiResponse.data will
+                                 be set to none and raw_data will store the
+                                 HTTP response body without reading/decoding.
+                                 Default is True.
+        :type _preload_content: bool, optional
+        :param _return_http_data_only: response data instead of ApiResponse
+                                       object with status code, headers, etc
+        :type _return_http_data_only: bool, optional
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the authentication
+                              in the spec for a single request.
+        :type _request_auth: dict, optional
+        :type _content_type: string, optional: force content-type for the request
+        :return: Returns the result object.
+                 If the method is called asynchronously,
+                 returns the request thread.
+        :rtype: None
+        """
+
+        _params = locals()
+
+        _all_params = ["advanced_beamforming"]
+        _all_params.extend(
+            [
+                "_return_http_data_only",
+                "_preload_content",
+                "_request_timeout",
+                "_request_auth",
+                "_content_type",
+                "_headers",
+            ]
+        )
+
+        # validate the arguments
+        for _key, _val in _params["kwargs"].items():
+            if _key not in _all_params:
+                raise ApiTypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method set_sound_settings_adjustments_advanced_beamforming"
+                    % _key
+                )
+            _params[_key] = _val
+        del _params["kwargs"]
+
+        _collection_formats = {}
+
+        # process the path parameters
+        _path_params = {}
+
+        # process the query parameters
+        _query_params = []
+        # process the header parameters
+        _header_params = dict(_params.get("_headers", {}))
+        # process the form parameters
+        _form_params = []
+        _files = {}
+        # process the body parameter
+        _body_params = None
+        if _params["advanced_beamforming"] is not None:
+            _body_params = _params["advanced_beamforming"]
+
+        # set the HTTP header `Accept`
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )  # noqa: E501
+
+        # set the HTTP header `Content-Type`
+        _content_types_list = _params.get(
+            "_content_type",
+            self.api_client.select_header_content_type(["application/json"]),
+        )
+        if _content_types_list:
+            _header_params["Content-Type"] = _content_types_list
+
+        # authentication setting
+        _auth_settings = []  # noqa: E501
+
+        _response_types_map = {}
+
+        return await self.api_client.call_api(
+            "/api/v1/sound/settings/adjustments/advancedBeamforming",
             "PUT",
             _path_params,
             _query_params,

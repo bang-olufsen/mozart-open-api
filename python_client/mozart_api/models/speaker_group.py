@@ -57,7 +57,7 @@ class SpeakerGroup(BaseModel):
     room_compensation_id: Optional[StrictStr] = Field(
         default=None,
         alias="roomCompensationId",
-        description="ID of the calculated coefficents for this group, made during advanced room compensation. When updating an existing group, an empty string will clear roomCompensationId. ",
+        description="ID of the calculated coefficients for this group, made during advanced room compensation. When updating an existing group, an empty string will clear roomCompensationId. ",
     )
     speaker_preset: Optional[conint(strict=True, le=99, ge=0)] = Field(
         default=None,

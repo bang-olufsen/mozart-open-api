@@ -41,9 +41,10 @@ class SpatialProcessing(BaseModel):
             "direct",
             "trueimage",
             "downmix",
+            "dolbymode",
         ):
             raise ValueError(
-                "must be one of enum values ('direct', 'trueimage', 'downmix')"
+                "must be one of enum values ('direct', 'trueimage', 'downmix', 'dolbymode')"
             )
         return value
 

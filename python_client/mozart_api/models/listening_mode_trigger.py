@@ -20,27 +20,22 @@ import re  # noqa: F401
 from typing import Optional
 
 try:
-    from pydantic.v1 import BaseModel, Field, StrictStr
+    from pydantic.v1 import BaseModel, Field, StrictInt
 except ImportError:
-    from pydantic import BaseModel, Field, StrictStr
+    from pydantic import BaseModel, Field, StrictInt
 
 
-class BeolinkPeer(BaseModel):
+class ListeningModeTrigger(BaseModel):
     """
-    BeolinkPeer
+    ListeningModeTrigger
     """
 
-    audio_transport: Optional[StrictStr] = Field(
+    power_link_preset: Optional[StrictInt] = Field(
         default=None,
-        alias="audioTransport",
-        description='Specifies the audio transport protocol in use. Can be:   - `"v1"`: Use protocol version 1.   - `"v2"`: Use protocol version 2. ',
+        alias="powerLinkPreset",
+        description="Despite the name, this preset is used anytime a speaker is used as a secondary as a way for the primary to indicate which directivity (and possibly other characteristics in the future) should be used on a speaker by speaker basis. It is used when a speaker is a powerlink speaker (hence the name), WISA speaker or a speakerlink secondary in multichannel. ",
     )
-    friendly_name: StrictStr = Field(default=..., alias="friendlyName")
-    ip_address: StrictStr = Field(
-        default=..., alias="ipAddress", description="IP address"
-    )
-    jid: StrictStr = Field(default=..., description="Beolink peer ID")
-    __properties = ["audioTransport", "friendlyName", "ipAddress", "jid"]
+    __properties = ["powerLinkPreset"]
 
     class Config:
         """Pydantic configuration"""
@@ -57,8 +52,8 @@ class BeolinkPeer(BaseModel):
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a JSON string"""
+    def from_json(cls, json_str: str) -> ListeningModeTrigger:
+        """Create an instance of ListeningModeTrigger from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self):
@@ -67,20 +62,15 @@ class BeolinkPeer(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> BeolinkPeer:
-        """Create an instance of BeolinkPeer from a dict"""
+    def from_dict(cls, obj: dict) -> ListeningModeTrigger:
+        """Create an instance of ListeningModeTrigger from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return BeolinkPeer.parse_obj(obj)
+            return ListeningModeTrigger.parse_obj(obj)
 
-        _obj = BeolinkPeer.parse_obj(
-            {
-                "audio_transport": obj.get("audioTransport"),
-                "friendly_name": obj.get("friendlyName"),
-                "ip_address": obj.get("ipAddress"),
-                "jid": obj.get("jid"),
-            }
+        _obj = ListeningModeTrigger.parse_obj(
+            {"power_link_preset": obj.get("powerLinkPreset")}
         )
         return _obj

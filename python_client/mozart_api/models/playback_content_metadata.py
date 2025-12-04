@@ -180,9 +180,10 @@ class PlaybackContentMetadata(BaseModel):
             "Direct",
             "Downmix",
             "TrueImage",
+            "DolbyMode",
         ):
             raise ValueError(
-                "must be one of enum values ('Direct', 'Downmix', 'TrueImage')"
+                "must be one of enum values ('Direct', 'Downmix', 'TrueImage', 'DolbyMode')"
             )
         return value
 

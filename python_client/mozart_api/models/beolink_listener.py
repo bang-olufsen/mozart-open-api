@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import pprint
 import re  # noqa: F401
+from typing import Optional
 
 try:
     from pydantic.v1 import BaseModel, Field, StrictStr
@@ -29,8 +30,13 @@ class BeolinkListener(BaseModel):
     BeolinkListener
     """
 
+    audio_transport: Optional[StrictStr] = Field(
+        default=None,
+        alias="audioTransport",
+        description='Specifies the audio transport protocol in use. Can be:   - `"v1"`: Use protocol version 1.   - `"v2"`: Use protocol version 2. ',
+    )
     jid: StrictStr = Field(default=..., description="Beolink peer ID")
-    __properties = ["jid"]
+    __properties = ["audioTransport", "jid"]
 
     class Config:
         """Pydantic configuration"""
@@ -65,5 +71,7 @@ class BeolinkListener(BaseModel):
         if not isinstance(obj, dict):
             return BeolinkListener.parse_obj(obj)
 
-        _obj = BeolinkListener.parse_obj({"jid": obj.get("jid")})
+        _obj = BeolinkListener.parse_obj(
+            {"audio_transport": obj.get("audioTransport"), "jid": obj.get("jid")}
+        )
         return _obj

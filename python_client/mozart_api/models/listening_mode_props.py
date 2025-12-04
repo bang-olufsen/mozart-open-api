@@ -33,7 +33,7 @@ except ImportError:
     from pydantic import BaseModel, Field, StrictStr, conint, conlist, constr, validator
 
 from mozart_api.models.listening_mode_features import ListeningModeFeatures
-from mozart_api.models.power_link_trigger import PowerLinkTrigger
+from mozart_api.models.listening_mode_trigger import ListeningModeTrigger
 
 
 class ListeningModeProps(BaseModel):
@@ -56,7 +56,7 @@ class ListeningModeProps(BaseModel):
     role: Optional[StrictStr] = Field(
         default=None, description="Role a listening mode applies to"
     )
-    triggers: Optional[conlist(PowerLinkTrigger)] = None
+    triggers: Optional[conlist(ListeningModeTrigger)] = None
     __properties = ["clientCtx", "features", "id", "name", "origin", "role", "triggers"]
 
     @validator("origin")
@@ -153,7 +153,8 @@ class ListeningModeProps(BaseModel):
                 "origin": obj.get("origin"),
                 "role": obj.get("role"),
                 "triggers": [
-                    PowerLinkTrigger.from_dict(_item) for _item in obj.get("triggers")
+                    ListeningModeTrigger.from_dict(_item)
+                    for _item in obj.get("triggers")
                 ]
                 if obj.get("triggers") is not None
                 else None,

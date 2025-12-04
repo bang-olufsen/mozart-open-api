@@ -54,7 +54,7 @@ class Action(BaseModel):
     gain_db: Optional[
         Union[confloat(le=12, ge=-12, strict=True), conint(le=12, ge=-12, strict=True)]
     ] = Field(
-        default=None, alias="gainDb", description="Only usef for 'type=sourceGain'"
+        default=None, alias="gainDb", description="Only used for 'type=sourceGain'"
     )
     listening_mode_id: Optional[conint(strict=True, ge=0)] = Field(
         default=None, alias="listeningModeId"

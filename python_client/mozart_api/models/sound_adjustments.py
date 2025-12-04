@@ -37,6 +37,9 @@ class SoundAdjustments(BaseModel):
     SoundAdjustments
     """
 
+    advanced_beamforming: Optional[StrictInt] = Field(
+        default=None, alias="advancedBeamforming"
+    )
     ambience: Optional[Union[StrictFloat, StrictInt]] = None
     bass: Optional[StrictInt] = None
     directivity: Optional[StrictStr] = None
@@ -45,6 +48,7 @@ class SoundAdjustments(BaseModel):
     loudness: Optional[StrictBool] = None
     treble: Optional[StrictInt] = None
     __properties = [
+        "advancedBeamforming",
         "ambience",
         "bass",
         "directivity",
@@ -94,6 +98,7 @@ class SoundAdjustments(BaseModel):
 
         _obj = SoundAdjustments.parse_obj(
             {
+                "advanced_beamforming": obj.get("advancedBeamforming"),
                 "ambience": obj.get("ambience"),
                 "bass": obj.get("bass"),
                 "directivity": obj.get("directivity"),

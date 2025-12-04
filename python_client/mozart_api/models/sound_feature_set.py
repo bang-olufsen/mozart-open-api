@@ -24,6 +24,7 @@ try:
 except ImportError:
     from pydantic import BaseModel, Field
 
+from mozart_api.models.advanced_beamforming_feature import AdvancedBeamformingFeature
 from mozart_api.models.ambience_feature import AmbienceFeature
 from mozart_api.models.balance_feature import BalanceFeature
 from mozart_api.models.bass_feature import BassFeature
@@ -48,6 +49,9 @@ class SoundFeatureSet(BaseModel):
     SoundFeatureSet
     """
 
+    advanced_beamforming: Optional[AdvancedBeamformingFeature] = Field(
+        default=None, alias="advancedBeamforming"
+    )
     ambience: Optional[AmbienceFeature] = None
     balance: Optional[BalanceFeature] = None
     bass: Optional[BassFeature] = None
@@ -82,6 +86,7 @@ class SoundFeatureSet(BaseModel):
     tone_touch_y: Optional[ToneTouchYFeature] = Field(default=None, alias="toneTouchY")
     treble: Optional[TrebleFeature] = None
     __properties = [
+        "advancedBeamforming",
         "ambience",
         "balance",
         "bass",
@@ -123,6 +128,9 @@ class SoundFeatureSet(BaseModel):
     def to_dict(self):
         """Returns the dictionary representation of the model using alias"""
         _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+        # override the default output from pydantic by calling `to_dict()` of advanced_beamforming
+        if self.advanced_beamforming:
+            _dict["advancedBeamforming"] = self.advanced_beamforming.to_dict()
         # override the default output from pydantic by calling `to_dict()` of ambience
         if self.ambience:
             _dict["ambience"] = self.ambience.to_dict()
@@ -187,6 +195,11 @@ class SoundFeatureSet(BaseModel):
 
         _obj = SoundFeatureSet.parse_obj(
             {
+                "advanced_beamforming": AdvancedBeamformingFeature.from_dict(
+                    obj.get("advancedBeamforming")
+                )
+                if obj.get("advancedBeamforming") is not None
+                else None,
                 "ambience": AmbienceFeature.from_dict(obj.get("ambience"))
                 if obj.get("ambience") is not None
                 else None,
