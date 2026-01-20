@@ -7,7 +7,6 @@ import logging
 import re
 from collections import defaultdict
 from collections.abc import Awaitable, Callable
-from dataclasses import dataclass
 from ssl import SSLContext
 from types import TracebackType
 from typing import Literal, Self, TypedDict
@@ -37,6 +36,7 @@ from mozart_api.models import (
     BeoRemoteButton,
     ButtonEvent,
     ChannelSurveyStatus,
+    ContentItem,
     HdmiInput,
     HdmiVideoFormat,
     InstallRecordIdState,
@@ -72,6 +72,7 @@ from mozart_api.models import (
     WebSocketEventBeoRemoteButton,
     WebSocketEventButton,
     WebSocketEventChannelSurveyStatus,
+    WebSocketEventClassicsAdapterContent,
     WebSocketEventCurtains,
     WebSocketEventHdmiVideoFormatSignal,
     WebSocketEventNotification,
@@ -118,6 +119,7 @@ NOTIFICATION_TYPES = {
     "beolink_join_result",
     "button",
     "channel_survey_status",
+    "classics_adapter_content",
     "curtains",
     "hdmi_video_format_signal",
     "notification",
@@ -157,6 +159,7 @@ WebSocketEventType = type[
     | WebSocketEventBeolinkJoinResult
     | WebSocketEventButton
     | WebSocketEventChannelSurveyStatus
+    | WebSocketEventClassicsAdapterContent
     | WebSocketEventCurtains
     | WebSocketEventHdmiVideoFormatSignal
     | WebSocketEventNotification
@@ -298,7 +301,10 @@ class MozartClient(MozartApi):
 
     async def __aenter__(self) -> Self:
         """Context entry."""
-        if self.api_client.rest_client.pool_manager.closed:
+        if (
+            self.api_client.rest_client.pool_manager
+            and self.api_client.rest_client.pool_manager.closed
+        ):
             self.api_client = ApiClient(self.configuration)
         return self
 
@@ -488,12 +494,6 @@ class MozartClient(MozartApi):
 
                 await asyncio.sleep(TIMEOUT)
 
-    @dataclass
-    class _ResponseWrapper:
-        """Wrapper class for deserializing WebSocket response."""
-
-        data: str
-
     async def _on_message(self, notification: BaseWebSocketResponse) -> None:
         """Handle WebSocket notifications."""
         # Get the object type and deserialized object.
@@ -501,8 +501,7 @@ class MozartClient(MozartApi):
             notification_type = notification["eventType"]
 
             deserialized_data = self.api_client.deserialize(
-                self._ResponseWrapper(json.dumps(notification)),
-                notification_type,
+                json.dumps(notification), notification_type, None
             ).event_data
 
         except (ValueError, AttributeError):
@@ -682,6 +681,17 @@ class MozartClient(MozartApi):
         """Set callback for WebSocketEventChannelSurveyStatus notifications."""
         self._notification_callbacks["WebSocketEventChannelSurveyStatus"] = (
             on_channel_survey_status_notification
+        )
+
+    def get_classics_adapter_content_notifications(
+        self,
+        on_classics_adapter_content_notification: Callable[
+            [ContentItem], Awaitable[None] | None
+        ],
+    ) -> None:
+        """Set callback for WebSocketEventClassicsAdapterContent notifications."""
+        self._notification_callbacks["WebSocketEventClassicsAdapterContent"] = (
+            on_classics_adapter_content_notification
         )
 
     def get_curtains_notifications(

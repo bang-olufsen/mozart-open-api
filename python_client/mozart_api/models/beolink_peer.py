@@ -17,70 +17,86 @@ from __future__ import annotations
 import json
 import pprint
 import re  # noqa: F401
-from typing import Optional
+from typing import Any, ClassVar, Dict, List, Optional, Set
 
-try:
-    from pydantic.v1 import BaseModel, Field, StrictStr
-except ImportError:
-    from pydantic import BaseModel, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from typing_extensions import Annotated, Self
 
 
 class BeolinkPeer(BaseModel):
     """
     BeolinkPeer
-    """
+    """  # noqa: E501
 
-    audio_transport: Optional[StrictStr] = Field(
-        default=None,
-        alias="audioTransport",
-        description='Specifies the audio transport protocol in use. Can be:   - `"v1"`: Use protocol version 1.   - `"v2"`: Use protocol version 2. ',
+    audio_transport: Annotated[
+        Optional[StrictStr],
+        Field(
+            description='Specifies the audio transport protocol in use. Can be:   - `"v1"`: Use protocol version 1.   - `"v2"`: Use protocol version 2. ',
+            alias="audioTransport",
+        ),
+    ] = None
+    friendly_name: Annotated[StrictStr, Field(alias="friendlyName")]
+    ip_address: Annotated[StrictStr, Field(description="IP address", alias="ipAddress")]
+    jid: Annotated[StrictStr, Field(description="Beolink peer ID")]
+    __properties: ClassVar[List[str]] = [
+        "audioTransport",
+        "friendlyName",
+        "ipAddress",
+        "jid",
+    ]
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
     )
-    friendly_name: StrictStr = Field(default=..., alias="friendlyName")
-    ip_address: StrictStr = Field(
-        default=..., alias="ipAddress", description="IP address"
-    )
-    jid: StrictStr = Field(default=..., description="Beolink peer ID")
-    __properties = ["audioTransport", "friendlyName", "ipAddress", "jid"]
-
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> BeolinkPeer:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of BeolinkPeer from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> BeolinkPeer:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of BeolinkPeer from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return BeolinkPeer.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = BeolinkPeer.parse_obj(
-            {
-                "audio_transport": obj.get("audioTransport"),
-                "friendly_name": obj.get("friendlyName"),
-                "ip_address": obj.get("ipAddress"),
-                "jid": obj.get("jid"),
-            }
-        )
+        _obj = cls.model_validate({
+            "audioTransport": obj.get("audioTransport"),
+            "friendlyName": obj.get("friendlyName"),
+            "ipAddress": obj.get("ipAddress"),
+            "jid": obj.get("jid"),
+        })
         return _obj

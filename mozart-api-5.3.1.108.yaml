@@ -2333,6 +2333,8 @@ components:
 
                         - deezer
 
+                        - classicsAdapter
+
                         - usbIn
 
                         - tidal
@@ -3063,6 +3065,13 @@ components:
             properties:
                 eventData:
                     $ref: '#/components/schemas/ChannelSurveyStatus'
+                eventType:
+                    type: string
+            type: object
+        WebSocketEventClassicsAdapterContent:
+            properties:
+                eventData:
+                    $ref: '#/components/schemas/ContentItem'
                 eventType:
                     type: string
             type: object

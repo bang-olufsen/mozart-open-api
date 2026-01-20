@@ -17,12 +17,10 @@ from __future__ import annotations
 import json
 import pprint
 import re  # noqa: F401
-from typing import List
+from typing import Any, ClassVar, Dict, List, Optional, Set
 
-try:
-    from pydantic.v1 import BaseModel, Field, StrictStr, conlist, validator
-except ImportError:
-    from pydantic import BaseModel, Field, StrictStr, conlist, validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from typing_extensions import Annotated, Self
 
 from mozart_api.models.speaker_link_member_status import SpeakerLinkMemberStatus
 from mozart_api.models.speaker_link_role import SpeakerLinkRole
@@ -31,81 +29,89 @@ from mozart_api.models.speaker_link_role import SpeakerLinkRole
 class SpeakerLinkStatus(BaseModel):
     """
     SpeakerLinkStatus
-    """
+    """  # noqa: E501
 
-    role_info: SpeakerLinkRole = Field(default=..., alias="roleInfo")
-    speakers: conlist(SpeakerLinkMemberStatus) = Field(...)
-    type: StrictStr = Field(...)
-    __properties = ["roleInfo", "speakers", "type"]
+    role_info: Annotated[SpeakerLinkRole, Field(alias="roleInfo")]
+    speakers: List[SpeakerLinkMemberStatus]
+    type: StrictStr
+    __properties: ClassVar[List[str]] = ["roleInfo", "speakers", "type"]
 
-    @validator("type")
+    @field_validator("type")
     def type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in (
-            "standalone",
-            "stereo",
-            "surround",
-        ):
+        if value not in set(["standalone", "stereo", "surround"]):
             raise ValueError(
                 "must be one of enum values ('standalone', 'stereo', 'surround')"
             )
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> SpeakerLinkStatus:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of SpeakerLinkStatus from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of role_info
         if self.role_info:
             _dict["roleInfo"] = self.role_info.to_dict()
         # override the default output from pydantic by calling `to_dict()` of each item in speakers (list)
         _items = []
         if self.speakers:
-            for _item in self.speakers:
-                if _item:
-                    _items.append(_item.to_dict())
+            for _item_speakers in self.speakers:
+                if _item_speakers:
+                    _items.append(_item_speakers.to_dict())
             _dict["speakers"] = _items
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> SpeakerLinkStatus:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of SpeakerLinkStatus from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return SpeakerLinkStatus.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = SpeakerLinkStatus.parse_obj(
-            {
-                "role_info": SpeakerLinkRole.from_dict(obj.get("roleInfo"))
-                if obj.get("roleInfo") is not None
-                else None,
-                "speakers": [
-                    SpeakerLinkMemberStatus.from_dict(_item)
-                    for _item in obj.get("speakers")
-                ]
-                if obj.get("speakers") is not None
-                else None,
-                "type": obj.get("type"),
-            }
-        )
+        _obj = cls.model_validate({
+            "roleInfo": SpeakerLinkRole.from_dict(obj["roleInfo"])
+            if obj.get("roleInfo") is not None
+            else None,
+            "speakers": [
+                SpeakerLinkMemberStatus.from_dict(_item) for _item in obj["speakers"]
+            ]
+            if obj.get("speakers") is not None
+            else None,
+            "type": obj.get("type"),
+        })
         return _obj

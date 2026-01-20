@@ -18,12 +18,10 @@ import json
 import pprint
 import re  # noqa: F401
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, ClassVar, Dict, List, Optional, Set
 
-try:
-    from pydantic.v1 import BaseModel, Field, StrictStr, conlist, validator
-except ImportError:
-    from pydantic import BaseModel, Field, StrictStr, conlist, validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from typing_extensions import Annotated, Self
 
 from mozart_api.models.room_compensation_response import RoomCompensationResponse
 from mozart_api.models.speaker_group import SpeakerGroup
@@ -32,21 +30,21 @@ from mozart_api.models.speaker_group import SpeakerGroup
 class RoomCompensationResult(BaseModel):
     """
     RoomCompensationResult
-    """
+    """  # noqa: E501
 
-    compensation: Optional[conlist(RoomCompensationResponse)] = None
-    measured_response: Optional[conlist(RoomCompensationResponse)] = Field(
-        default=None, alias="measuredResponse"
-    )
+    compensation: Optional[List[RoomCompensationResponse]] = None
+    measured_response: Annotated[
+        Optional[List[RoomCompensationResponse]], Field(alias="measuredResponse")
+    ] = None
     placement: Optional[StrictStr] = None
-    reference_response: Optional[conlist(RoomCompensationResponse)] = Field(
-        default=None, alias="referenceResponse"
-    )
-    speaker_group_suggestion: Optional[SpeakerGroup] = Field(
-        default=None, alias="speakerGroupSuggestion"
-    )
-    time_stamp: Optional[datetime] = Field(default=None, alias="timeStamp")
-    __properties = [
+    reference_response: Annotated[
+        Optional[List[RoomCompensationResponse]], Field(alias="referenceResponse")
+    ] = None
+    speaker_group_suggestion: Annotated[
+        Optional[SpeakerGroup], Field(alias="speakerGroupSuggestion")
+    ] = None
+    time_stamp: Annotated[Optional[datetime], Field(alias="timeStamp")] = None
+    __properties: ClassVar[List[str]] = [
         "compensation",
         "measuredResponse",
         "placement",
@@ -55,64 +53,75 @@ class RoomCompensationResult(BaseModel):
         "timeStamp",
     ]
 
-    @validator("placement")
+    @field_validator("placement")
     def placement_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in (
-            "free",
-            "nearWall",
-            "unknown",
-        ):
+        if value not in set(["free", "nearWall", "unknown"]):
             raise ValueError(
                 "must be one of enum values ('free', 'nearWall', 'unknown')"
             )
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> RoomCompensationResult:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of RoomCompensationResult from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of each item in compensation (list)
         _items = []
         if self.compensation:
-            for _item in self.compensation:
-                if _item:
-                    _items.append(_item.to_dict())
+            for _item_compensation in self.compensation:
+                if _item_compensation:
+                    _items.append(_item_compensation.to_dict())
             _dict["compensation"] = _items
         # override the default output from pydantic by calling `to_dict()` of each item in measured_response (list)
         _items = []
         if self.measured_response:
-            for _item in self.measured_response:
-                if _item:
-                    _items.append(_item.to_dict())
+            for _item_measured_response in self.measured_response:
+                if _item_measured_response:
+                    _items.append(_item_measured_response.to_dict())
             _dict["measuredResponse"] = _items
         # override the default output from pydantic by calling `to_dict()` of each item in reference_response (list)
         _items = []
         if self.reference_response:
-            for _item in self.reference_response:
-                if _item:
-                    _items.append(_item.to_dict())
+            for _item_reference_response in self.reference_response:
+                if _item_reference_response:
+                    _items.append(_item_reference_response.to_dict())
             _dict["referenceResponse"] = _items
         # override the default output from pydantic by calling `to_dict()` of speaker_group_suggestion
         if self.speaker_group_suggestion:
@@ -120,41 +129,39 @@ class RoomCompensationResult(BaseModel):
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> RoomCompensationResult:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of RoomCompensationResult from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return RoomCompensationResult.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = RoomCompensationResult.parse_obj(
-            {
-                "compensation": [
-                    RoomCompensationResponse.from_dict(_item)
-                    for _item in obj.get("compensation")
-                ]
-                if obj.get("compensation") is not None
-                else None,
-                "measured_response": [
-                    RoomCompensationResponse.from_dict(_item)
-                    for _item in obj.get("measuredResponse")
-                ]
-                if obj.get("measuredResponse") is not None
-                else None,
-                "placement": obj.get("placement"),
-                "reference_response": [
-                    RoomCompensationResponse.from_dict(_item)
-                    for _item in obj.get("referenceResponse")
-                ]
-                if obj.get("referenceResponse") is not None
-                else None,
-                "speaker_group_suggestion": SpeakerGroup.from_dict(
-                    obj.get("speakerGroupSuggestion")
-                )
-                if obj.get("speakerGroupSuggestion") is not None
-                else None,
-                "time_stamp": obj.get("timeStamp"),
-            }
-        )
+        _obj = cls.model_validate({
+            "compensation": [
+                RoomCompensationResponse.from_dict(_item)
+                for _item in obj["compensation"]
+            ]
+            if obj.get("compensation") is not None
+            else None,
+            "measuredResponse": [
+                RoomCompensationResponse.from_dict(_item)
+                for _item in obj["measuredResponse"]
+            ]
+            if obj.get("measuredResponse") is not None
+            else None,
+            "placement": obj.get("placement"),
+            "referenceResponse": [
+                RoomCompensationResponse.from_dict(_item)
+                for _item in obj["referenceResponse"]
+            ]
+            if obj.get("referenceResponse") is not None
+            else None,
+            "speakerGroupSuggestion": SpeakerGroup.from_dict(
+                obj["speakerGroupSuggestion"]
+            )
+            if obj.get("speakerGroupSuggestion") is not None
+            else None,
+            "timeStamp": obj.get("timeStamp"),
+        })
         return _obj

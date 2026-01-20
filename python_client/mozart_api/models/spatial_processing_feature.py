@@ -17,12 +17,10 @@ from __future__ import annotations
 import json
 import pprint
 import re  # noqa: F401
-from typing import List
+from typing import Any, ClassVar, Dict, List, Optional, Set
 
-try:
-    from pydantic.v1 import BaseModel, Field, StrictStr, conlist, validator
-except ImportError:
-    from pydantic import BaseModel, Field, StrictStr, conlist, validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from typing_extensions import Annotated, Self
 
 from mozart_api.models.spatial_processing import SpatialProcessing
 
@@ -30,85 +28,89 @@ from mozart_api.models.spatial_processing import SpatialProcessing
 class SpatialProcessingFeature(BaseModel):
     """
     SpatialProcessingFeature
-    """
+    """  # noqa: E501
 
-    value: StrictStr = Field(
-        default=..., description="Selected spatial-processing value"
-    )
-    default: SpatialProcessing = Field(...)
-    range: conlist(SpatialProcessing, unique_items=True) = Field(
-        default=..., description="spatial-processing range"
-    )
-    __properties = ["value", "default", "range"]
+    value: Annotated[StrictStr, Field(description="Selected spatial-processing value")]
+    default: SpatialProcessing
+    range: Annotated[
+        List[SpatialProcessing], Field(description="spatial-processing range")
+    ]
+    __properties: ClassVar[List[str]] = ["value", "default", "range"]
 
-    @validator("value")
+    @field_validator("value")
     def value_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in (
-            "direct",
-            "trueimage",
-            "downmix",
-            "dolbymode",
-        ):
+        if value not in set(["direct", "trueimage", "downmix", "dolbymode"]):
             raise ValueError(
                 "must be one of enum values ('direct', 'trueimage', 'downmix', 'dolbymode')"
             )
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> SpatialProcessingFeature:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of SpatialProcessingFeature from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of default
         if self.default:
             _dict["default"] = self.default.to_dict()
         # override the default output from pydantic by calling `to_dict()` of each item in range (list)
         _items = []
         if self.range:
-            for _item in self.range:
-                if _item:
-                    _items.append(_item.to_dict())
+            for _item_range in self.range:
+                if _item_range:
+                    _items.append(_item_range.to_dict())
             _dict["range"] = _items
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> SpatialProcessingFeature:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of SpatialProcessingFeature from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return SpatialProcessingFeature.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = SpatialProcessingFeature.parse_obj(
-            {
-                "value": obj.get("value"),
-                "default": SpatialProcessing.from_dict(obj.get("default"))
-                if obj.get("default") is not None
-                else None,
-                "range": [
-                    SpatialProcessing.from_dict(_item) for _item in obj.get("range")
-                ]
-                if obj.get("range") is not None
-                else None,
-            }
-        )
+        _obj = cls.model_validate({
+            "value": obj.get("value"),
+            "default": SpatialProcessing.from_dict(obj["default"])
+            if obj.get("default") is not None
+            else None,
+            "range": [SpatialProcessing.from_dict(_item) for _item in obj["range"]]
+            if obj.get("range") is not None
+            else None,
+        })
         return _obj

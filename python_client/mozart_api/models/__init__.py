@@ -227,6 +227,9 @@ from mozart_api.models.web_socket_event_button import WebSocketEventButton
 from mozart_api.models.web_socket_event_channel_survey_status import (
     WebSocketEventChannelSurveyStatus,
 )
+from mozart_api.models.web_socket_event_classics_adapter_content import (
+    WebSocketEventClassicsAdapterContent,
+)
 from mozart_api.models.web_socket_event_curtains import WebSocketEventCurtains
 from mozart_api.models.web_socket_event_hdmi_video_format_signal import (
     WebSocketEventHdmiVideoFormatSignal,
@@ -286,6 +289,7 @@ from mozart_api.models.web_socket_event_volume import WebSocketEventVolume
 from mozart_api.models.web_socket_event_wisa_out_state import WebSocketEventWisaOutState
 from mozart_api.models.websocket_notification_tag import WebsocketNotificationTag
 from mozart_api.models.wisa_out_state import WisaOutState
+
 
 # Define package exports
 __all__ = [
@@ -472,6 +476,7 @@ __all__ = [
     "WebSocketEventBeolinkJoinResult",
     "WebSocketEventButton",
     "WebSocketEventChannelSurveyStatus",
+    "WebSocketEventClassicsAdapterContent",
     "WebSocketEventCurtains",
     "WebSocketEventHdmiVideoFormatSignal",
     "WebSocketEventNotification",

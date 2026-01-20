@@ -18,37 +18,38 @@ import json
 import pprint
 import re  # noqa: F401
 from datetime import datetime
-from typing import Optional
+from typing import Any, ClassVar, Dict, List, Optional, Set
 
-try:
-    from pydantic.v1 import BaseModel, Field, StrictStr, constr, validator
-except ImportError:
-    from pydantic import BaseModel, Field, StrictStr, constr, validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from typing_extensions import Annotated, Self
 
 
 class SpeakerLinkMemberStatus(BaseModel):
     """
     SpeakerLinkMemberStatus
-    """
+    """  # noqa: E501
 
-    base_url: Optional[StrictStr] = Field(
-        default=None,
-        alias="baseUrl",
-        description="API prefix to use when talking to the secondary",
-    )
-    health: StrictStr = Field(...)
-    ip_address: Optional[StrictStr] = Field(
-        default=None, alias="ipAddress", description="IP address"
-    )
-    network_type: StrictStr = Field(default=..., alias="networkType")
-    product_type: Optional[StrictStr] = Field(default=None, alias="productType")
-    serial_number: constr(strict=True) = Field(
-        default=..., alias="serialNumber", description="Speaker serial number"
-    )
-    updated_at: datetime = Field(
-        default=..., alias="updatedAt", description="Timestamp in RFC3393 format"
-    )
-    __properties = [
+    base_url: Annotated[
+        Optional[StrictStr],
+        Field(
+            description="API prefix to use when talking to the secondary",
+            alias="baseUrl",
+        ),
+    ] = None
+    health: StrictStr
+    ip_address: Annotated[
+        Optional[StrictStr], Field(description="IP address", alias="ipAddress")
+    ] = None
+    network_type: Annotated[StrictStr, Field(alias="networkType")]
+    product_type: Annotated[Optional[StrictStr], Field(alias="productType")] = None
+    serial_number: Annotated[
+        Annotated[str, Field(strict=True)],
+        Field(description="Speaker serial number", alias="serialNumber"),
+    ]
+    updated_at: Annotated[
+        datetime, Field(description="Timestamp in RFC3393 format", alias="updatedAt")
+    ]
+    __properties: ClassVar[List[str]] = [
         "baseUrl",
         "health",
         "ipAddress",
@@ -58,90 +59,94 @@ class SpeakerLinkMemberStatus(BaseModel):
         "updatedAt",
     ]
 
-    @validator("health")
+    @field_validator("health")
     def health_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in (
-            "unknown",
-            "good",
-            "warning",
-            "bad",
-        ):
+        if value not in set(["unknown", "good", "warning", "bad"]):
             raise ValueError(
                 "must be one of enum values ('unknown', 'good', 'warning', 'bad')"
             )
         return value
 
-    @validator("network_type")
+    @field_validator("network_type")
     def network_type_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in (
-            "none",
-            "wired",
-            "wireless",
-        ):
+        if value not in set(["none", "wired", "wireless"]):
             raise ValueError("must be one of enum values ('none', 'wired', 'wireless')")
         return value
 
-    @validator("serial_number")
+    @field_validator("serial_number")
     def serial_number_validate_regular_expression(cls, value):
         """Validates the regular expression"""
         if not re.match(r"^\d{8}", value):
             raise ValueError(r"must validate the regular expression /^\d{8}/")
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> SpeakerLinkMemberStatus:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of SpeakerLinkMemberStatus from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # set to None if base_url (nullable) is None
-        # and __fields_set__ contains the field
-        if self.base_url is None and "base_url" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.base_url is None and "base_url" in self.model_fields_set:
             _dict["baseUrl"] = None
 
         # set to None if ip_address (nullable) is None
-        # and __fields_set__ contains the field
-        if self.ip_address is None and "ip_address" in self.__fields_set__:
+        # and model_fields_set contains the field
+        if self.ip_address is None and "ip_address" in self.model_fields_set:
             _dict["ipAddress"] = None
 
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> SpeakerLinkMemberStatus:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of SpeakerLinkMemberStatus from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return SpeakerLinkMemberStatus.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = SpeakerLinkMemberStatus.parse_obj(
-            {
-                "base_url": obj.get("baseUrl"),
-                "health": obj.get("health"),
-                "ip_address": obj.get("ipAddress"),
-                "network_type": obj.get("networkType"),
-                "product_type": obj.get("productType"),
-                "serial_number": obj.get("serialNumber"),
-                "updated_at": obj.get("updatedAt"),
-            }
-        )
+        _obj = cls.model_validate({
+            "baseUrl": obj.get("baseUrl"),
+            "health": obj.get("health"),
+            "ipAddress": obj.get("ipAddress"),
+            "networkType": obj.get("networkType"),
+            "productType": obj.get("productType"),
+            "serialNumber": obj.get("serialNumber"),
+            "updatedAt": obj.get("updatedAt"),
+        })
         return _obj

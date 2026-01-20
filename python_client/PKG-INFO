@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: mozart_api
-Version: 5.3.1.108.0
+Version: 5.3.1.108.1
 Summary: Mozart platform API
 License: MIT
 License-File: LICENSE
@@ -16,6 +16,7 @@ Classifier: Intended Audience :: Developers
 Requires-Dist: aioconsole (>=0.4.1)
 Requires-Dist: aiohttp (>=3.11.0)
 Requires-Dist: aiohttp-retry (>=2.8.3)
+Requires-Dist: inflection (>=0.5.1)
 Requires-Dist: pydantic (>=2)
 Requires-Dist: python-dateutil (>=2.8.2)
 Requires-Dist: typing-extensions (>=4.7.1)

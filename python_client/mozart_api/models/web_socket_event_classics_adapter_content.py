@@ -19,34 +19,20 @@ import pprint
 import re  # noqa: F401
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing_extensions import Annotated, Self
 
+from mozart_api.models.content_item import ContentItem
 
-class RemoteUIKeyState(BaseModel):
+
+class WebSocketEventClassicsAdapterContent(BaseModel):
     """
-    RemoteUIKeyState
+    WebSocketEventClassicsAdapterContent
     """  # noqa: E501
 
-    state: Annotated[
-        Optional[StrictStr],
-        Field(
-            description="The state of the pressed key. ShortPress and LongPress's duration are determined by the remote. Whereas Down, Continue, and Release reflect the state of the key and press duration is the time between a Down and a Release state. Continue indicates that a button is pressed and the key event should be handled multiple times until a release is received. "
-        ),
-    ] = None
-    __properties: ClassVar[List[str]] = ["state"]
-
-    @field_validator("state")
-    def state_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(["ShortPress", "LongPress", "Down", "Continue", "Release"]):
-            raise ValueError(
-                "must be one of enum values ('ShortPress', 'LongPress', 'Down', 'Continue', 'Release')"
-            )
-        return value
+    event_data: Annotated[Optional[ContentItem], Field(alias="eventData")] = None
+    event_type: Annotated[Optional[StrictStr], Field(alias="eventType")] = None
+    __properties: ClassVar[List[str]] = ["eventData", "eventType"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -65,7 +51,7 @@ class RemoteUIKeyState(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of RemoteUIKeyState from a JSON string"""
+        """Create an instance of WebSocketEventClassicsAdapterContent from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -85,16 +71,24 @@ class RemoteUIKeyState(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of event_data
+        if self.event_data:
+            _dict["eventData"] = self.event_data.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of RemoteUIKeyState from a dict"""
+        """Create an instance of WebSocketEventClassicsAdapterContent from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
-        _obj = cls.model_validate({"state": obj.get("state")})
+        _obj = cls.model_validate({
+            "eventData": ContentItem.from_dict(obj["eventData"])
+            if obj.get("eventData") is not None
+            else None,
+            "eventType": obj.get("eventType"),
+        })
         return _obj

@@ -18,47 +18,37 @@ import json
 import pprint
 import re  # noqa: F401
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, ClassVar, Dict, List, Optional, Set
 
-try:
-    from pydantic.v1 import (
-        BaseModel,
-        Field,
-        StrictBool,
-        StrictStr,
-        conint,
-        conlist,
-        validator,
-    )
-except ImportError:
-    from pydantic import (
-        BaseModel,
-        Field,
-        StrictBool,
-        StrictStr,
-        conint,
-        conlist,
-        validator,
-    )
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    StrictBool,
+    StrictStr,
+    field_validator,
+)
+from typing_extensions import Annotated, Self
 
 
 class PairedRemote(BaseModel):
     """
     PairedRemote
-    """
+    """  # noqa: E501
 
-    address: StrictStr = Field(...)
-    app_version: Optional[StrictStr] = Field(default=None, alias="appVersion")
-    battery_level: Optional[conint(strict=True, le=100, ge=0)] = Field(
-        default=None, alias="batteryLevel"
-    )
+    address: StrictStr
+    app_version: Annotated[Optional[StrictStr], Field(alias="appVersion")] = None
+    battery_level: Annotated[
+        Optional[Annotated[int, Field(le=100, strict=True, ge=0)]],
+        Field(alias="batteryLevel"),
+    ] = None
     connected: Optional[StrictBool] = None
-    db_version: Optional[StrictStr] = Field(default=None, alias="dbVersion")
-    last_seen: Optional[datetime] = Field(default=None, alias="lastSeen")
-    name: StrictStr = Field(...)
-    serial_number: Optional[StrictStr] = Field(default=None, alias="serialNumber")
-    updated: Optional[conlist(StrictStr)] = None
-    __properties = [
+    db_version: Annotated[Optional[StrictStr], Field(alias="dbVersion")] = None
+    last_seen: Annotated[Optional[datetime], Field(alias="lastSeen")] = None
+    name: StrictStr
+    serial_number: Annotated[Optional[StrictStr], Field(alias="serialNumber")] = None
+    updated: Optional[List[StrictStr]] = None
+    __properties: ClassVar[List[str]] = [
         "address",
         "appVersion",
         "batteryLevel",
@@ -70,64 +60,74 @@ class PairedRemote(BaseModel):
         "updated",
     ]
 
-    @validator("updated")
+    @field_validator("updated")
     def updated_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
         for i in value:
-            if i not in (
-                "app",
-                "db",
-            ):
+            if i not in set(["app", "db"]):
                 raise ValueError("each list item must be one of ('app', 'db')")
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> PairedRemote:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of PairedRemote from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> PairedRemote:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of PairedRemote from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return PairedRemote.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = PairedRemote.parse_obj(
-            {
-                "address": obj.get("address"),
-                "app_version": obj.get("appVersion"),
-                "battery_level": obj.get("batteryLevel"),
-                "connected": obj.get("connected"),
-                "db_version": obj.get("dbVersion"),
-                "last_seen": obj.get("lastSeen"),
-                "name": obj.get("name"),
-                "serial_number": obj.get("serialNumber"),
-                "updated": obj.get("updated"),
-            }
-        )
+        _obj = cls.model_validate({
+            "address": obj.get("address"),
+            "appVersion": obj.get("appVersion"),
+            "batteryLevel": obj.get("batteryLevel"),
+            "connected": obj.get("connected"),
+            "dbVersion": obj.get("dbVersion"),
+            "lastSeen": obj.get("lastSeen"),
+            "name": obj.get("name"),
+            "serialNumber": obj.get("serialNumber"),
+            "updated": obj.get("updated"),
+        })
         return _obj

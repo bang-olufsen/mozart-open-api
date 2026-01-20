@@ -17,43 +17,47 @@ from __future__ import annotations
 import json
 import pprint
 import re  # noqa: F401
-from typing import Optional
+from typing import Any, ClassVar, Dict, List, Optional, Set
 
-try:
-    from pydantic.v1 import BaseModel, Field, StrictInt, StrictStr, validator
-except ImportError:
-    from pydantic import BaseModel, Field, StrictInt, StrictStr, validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from typing_extensions import Annotated, Self
 
 from mozart_api.models.beo_shape_status_sound_profile import BeoShapeStatusSoundProfile
 
 
 class BeoShapeStatus(BaseModel):
     """
-    Status  # noqa: E501
-    """
+    Status
+    """  # noqa: E501
 
-    amplifier_tiles_configured: StrictInt = Field(
-        default=...,
-        alias="amplifierTilesConfigured",
-        description="Number of amplifier Shape titles currently configured",
-    )
-    amplifier_tiles_online: StrictInt = Field(
-        default=...,
-        alias="amplifierTilesOnline",
-        description="Number of amplifier Shape tiles currently connected",
-    )
-    design_id: Optional[StrictStr] = Field(default=None, alias="designId")
-    design_name: Optional[StrictStr] = Field(default=None, alias="designName")
-    sound_profile: Optional[BeoShapeStatusSoundProfile] = Field(
-        default=None, alias="soundProfile"
-    )
-    speaker_tiles_configured: StrictInt = Field(
-        default=...,
-        alias="speakerTilesConfigured",
-        description="Number of speaker Shape titles currently configured",
-    )
-    state: StrictStr = Field(...)
-    __properties = [
+    amplifier_tiles_configured: Annotated[
+        StrictInt,
+        Field(
+            description="Number of amplifier Shape titles currently configured",
+            alias="amplifierTilesConfigured",
+        ),
+    ]
+    amplifier_tiles_online: Annotated[
+        StrictInt,
+        Field(
+            description="Number of amplifier Shape tiles currently connected",
+            alias="amplifierTilesOnline",
+        ),
+    ]
+    design_id: Annotated[Optional[StrictStr], Field(alias="designId")] = None
+    design_name: Annotated[Optional[StrictStr], Field(alias="designName")] = None
+    sound_profile: Annotated[
+        Optional[BeoShapeStatusSoundProfile], Field(alias="soundProfile")
+    ] = None
+    speaker_tiles_configured: Annotated[
+        StrictInt,
+        Field(
+            description="Number of speaker Shape titles currently configured",
+            alias="speakerTilesConfigured",
+        ),
+    ]
+    state: StrictStr
+    __properties: ClassVar[List[str]] = [
         "amplifierTilesConfigured",
         "amplifierTilesOnline",
         "designId",
@@ -63,70 +67,81 @@ class BeoShapeStatus(BaseModel):
         "state",
     ]
 
-    @validator("state")
+    @field_validator("state")
     def state_validate_enum(cls, value):
         """Validates the enum"""
-        if value not in (
+        if value not in set([
             "notUsed",
             "updatingFirmware",
             "initializing",
             "errorHardwareConfig",
             "ready",
-        ):
+        ]):
             raise ValueError(
                 "must be one of enum values ('notUsed', 'updatingFirmware', 'initializing', 'errorHardwareConfig', 'ready')"
             )
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> BeoShapeStatus:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of BeoShapeStatus from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of sound_profile
         if self.sound_profile:
             _dict["soundProfile"] = self.sound_profile.to_dict()
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> BeoShapeStatus:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of BeoShapeStatus from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return BeoShapeStatus.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = BeoShapeStatus.parse_obj(
-            {
-                "amplifier_tiles_configured": obj.get("amplifierTilesConfigured"),
-                "amplifier_tiles_online": obj.get("amplifierTilesOnline"),
-                "design_id": obj.get("designId"),
-                "design_name": obj.get("designName"),
-                "sound_profile": BeoShapeStatusSoundProfile.from_dict(
-                    obj.get("soundProfile")
-                )
-                if obj.get("soundProfile") is not None
-                else None,
-                "speaker_tiles_configured": obj.get("speakerTilesConfigured"),
-                "state": obj.get("state"),
-            }
-        )
+        _obj = cls.model_validate({
+            "amplifierTilesConfigured": obj.get("amplifierTilesConfigured"),
+            "amplifierTilesOnline": obj.get("amplifierTilesOnline"),
+            "designId": obj.get("designId"),
+            "designName": obj.get("designName"),
+            "soundProfile": BeoShapeStatusSoundProfile.from_dict(obj["soundProfile"])
+            if obj.get("soundProfile") is not None
+            else None,
+            "speakerTilesConfigured": obj.get("speakerTilesConfigured"),
+            "state": obj.get("state"),
+        })
         return _obj

@@ -1,20 +1,21 @@
 [project]
 name = "mozart_api"
-version = "5.3.1.108.0"
+version = "5.3.1.108.1"
 description = "Mozart platform API"
 authors = [{ name = "BangOlufsen", email = "support@bang-olufsen.dk" }]
 readme = "README.md"
 keywords = ["OpenAPI", "OpenAPI-Generator", "Mozart platform API"]
 requires-python = ">=3.11"
 dependencies = [
-    "python-dateutil (>=2.8.2)",
-    "aiohttp-retry (>=2.8.3)",
-    "pydantic (>=2)",
-    "typing-extensions (>=4.7.1)",
     "aioconsole (>=0.4.1)",
     "aiohttp (>=3.11.0)",
-    "zeroconf (>=0.25.1)",
+    "aiohttp-retry (>=2.8.3)",
+    "inflection (>=0.5.1)",
+    "pydantic (>=2)",
+    "python-dateutil (>=2.8.2)",
+    "typing-extensions (>=4.7.1)",
     "urllib3 (<3)",
+    "zeroconf (>=0.25.1)",
 ]
 classifiers = [
     "Programming Language :: Python",

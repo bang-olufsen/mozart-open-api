@@ -18,12 +18,10 @@ import json
 import pprint
 import re  # noqa: F401
 from datetime import datetime
-from typing import Optional
+from typing import Any, ClassVar, Dict, List, Optional, Set
 
-try:
-    from pydantic.v1 import BaseModel, Field, StrictInt, StrictStr, validator
-except ImportError:
-    from pydantic import BaseModel, Field, StrictInt, StrictStr, validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from typing_extensions import Annotated, Self
 
 from mozart_api.models.software_update_state import SoftwareUpdateState
 
@@ -31,16 +29,20 @@ from mozart_api.models.software_update_state import SoftwareUpdateState
 class SoftwareUpdateStatus(BaseModel):
     """
     SoftwareUpdateStatus
-    """
+    """  # noqa: E501
 
-    available_update: Optional[StrictStr] = Field(default=None, alias="availableUpdate")
-    last_check: Optional[datetime] = Field(default=None, alias="lastCheck")
-    last_update: Optional[datetime] = Field(default=None, alias="lastUpdate")
-    software_version: StrictStr = Field(default=..., alias="softwareVersion")
-    state: SoftwareUpdateState = Field(...)
-    update_progress: Optional[StrictInt] = Field(default=None, alias="updateProgress")
-    update_type: Optional[StrictStr] = Field(default=None, alias="updateType")
-    __properties = [
+    available_update: Annotated[Optional[StrictStr], Field(alias="availableUpdate")] = (
+        None
+    )
+    last_check: Annotated[Optional[datetime], Field(alias="lastCheck")] = None
+    last_update: Annotated[Optional[datetime], Field(alias="lastUpdate")] = None
+    software_version: Annotated[StrictStr, Field(alias="softwareVersion")]
+    state: SoftwareUpdateState
+    update_progress: Annotated[Optional[StrictInt], Field(alias="updateProgress")] = (
+        None
+    )
+    update_type: Annotated[Optional[StrictStr], Field(alias="updateType")] = None
+    __properties: ClassVar[List[str]] = [
         "availableUpdate",
         "lastCheck",
         "lastUpdate",
@@ -50,70 +52,78 @@ class SoftwareUpdateStatus(BaseModel):
         "updateType",
     ]
 
-    @validator("update_type")
+    @field_validator("update_type")
     def update_type_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
-        if value not in (
-            "none",
-            "normal",
-            "critical",
-            "forced",
-        ):
+        if value not in set(["none", "normal", "critical", "forced"]):
             raise ValueError(
                 "must be one of enum values ('none', 'normal', 'critical', 'forced')"
             )
         return value
 
-    class Config:
-        """Pydantic configuration"""
-
-        allow_population_by_field_name = True
-        validate_assignment = True
+    model_config = ConfigDict(
+        populate_by_name=True,
+        validate_assignment=True,
+        protected_namespaces=(),
+    )
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
-        return pprint.pformat(self.dict(by_alias=True))
+        return pprint.pformat(self.model_dump(by_alias=True))
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
+        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
         return json.dumps(self.to_dict())
 
     @classmethod
-    def from_json(cls, json_str: str) -> SoftwareUpdateStatus:
+    def from_json(cls, json_str: str) -> Optional[Self]:
         """Create an instance of SoftwareUpdateStatus from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
-    def to_dict(self):
-        """Returns the dictionary representation of the model using alias"""
-        _dict = self.dict(by_alias=True, exclude={}, exclude_none=True)
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the dictionary representation of the model using alias.
+
+        This has the following differences from calling pydantic's
+        `self.model_dump(by_alias=True)`:
+
+        * `None` is only added to the output dict for nullable fields that
+          were set at model initialization. Other fields with value `None`
+          are ignored.
+        """
+        excluded_fields: Set[str] = set([])
+
+        _dict = self.model_dump(
+            by_alias=True,
+            exclude=excluded_fields,
+            exclude_none=True,
+        )
         # override the default output from pydantic by calling `to_dict()` of state
         if self.state:
             _dict["state"] = self.state.to_dict()
         return _dict
 
     @classmethod
-    def from_dict(cls, obj: dict) -> SoftwareUpdateStatus:
+    def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
         """Create an instance of SoftwareUpdateStatus from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
-            return SoftwareUpdateStatus.parse_obj(obj)
+            return cls.model_validate(obj)
 
-        _obj = SoftwareUpdateStatus.parse_obj(
-            {
-                "available_update": obj.get("availableUpdate"),
-                "last_check": obj.get("lastCheck"),
-                "last_update": obj.get("lastUpdate"),
-                "software_version": obj.get("softwareVersion"),
-                "state": SoftwareUpdateState.from_dict(obj.get("state"))
-                if obj.get("state") is not None
-                else None,
-                "update_progress": obj.get("updateProgress"),
-                "update_type": obj.get("updateType"),
-            }
-        )
+        _obj = cls.model_validate({
+            "availableUpdate": obj.get("availableUpdate"),
+            "lastCheck": obj.get("lastCheck"),
+            "lastUpdate": obj.get("lastUpdate"),
+            "softwareVersion": obj.get("softwareVersion"),
+            "state": SoftwareUpdateState.from_dict(obj["state"])
+            if obj.get("state") is not None
+            else None,
+            "updateProgress": obj.get("updateProgress"),
+            "updateType": obj.get("updateType"),
+        })
         return _obj

@@ -7,9 +7,10 @@ import ipaddress
 import sys
 import threading
 from dataclasses import dataclass
+from pprint import pprint
 from typing import Final, cast
 
-from aioconsole import ainput  # type: ignore[import-untyped]
+from aioconsole import ainput
 from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
 
 from mozart_api import __version__
@@ -290,7 +291,7 @@ class MozartApiCli:
         # then wait for keypress before exiting the CLI
         if self.websocket:
             await ainput(
-                "Listening to WebSocket events. Press any key to exit CLI.\n\r",
+                "Listening to WebSocket events. Press 'enter' key to exit CLI.\n\r",
             )
             self.mozart_client.disconnect_notifications()
 
@@ -326,7 +327,9 @@ class MozartApiCli:
         _: str,
     ) -> None:
         """Handle all notifications."""
-        print(notification)
+        print("WebSocket:")
+        pprint(notification)
+        print("\n\r")
 
     async def _command_handler(self) -> None:
         """Handle commands."""
@@ -362,10 +365,10 @@ class MozartApiCli:
         # Currently show battery state, product state
         elif self.command == "info":
             battery_state = await self.mozart_client.get_battery_state()
-            print(f"Battery state: {battery_state}")
+            print(f"Info - battery state: {battery_state}\n\r")
 
             power_state = await self.mozart_client.get_product_state()
-            print(f"Product state: {power_state}")
+            print(f"Info - product state: {power_state}\n\r")
 
         elif self.command == "allstandby":
             await self.mozart_client.post_beolink_allstandby()
@@ -379,9 +382,6 @@ class MozartApiCli:
             # Wait for the join-result to be available
             await asyncio.sleep(1)
             if status:
-                print("Beolink Join status:")
                 print(
-                    await self.mozart_client.get_beolink_join_result(
-                        id=status.request_id,
-                    ),
+                    f"Beolink Join status:{await self.mozart_client.get_beolink_join_result(id=status.request_id)}\n\r"
                 )
