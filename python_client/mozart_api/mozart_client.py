@@ -10,6 +10,7 @@ from collections.abc import Awaitable, Callable
 from ssl import SSLContext
 from types import TracebackType
 from typing import Literal, Self, TypedDict
+from uuid import UUID
 
 from aiohttp import ClientSession, ClientTimeout
 from aiohttp.client_exceptions import (
@@ -949,7 +950,7 @@ class MozartClient(MozartApi):
     # Generated section end
 
     async def async_get_beolink_join_result(
-        self, join_request_id: str
+        self, join_request_id: UUID
     ) -> BeolinkJoinResult | None:
         """Get `get_beolink_join_result` asynchronously with a timeout."""
         try:

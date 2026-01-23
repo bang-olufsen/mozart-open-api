@@ -4,10 +4,11 @@ import argparse
 import asyncio
 import contextlib
 import ipaddress
+import logging
+import pprint
 import sys
 import threading
 from dataclasses import dataclass
-from pprint import pprint
 from typing import Final, cast
 
 from aioconsole import ainput
@@ -62,7 +63,54 @@ sw_version: {self.sw_version}
 """
 
 
+class CustomFormatter(logging.Formatter):
+    """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629."""
+
+    red = "\033[31m"
+    green = "\033[32m"
+    yellow = "\033[33m"
+    blue = "\033[34m"
+    reset = "\x1b[0m"
+
+    def __init__(self) -> None:
+        """Initialize custom logger."""
+        super().__init__()
+        fmt = "%(asctime)s - %(message)s"
+
+        # The levels are used for color coding
+        self.FORMATS = {
+            logging.DEBUG: self.blue + fmt + self.reset,
+            logging.INFO: self.green + fmt + self.reset,
+            logging.WARNING: self.yellow + fmt + self.reset,
+            logging.ERROR: fmt,
+            logging.CRITICAL: self.red + fmt + self.reset,
+        }
+
+    def format(self, record: logging.LogRecord) -> str:
+        """Format log message."""
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
+
+
+class CustomLogger(logging.Logger):
+    """Custom logger with color coding."""
+
+    def __init__(self, name: str) -> None:
+        """Init the logger."""
+        super().__init__(name)
+        self.setLevel(logging.DEBUG)
+
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.DEBUG)
+        stream_handler.setFormatter(CustomFormatter())
+
+        self.addHandler(stream_handler)
+
+
 mozart_devices: list[MozartDevice] = []
+
+logger = CustomLogger(__name__)
 
 
 class MozartListener(ServiceListener):
@@ -71,9 +119,9 @@ class MozartListener(ServiceListener):
     def __init__(self, mode: str, verbose: bool, event: threading.Event) -> None:
         """Initialize listener."""
         super().__init__()
-        self.mode = mode
-        self.verbose = verbose
-        self.event = event
+        self._mode = mode
+        self._verbose = verbose
+        self._event = event
 
     def update_service(self, zc: Zeroconf, type_: str, name: str) -> None:
         """Unused."""
@@ -87,7 +135,7 @@ class MozartListener(ServiceListener):
 
         # Sometimes service info is None.
         if not info:
-            print(f"Error getting {name}")
+            logger.info("Error getting %s", name)
             return
 
         # Create MozartDevice object from MDNS discovered information.
@@ -109,13 +157,15 @@ class MozartListener(ServiceListener):
         mozart_devices.append(mozart_device)
 
         # Stop discovery if the desired Mozart device has been found.
-        if self.mode == serial_number:
-            print(f"Desired Mozart device: {self.mode} found: {mozart_device}")
-            self.event.set()
+        if self._mode == serial_number:
+            logger.error(
+                "Desired Mozart device: %s found: %s", self._mode, mozart_device
+            )
+            self._event.set()
 
         # Only print the discovered devices if in 'discover' mode or verbose is enabled.
-        elif self.mode == DISCOVER_MODE or self.verbose:
-            print(mozart_device)
+        elif self._mode == DISCOVER_MODE or self._verbose:
+            logger.error("%s", mozart_device)
 
 
 def discover_devices(mode: str, timeout: int, verbose: bool) -> list[MozartDevice]:
@@ -127,17 +177,17 @@ def discover_devices(mode: str, timeout: int, verbose: bool) -> list[MozartDevic
     browser = ServiceBrowser(zeroconf, MOZART_MDNS_TYPE, listener)
 
     if mode == "discover" or verbose:
-        print("Discovering Mozart devices. Scanning _bangolufsen._tcp.local.")
+        logger.error("Discovering Mozart devices. Scanning _bangolufsen._tcp.local.")
 
     if timeout == -1:
-        input("Press 'enter' to stop discovery.\n\r")
-
+        with contextlib.suppress(KeyboardInterrupt):
+            input("Press the 'enter' key to stop discovery.\n\r")
     else:
         # Stop if the serial number has been found with MDNS
         timeout_status = event.wait(timeout)
 
         if not timeout_status:
-            print(f"Discovery timed out with timeout of {timeout} seconds.")
+            logger.error("Discovery timed out with timeout of %s seconds.", timeout)
 
     browser.cancel()
     zeroconf.close()
@@ -213,58 +263,58 @@ class MozartApiCli:
 
     def __init__(self) -> None:
         """Init the Mozart CLI."""
-        self.timeout = MDNS_TIMEOUT
-        self.verbose = False
-        self.websocket = False
-        self.mode = ""
-        self.command = ""
-        self.host = ""
-        self.command_args: list[str] = []
-        self.mozart_devices: list[MozartDevice] = []
+        self._timeout = MDNS_TIMEOUT
+        self._verbose = False
+        self._websocket = False
+        self._mode = ""
+        self._command = ""
+        self._host = ""
+        self._command_args: list[str] = []
+        self._mozart_devices: list[MozartDevice] = []
 
         parser = init_argument_parser()
         args = parser.parse_args()
 
         if args.timeout:
-            self.timeout = int(args.timeout)
+            self._timeout = int(args.timeout)
 
-        self.verbose = bool(args.verbose)
-        self.websocket = bool(args.websocket)
-        self.mode = args.mode
-        self.command = args.command
-        self.command_args = args.command_args
+        self._verbose = bool(args.verbose)
+        self._websocket = bool(args.websocket)
+        self._mode = args.mode
+        self._command = args.command
+        self._command_args = args.command_args
 
         # Check if the API version should be printed
-        if self.mode == VERSION_MODE:
-            print(__version__)
+        if self._mode == VERSION_MODE:
+            logger.error("%s", __version__)
             sys.exit(0)
 
         # Check if the mode defined is an ip address
         with contextlib.suppress(ValueError):
-            ipaddress.ip_address(self.mode)
-            self.host = self.mode
+            ipaddress.ip_address(self._mode)
+            self._host = self._mode
 
         # Discover devices if host has not been defined
-        if not self.host:
-            self.mozart_devices = discover_devices(
-                self.mode,
-                self.timeout,
-                self.verbose,
+        if not self._host:
+            self._mozart_devices = discover_devices(
+                self._mode,
+                self._timeout,
+                self._verbose,
             )
 
             # Get the ip address from the devices Mozart devices
-            self.host = next(
+            self._host = next(
                 (
                     device
-                    for device in self.mozart_devices
-                    if device.serial_number == self.mode
+                    for device in self._mozart_devices
+                    if device.serial_number == self._mode
                 ),
                 MozartDevice(),
             ).ip_address
 
         # Exit if in discover mode, no command has been defined
         # or desired host can't be found.
-        if self.mode == DISCOVER_MODE or self.command == "" or self.host == "":
+        if self._mode == DISCOVER_MODE or self._command == "" or self._host == "":
             sys.exit(0)
 
         asyncio.run(self._run_api())
@@ -274,12 +324,14 @@ class MozartApiCli:
     async def _run_api(self) -> None:
         """Run async API command handling."""
         # Generate MozartApi object for calling API endpoints.
-        self.mozart_client = MozartClient(self.host)
+        self.mozart_client = MozartClient(self._host)
 
         # Connect to the websocket notification channel if defined
-        if self.websocket:
-            print("Connecting to WebSocket channel")
+        if self._websocket:
+            logger.error("Connecting to WebSocket channel")
             self.mozart_client.get_all_notifications(self.all_notifications)
+            self.mozart_client.get_on_connection(self.on_connection)
+            self.mozart_client.get_on_connection_lost(self.on_connection_lost)
             await self.mozart_client.connect_notifications(
                 remote_control=True, reconnect=True
             )
@@ -289,10 +341,11 @@ class MozartApiCli:
 
         # If WebSocket listener is enabled,
         # then wait for keypress before exiting the CLI
-        if self.websocket:
-            await ainput(
-                "Listening to WebSocket events. Press 'enter' key to exit CLI.\n\r",
-            )
+        if self._websocket:
+            with contextlib.suppress(KeyboardInterrupt):
+                await ainput(
+                    "Listening to WebSocket events. Press the 'enter' key to exit CLI.\n\r"
+                )
             self.mozart_client.disconnect_notifications()
 
         await self.mozart_client.close_api_client()
@@ -300,11 +353,11 @@ class MozartApiCli:
     async def _beolink_join(self) -> BeolinkJoinRequest | None:
         """Showcase async API usage of the Beolink command."""
         # If no JID is specified, then join an active experience if available
-        if len(self.command_args) == 0:
+        if len(self._command_args) == 0:
             status = await self.mozart_client.join_latest_beolink_experience()
 
         else:
-            serial_number = self.command_args[0]
+            serial_number = self._command_args[0]
 
             # Check if a device with specified serial number
             # is available as a peer and get JID if available
@@ -312,7 +365,7 @@ class MozartApiCli:
 
             # The peers may be outdated and still have now unavailable devices.
             if len(peers) == 0:
-                print("No available Beolink peers.")
+                logger.error("No available Beolink peers.")
                 return None
 
             jid = next(peer for peer in peers if serial_number in peer.jid).jid
@@ -327,61 +380,79 @@ class MozartApiCli:
         _: str,
     ) -> None:
         """Handle all notifications."""
-        print("WebSocket:")
-        pprint(notification)
-        print("\n\r")
+        logger.debug("WebSocket:\n\r%s", pprint.pformat(notification))
+
+    def on_connection(self) -> None:
+        """Handle connection made."""
+        logger.error("WebSocket connection established.")
+
+    def on_connection_lost(self) -> None:
+        """Handle connection lost."""
+        logger.warning(
+            "WebSocket connection lost. Attempting to reconnect to %s...", self._host
+        )
 
     async def _command_handler(self) -> None:
         """Handle commands."""
-        print(
-            f"Sending command: '{self.command}' to device with args {self.command_args}.",
+        logger.error(
+            "Sending command: '%s' to device with args %s.",
+            self._command,
+            self._command_args,
         )
         status = None
 
-        if self.command == "preset":
-            preset_id = int(self.command_args[0])
+        if self._command == "preset":
+            preset_id = int(self._command_args[0])
             await self.mozart_client.activate_preset(id=preset_id)
 
-        elif self.command in ("play", "pause", "next", "previous"):
-            await self.mozart_client.post_playback_command(command=self.command)
+        elif self._command in ("play", "pause", "next", "previous"):
+            await self.mozart_client.post_playback_command(command=self._command)
 
-        elif self.command == "mute":
+        elif self._command == "mute":
             await self.mozart_client.set_volume_mute(volume_mute=VolumeMute(muted=True))
 
-        elif self.command == "unmute":
+        elif self._command == "unmute":
             await self.mozart_client.set_volume_mute(
                 volume_mute=VolumeMute(muted=False),
             )
 
-        elif self.command == "volume":
-            volume_level = int(self.command_args[0])
+        elif self._command == "volume":
+            volume_level = int(self._command_args[0])
             await self.mozart_client.set_current_volume_level(
                 volume_level=VolumeLevel(level=volume_level),
             )
 
-        elif self.command == "join":
+        elif self._command == "join":
             status = await self._beolink_join()
 
         # Currently show battery state, product state
-        elif self.command == "info":
+        elif self._command == "info":
             battery_state = await self.mozart_client.get_battery_state()
-            print(f"Info - battery state: {battery_state}\n\r")
+            logger.info(
+                "Info - battery state:\n\r%s",
+                pprint.pformat(battery_state.model_dump()),
+            )
 
             power_state = await self.mozart_client.get_product_state()
-            print(f"Info - product state: {power_state}\n\r")
+            logger.info(
+                "Info - product state:\n\r%s", pprint.pformat(power_state.model_dump())
+            )
 
-        elif self.command == "allstandby":
+        elif self._command == "allstandby":
             await self.mozart_client.post_beolink_allstandby()
 
         else:
-            print(f"Invalid command {self.command}.")
+            logger.error("Invalid command %s.", self._command)
             return
 
         # Print verbose status information if defined.
-        if self.verbose and self.command == "join":
+        if self._verbose and self._command == "join":
             # Wait for the join-result to be available
             await asyncio.sleep(1)
             if status:
-                print(
-                    f"Beolink Join status:{await self.mozart_client.get_beolink_join_result(id=status.request_id)}\n\r"
+                join_result = await self.mozart_client.get_beolink_join_result(
+                    id=status.request_id
+                )
+                logger.info(
+                    "Beolink Join status: %s", pprint.pformat(join_result.model_dump())
                 )
