@@ -6,7 +6,7 @@ info:
   description: API for interacting with the Mozart platform.
   license:
     name: MIT
-    url: 'https://opensource.org/licenses/MIT'
+    url: https://opensource.org/licenses/MIT
   title: Mozart platform API
   version: 0.2.0
 paths:
@@ -64,7 +64,7 @@ paths:
       tags:
         - Beolink
         - mozart
-  '/api/v1/beolink/expand/{jid}':
+  /api/v1/beolink/expand/{jid}:
     parameters:
       - name: jid
         in: path
@@ -119,10 +119,10 @@ paths:
       tags:
         - Beolink
         - mozart
-  '/api/v1/beolink/join-result/{id}':
+  /api/v1/beolink/join-result/{id}:
     get:
       operationId: get-beolink-join-result
-      summary: 'Get Beolink join result, test-endpoint'
+      summary: Get Beolink join result, test-endpoint
       description: |
         Returns the result of a join request.
 
@@ -150,7 +150,7 @@ paths:
         required: true
         schema:
           $ref: '#/components/schemas/BeolinkRequestID'
-  '/api/v1/beolink/join/{jid}':
+  /api/v1/beolink/join/{jid}:
     parameters:
       - name: jid
         in: path
@@ -267,7 +267,7 @@ paths:
       tags:
         - Beolink
         - mozart
-  '/api/v1/beolink/unexpand/{jid}':
+  /api/v1/beolink/unexpand/{jid}:
     parameters:
       - name: jid
         in: path
@@ -309,7 +309,7 @@ paths:
     parameters:
       - name: startWith
         in: query
-        description: 'Filter result that start with x. It could be input source "tv", "netradio" or content "tv://TV", "tv://netflix"'
+        description: Filter result that start with x. It could be input source "tv", "netradio" or content "tv://TV", "tv://netflix"
         required: false
         schema:
           type: string
@@ -374,7 +374,7 @@ paths:
       tags:
         - Overlay
         - mozart
-  '/api/v1/playback/command/{command}':
+  /api/v1/playback/command/{command}:
     post:
       operationId: post-playback-command
       summary: Send a specific playback command to the product
@@ -427,7 +427,7 @@ paths:
         - Deezer
         - Playback
         - mozart
-  '/api/v1/playback/preset/{id}/trigger':
+  /api/v1/playback/preset/{id}/trigger:
     post:
       operationId: activate-preset
       summary: Trigger a preset
@@ -589,7 +589,7 @@ paths:
       tags:
         - Playback
         - mozart
-  '/api/v1/playback/sources/active/{sourceId}':
+  /api/v1/playback/sources/active/{sourceId}:
     post:
       operationId: set-active-source
       summary: Set the active source
@@ -706,7 +706,7 @@ paths:
                   parentMenuItemId: null
                 dd5196ce-65c4-4c56-9a48-1943c4afef9c:
                   content:
-                    contentUri: 'tv://HBO'
+                    contentUri: tv://HBO
                     source: tv
                   fixed: false
                   id: dd5196ce-65c4-4c56-9a48-1943c4afef9c
@@ -714,7 +714,7 @@ paths:
                   parentMenuItemId: 6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0
                 ee5196ce-65c4-4c56-9a48-1943c4afef9c:
                   content:
-                    contentUri: 'tv://Netflix'
+                    contentUri: tv://Netflix
                     source: tv
                   fixed: false
                   id: ee5196ce-65c4-4c56-9a48-1943c4afef9c
@@ -726,7 +726,7 @@ paths:
       tags:
         - Remote
         - mozart
-  '/api/v1/remote/key/{id}/trigger':
+  /api/v1/remote/key/{id}/trigger:
     post:
       operationId: post-remote-key-trigger
       summary: Remote input key press
@@ -761,7 +761,7 @@ paths:
       tags:
         - Remote
         - mozart
-  '/api/v1/remote/{id}/trigger':
+  /api/v1/remote/{id}/trigger:
     parameters:
       - name: id
         in: path
@@ -830,7 +830,7 @@ paths:
       tags:
         - Scenes
         - mozart
-  '/api/v1/scene/{id}/trigger':
+  /api/v1/scene/{id}/trigger:
     post:
       operationId: post-scene-trigger
       summary: Trigger a specific scene
@@ -1059,7 +1059,7 @@ paths:
       tags:
         - Sound
         - mozart
-  '/api/v1/sound/listening-modes/{id}/activate':
+  /api/v1/sound/listening-modes/{id}/activate:
     parameters:
       - $ref: '#/components/parameters/ListeningModeID'
     post:
@@ -1200,7 +1200,7 @@ paths:
       summary: Get the active speaker group
       responses:
         '200':
-          description: 'The active speaker group, or empty if none'
+          description: The active speaker group, or empty if none
           content:
             application/json:
               schema:
@@ -1628,7 +1628,7 @@ components:
         presetKey:
           description: Only used for 'type=sourcePreset'
           type: string
-          format: '^Preset[0-9]+$'
+          format: ^Preset[0-9]+$
           nullable: true
         queueItem:
           description: PlayQueue item only used for 'type=playQueue'
@@ -1874,8 +1874,8 @@ components:
           description: Selected bass-management value
           type: string
           enum:
-            - 'on'
-            - 'off'
+            - on
+            - off
       required:
         - value
     BassManagementFeature:
@@ -2018,13 +2018,13 @@ components:
             - MEDIA
             - UNKNOWN
         id:
-          description: 'experience id, e.g. "RADIO" or "toslink"'
+          description: experience id, e.g. "RADIO" or "toslink"
           type: string
         linkable:
           description: Linkable means "Does pressing play on this source make sense"
           type: boolean
         name:
-          description: 'Experience name, e.g. "Bluetooth" or "B&O Radio"'
+          description: Experience name, e.g. "Bluetooth" or "B&O Radio"
           type: string
         productFriendlyName:
           description: Optional product friendly name
@@ -2234,7 +2234,7 @@ components:
           description: Selected compression value
           type: string
           enum:
-            - 'off'
+            - off
             - medium
             - maximum
       required:
@@ -2282,7 +2282,7 @@ components:
         source:
           $ref: '#/components/schemas/SourceTypeEnum'
       example:
-        contentUri: 'tv://netflix'
+        contentUri: tv://netflix
         label: Netflix
       required:
         - contentUri
@@ -2291,7 +2291,7 @@ components:
       type: object
       example:
         475169e4-32bb-59ad-b88d-a6d53c289838:
-          contentUri: 'tv://netflix'
+          contentUri: tv://netflix
           label: Netflix
       additionalProperties:
         $ref: '#/components/schemas/ContentItem'
@@ -2429,7 +2429,7 @@ components:
     IpAddress:
       description: IP address
       type: string
-      example: 'fe80::209:a7ff:fe78:f605'
+      example: fe80::209:a7ff:fe78:f605
     LatencyProfile:
       description: |
         The latency profile of this speaker group.
@@ -2534,7 +2534,7 @@ components:
           description: Friendly name
           type: string
         origin:
-          description: 'User created, default or an edited default listening mode'
+          description: User created, default or an edited default listening mode
           type: string
           enum:
             - user
@@ -2593,10 +2593,10 @@ components:
         value:
           type: string
           enum:
-            - 'on'
-            - 'off'
+            - on
+            - off
     MicrophonesState:
-      description: 'state of microphones, both physical switches and software state'
+      description: state of microphones, both physical switches and software state
       type: object
       properties:
         microphoneState:
@@ -2606,7 +2606,7 @@ components:
     OptionalIpAddress:
       description: IP address
       type: string
-      example: 'fe80::209:a7ff:fe78:f605'
+      example: fe80::209:a7ff:fe78:f605
       nullable: true
     OverlayPlayRequest:
       allOf:
@@ -2732,7 +2732,7 @@ components:
         provider:
           $ref: '#/components/schemas/PlayQueueItemType'
         startNowFromPosition:
-          description: 'Start playing specified track as soon as possible. This works for any type, for `track` set to 0 and for `playlist` specify the wanted track from position 0'
+          description: Start playing specified track as soon as possible. This works for any type, for `track` set to 0 and for `playlist` specify the wanted track from position 0
           type: integer
           format: int32
           nullable: true
@@ -2742,7 +2742,7 @@ components:
             - track
             - playlist
         uri:
-          description: 'This can be url, track id, playlist id, radio id and suchlike'
+          description: This can be url, track id, playlist id, radio id and suchlike
           type: string
       required:
         - provider
@@ -2932,7 +2932,7 @@ components:
           type: string
           enum:
             - networkStandby
-            - 'on'
+            - on
             - standby
             - shutdown
             - storage
@@ -3044,12 +3044,12 @@ components:
       example:
         6c2ab917-2a9e-42dd-87c6-1fa2fabcdeb0:
           content:
-            contentUri: 'netRadio://123456'
+            contentUri: netRadio://123456
             source: netRadio
           label: P3
         ee5196ce-65c4-4c56-9a48-1943c4afef9c:
           content:
-            contentUri: 'tv://netflix'
+            contentUri: tv://netflix
             source: netRadio
           label: Netflix
       additionalProperties:
@@ -3075,7 +3075,7 @@ components:
               format: uuid
               nullable: true
             label:
-              description: 'Alternative label, if omitted mozart will try its best'
+              description: Alternative label, if omitted mozart will try its best
               type: string
               nullable: true
             nextSiblingMenuItemId:
@@ -3163,7 +3163,7 @@ components:
       type: object
       properties:
         errorList:
-          description: 'List of the speakers where measurement failed, including error type.'
+          description: List of the speakers where measurement failed, including error type.
           type: array
           items:
             $ref: '#/components/schemas/RoomCompensationMeasurementError'
@@ -3547,7 +3547,7 @@ components:
       description: Speaker serial number
       type: string
       example: '12345678'
-      pattern: '^\d{8}'
+      pattern: ^\d{8}
     SoftwareUpdateState:
       type: object
       properties:
@@ -3679,7 +3679,7 @@ components:
         x:
           type: number
           format: double
-        'y':
+        y:
           type: number
           format: double
         z:
@@ -3975,7 +3975,7 @@ components:
             x:
               type: integer
               format: int32
-            'y':
+            y:
               type: integer
               format: int32
             z:
@@ -3983,7 +3983,7 @@ components:
               format: int32
           required:
             - x
-            - 'y'
+            - y
             - z
         redirectionLevel:
           description: Redirection level for bass management in dB
@@ -4177,7 +4177,7 @@ components:
       properties:
         x:
           $ref: '#/components/schemas/ToneTouchType'
-        'y':
+        y:
           $ref: '#/components/schemas/ToneTouchType'
     ToneTouchType:
       type: object
