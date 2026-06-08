@@ -10,7 +10,7 @@ info:
     ![Python version](https://img.shields.io/pypi/pyversions/mozart-api)
 
 
-    The Mozart API is an async REST API with WebSocket notification channel for immediate state information from Mozart devices. Currently the API is distributed as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-5.3.1.108.yaml).
+    The Mozart API is an async REST API with WebSocket notification channel for immediate state information from Mozart devices. Currently the API is distributed as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-6.2.0.44.yaml).
 
 
     Supported by:
@@ -28,7 +28,7 @@ info:
     - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
 
 
-    This API documentation has been generated for version 5.3.1.108 of the Mozart platform and API generation version 5.3.1.108.2.
+    This API documentation has been generated for version 6.2.0.44 of the Mozart platform and API generation version 6.2.0.44.0.
 
     ## Python API
     The Python package has been generated using the [OpenAPI Generator](https://openapi-generator.tech/) version 7.22.0. On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
@@ -2561,6 +2561,43 @@ paths:
       tags:
         - Sound
         - mozart
+  /api/v1/stand/info:
+    get:
+      operationId: get-stand-info
+      summary: Get stand information
+      description: |-
+        Use the `get-stand-info` method in the Python package with one of:
+        ```mozart_client
+        await mozart_client.get_stand_info()
+        ```
+        ```mozart_api
+        await mozart_api.get_stand_info()
+        ```
+        ```stand_api
+        await stand_api.get_stand_info()
+        ```
+      responses:
+        '200':
+          description: Stand information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandInfo'
+        '400':
+          description: Stand capability is not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '404':
+          description: Stand not connected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+      tags:
+        - Stand
+        - mozart
   /api/v1/stand/move:
     post:
       operationId: set-stand-movement
@@ -2594,6 +2631,43 @@ paths:
           description: the movement was accepted
         '400':
           description: Stand not connected or stand capability is not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+      tags:
+        - Stand
+        - mozart
+  /api/v1/stand/status:
+    get:
+      operationId: get-stand-status
+      summary: Get stand Status
+      description: |-
+        Use the `get-stand-status` method in the Python package with one of:
+        ```mozart_client
+        await mozart_client.get_stand_status()
+        ```
+        ```mozart_api
+        await mozart_api.get_stand_status()
+        ```
+        ```stand_api
+        await stand_api.get_stand_status()
+        ```
+      responses:
+        '200':
+          description: The current stand position and movement status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StandStatus'
+        '400':
+          description: Stand capability is not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '404':
+          description: StandStatus not available
           content:
             application/json:
               schema:
@@ -2918,8 +2992,8 @@ components:
         deezerUserId:
           description: Id of user only used for 'type=deezerFlow' and is optional
           type: string
-          format: '[0-9]+'
           nullable: true
+          pattern: ^\d{10}$
         gainDb:
           description: Only used for 'type=sourceGain'
           type: number
@@ -2932,8 +3006,8 @@ components:
         presetKey:
           description: Only used for 'type=sourcePreset'
           type: string
-          format: ^Preset[0-9]+$
           nullable: true
+          pattern: ^Preset[0-9]+$
         queueItem:
           description: PlayQueue item only used for 'type=playQueue'
           $ref: '#/components/schemas/PlayQueueItem'
@@ -2945,8 +3019,8 @@ components:
         radioStationId:
           description: Id of RadioStation only used for 'type=radio'
           type: string
-          format: '[0-9]+'
           nullable: true
+          pattern: ^\d{16}$
         soundProfile:
           description: Only used for 'type=soundProfile'
           type: object
@@ -3442,6 +3516,7 @@ components:
       required:
         - jid
         - friendlyName
+        - audioTransport
     BeolinkListener:
       type: object
       properties:
@@ -3456,6 +3531,7 @@ components:
           $ref: '#/components/schemas/BeolinkPeerID'
       required:
         - jid
+        - audioTransport
     BeolinkPeer:
       type: object
       properties:
@@ -3476,6 +3552,7 @@ components:
         - jid
         - friendlyName
         - ipAddress
+        - audioTransport
     BeolinkPeerID:
       description: Beolink peer ID
       type: string
@@ -4851,7 +4928,7 @@ components:
       description: Speaker serial number
       type: string
       example: '12345678'
-      pattern: ^\d{8}
+      pattern: ^\d{8}$
     SoftwareUpdateState:
       type: object
       properties:
@@ -5328,6 +5405,10 @@ components:
           format: uri
           nullable: true
         health:
+          description: |
+            `good` Association with speaker completed and clock is synchronized with the clock of the primary.
+
+            `unknown` The health is not known. Association and clock sync may be in progress.
           type: string
           example: good
           enum:
@@ -5364,6 +5445,21 @@ components:
             - any
             - left
             - right
+        clockSync:
+          description: |
+            Only shown when secondary.
+
+            `good` The clock is synchronized with the clock of the primary.
+
+            `bad` The clock synchronization failed.
+
+            `unknown` The state is not known. Clock sync may be in progress.
+          type: string
+          example: good
+          enum:
+            - unknown
+            - good
+            - bad
         desired:
           type: string
           enum:
@@ -5398,7 +5494,6 @@ components:
       required:
         - type
         - speakers
-        - roleInfo
     SpeakerRole:
       type: string
       nullable: true
@@ -5443,6 +5538,28 @@ components:
       properties:
         connected:
           type: boolean
+    StandInfo:
+      type: object
+      properties:
+        applicationVersion:
+          type: string
+        bootloaderVersion:
+          type: string
+        serialNumber:
+          type: string
+        standType:
+          type: string
+          enum:
+            - wallBracketLeft
+            - wallBracketRight
+            - floorStand
+            - floorStandExtendedRange
+        supportedAxes:
+          type: array
+          items:
+            enum:
+              - turn
+            type: string
     StandMovement:
       type: object
       properties:
@@ -5461,10 +5578,32 @@ components:
             - stop
             - stepCW
             - continuousCW
+    StandMovementStatus:
+      type: object
+      properties:
+        movementState:
+          type: string
+          enum:
+            - stopped
+            - movingCW
+            - movingCCW
+            - blocked
     StandPosition:
       type: object
       properties:
         angle:
+          type: number
+          format: float
+    StandStatus:
+      type: object
+      properties:
+        manuallyadjusted:
+          type: boolean
+        movementstatus:
+          $ref: '#/components/schemas/StandMovementStatus'
+        position:
+          $ref: '#/components/schemas/StandPosition'
+        targetAngle:
           type: number
           format: float
     SupportedSoundFeatures:

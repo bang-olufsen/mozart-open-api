@@ -19,43 +19,30 @@ import pprint
 import re  # noqa: F401
 from typing import Any, ClassVar, Dict, List, Optional, Set, Union
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    StrictBool,
-    StrictFloat,
-    StrictInt,
-    StrictStr,
-)
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt
 from pydantic_core import to_jsonable_python
 from typing_extensions import Annotated, Self
 
+from mozart_api.models.stand_movement_status import StandMovementStatus
+from mozart_api.models.stand_position import StandPosition
 
-class SoundAdjustments(BaseModel):
+
+class StandStatus(BaseModel):
     """
-    SoundAdjustments
+    StandStatus
     """  # noqa: E501
 
-    advanced_beamforming: Annotated[
-        Optional[StrictInt], Field(alias="advancedBeamforming")
+    manuallyadjusted: Optional[StrictBool] = None
+    movementstatus: Optional[StandMovementStatus] = None
+    position: Optional[StandPosition] = None
+    target_angle: Annotated[
+        Optional[Union[StrictFloat, StrictInt]], Field(alias="targetAngle")
     ] = None
-    ambience: Optional[Union[StrictFloat, StrictInt]] = None
-    bass: Optional[StrictInt] = None
-    directivity: Optional[StrictStr] = None
-    eco_mode: Annotated[Optional[StrictBool], Field(alias="ecoMode")] = None
-    fadein: Optional[StrictBool] = None
-    loudness: Optional[StrictBool] = None
-    treble: Optional[StrictInt] = None
     __properties: ClassVar[List[str]] = [
-        "advancedBeamforming",
-        "ambience",
-        "bass",
-        "directivity",
-        "ecoMode",
-        "fadein",
-        "loudness",
-        "treble",
+        "manuallyadjusted",
+        "movementstatus",
+        "position",
+        "targetAngle",
     ]
 
     model_config = ConfigDict(
@@ -75,7 +62,7 @@ class SoundAdjustments(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of SoundAdjustments from a JSON string"""
+        """Create an instance of StandStatus from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -95,16 +82,17 @@ class SoundAdjustments(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if directivity (nullable) is None
-        # and model_fields_set contains the field
-        if self.directivity is None and "directivity" in self.model_fields_set:
-            _dict["directivity"] = None
-
+        # override the default output from pydantic by calling `to_dict()` of movementstatus
+        if self.movementstatus:
+            _dict["movementstatus"] = self.movementstatus.to_dict()
+        # override the default output from pydantic by calling `to_dict()` of position
+        if self.position:
+            _dict["position"] = self.position.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of SoundAdjustments from a dict"""
+        """Create an instance of StandStatus from a dict"""
         if obj is None:
             return None
 
@@ -112,13 +100,13 @@ class SoundAdjustments(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "advancedBeamforming": obj.get("advancedBeamforming"),
-            "ambience": obj.get("ambience"),
-            "bass": obj.get("bass"),
-            "directivity": obj.get("directivity"),
-            "ecoMode": obj.get("ecoMode"),
-            "fadein": obj.get("fadein"),
-            "loudness": obj.get("loudness"),
-            "treble": obj.get("treble"),
+            "manuallyadjusted": obj.get("manuallyadjusted"),
+            "movementstatus": StandMovementStatus.from_dict(obj["movementstatus"])
+            if obj.get("movementstatus") is not None
+            else None,
+            "position": StandPosition.from_dict(obj["position"])
+            if obj.get("position") is not None
+            else None,
+            "targetAngle": obj.get("targetAngle"),
         })
         return _obj

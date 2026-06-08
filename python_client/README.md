@@ -5,9 +5,9 @@
 [![Downloads](https://img.shields.io/pypi/dm/mozart-api)](https://pypi.org/project/mozart-api)
 ![Python version](https://img.shields.io/pypi/pyversions/mozart-api)
 
-[![Balance stereo](https://raw.githubusercontent.com/bang-olufsen/mozart-open-api/main/docs/media/balance_stereo.png)](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance-stereo-set?variant=beosound-balance-gva-naturaloak-bundle)
+[![Balance stereo](https://raw.githubusercontent.com/bang-olufsen/mozart-open-api/main/docs/media/balance_stereo.png)](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance-stereo-system)
 
-The Mozart API is an async REST API with WebSocket notification channel for immediate state information from Mozart devices. Currently the API is distributed as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-5.3.1.108.yaml).
+The Mozart API is an async REST API with WebSocket notification channel for immediate state information from Mozart devices. Currently the API is distributed as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-6.2.0.44.yaml).
 
 Supported by:
 

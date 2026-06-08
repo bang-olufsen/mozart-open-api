@@ -1,10 +1,10 @@
 Metadata-Version: 2.4
 Name: mozart_api
-Version: 5.3.1.108.2
-Summary: Mozart platform API
+Version: 6.2.0.44.0
+Summary: Mozart API
 License: MIT
 License-File: LICENSE
-Keywords: OpenAPI,OpenAPI-Generator,Mozart platform API
+Keywords: OpenAPI,OpenAPI-Generator,Mozart API
 Author: BangOlufsen
 Author-email: support@bang-olufsen.dk
 Requires-Python: >=3.11
@@ -17,7 +17,7 @@ Requires-Dist: aioconsole (>=0.4.1)
 Requires-Dist: aiohttp (>=3.11.0)
 Requires-Dist: aiohttp-retry (>=2.8.3)
 Requires-Dist: inflection (>=0.5.1)
-Requires-Dist: pydantic (>=2)
+Requires-Dist: pydantic (>=2.11)
 Requires-Dist: python-dateutil (>=2.8.2)
 Requires-Dist: typing-extensions (>=4.7.1)
 Requires-Dist: urllib3 (<3)
@@ -35,9 +35,9 @@ Description-Content-Type: text/markdown
 [![Downloads](https://img.shields.io/pypi/dm/mozart-api)](https://pypi.org/project/mozart-api)
 ![Python version](https://img.shields.io/pypi/pyversions/mozart-api)
 
-[![Balance stereo](https://raw.githubusercontent.com/bang-olufsen/mozart-open-api/main/docs/media/balance_stereo.png)](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance-stereo-set?variant=beosound-balance-gva-naturaloak-bundle)
+[![Balance stereo](https://raw.githubusercontent.com/bang-olufsen/mozart-open-api/main/docs/media/balance_stereo.png)](https://www.bang-olufsen.com/en/dk/speakers/beosound-balance-stereo-system)
 
-The Mozart API is an async REST API with WebSocket notification channel for immediate state information from Mozart devices. Currently the API is distributed as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-5.3.1.108.yaml).
+The Mozart API is an async REST API with WebSocket notification channel for immediate state information from Mozart devices. Currently the API is distributed as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-6.2.0.44.yaml).
 
 Supported by:
 

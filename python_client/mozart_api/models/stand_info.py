@@ -19,63 +19,61 @@ import pprint
 import re  # noqa: F401
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    StrictBool,
-    StrictStr,
-    field_validator,
-)
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from pydantic_core import to_jsonable_python
 from typing_extensions import Annotated, Self
 
 
-class LgeTvSoundSettings(BaseModel):
+class StandInfo(BaseModel):
     """
-    LgeTvSoundSettings
+    StandInfo
     """  # noqa: E501
 
-    digital_output: Annotated[Optional[StrictStr], Field(alias="digitalOutput")] = None
-    e_arc: Annotated[Optional[StrictBool], Field(alias="eArc")] = None
-    output: Optional[StrictStr] = None
-    __properties: ClassVar[List[str]] = ["digitalOutput", "eArc", "output"]
+    application_version: Annotated[
+        Optional[StrictStr], Field(alias="applicationVersion")
+    ] = None
+    bootloader_version: Annotated[
+        Optional[StrictStr], Field(alias="bootloaderVersion")
+    ] = None
+    serial_number: Annotated[Optional[StrictStr], Field(alias="serialNumber")] = None
+    stand_type: Annotated[Optional[StrictStr], Field(alias="standType")] = None
+    supported_axes: Annotated[
+        Optional[List[StrictStr]], Field(alias="supportedAxes")
+    ] = None
+    __properties: ClassVar[List[str]] = [
+        "applicationVersion",
+        "bootloaderVersion",
+        "serialNumber",
+        "standType",
+        "supportedAxes",
+    ]
 
-    @field_validator("digital_output")
-    def digital_output_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(["auto", "passThrough", "pcm", "unknown"]):
-            raise ValueError(
-                "must be one of enum values ('auto', 'passThrough', 'pcm', 'unknown')"
-            )
-        return value
-
-    @field_validator("output")
-    def output_validate_enum(cls, value):
+    @field_validator("stand_type")
+    def stand_type_validate_enum(cls, value):
         """Validates the enum"""
         if value is None:
             return value
 
         if value not in set([
-            "tvSpeaker",
-            "externalOptical",
-            "externalArc",
-            "bluetooth",
-            "wisaSpeakers",
-            "lineout",
-            "headphone",
-            "tvSpeakerAndExternalOptical",
-            "tvSpeakerAndHeadphone",
-            "tvSpeakerAndBluetooth",
-            "externalArcBno",
-            "unknown",
+            "wallBracketLeft",
+            "wallBracketRight",
+            "floorStand",
+            "floorStandExtendedRange",
         ]):
             raise ValueError(
-                "must be one of enum values ('tvSpeaker', 'externalOptical', 'externalArc', 'bluetooth', 'wisaSpeakers', 'lineout', 'headphone', 'tvSpeakerAndExternalOptical', 'tvSpeakerAndHeadphone', 'tvSpeakerAndBluetooth', 'externalArcBno', 'unknown')"
+                "must be one of enum values ('wallBracketLeft', 'wallBracketRight', 'floorStand', 'floorStandExtendedRange')"
             )
+        return value
+
+    @field_validator("supported_axes")
+    def supported_axes_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        for i in value:
+            if i not in set(["turn"]):
+                raise ValueError("each list item must be one of ('turn')")
         return value
 
     model_config = ConfigDict(
@@ -95,7 +93,7 @@ class LgeTvSoundSettings(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of LgeTvSoundSettings from a JSON string"""
+        """Create an instance of StandInfo from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -119,7 +117,7 @@ class LgeTvSoundSettings(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of LgeTvSoundSettings from a dict"""
+        """Create an instance of StandInfo from a dict"""
         if obj is None:
             return None
 
@@ -127,8 +125,10 @@ class LgeTvSoundSettings(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "digitalOutput": obj.get("digitalOutput"),
-            "eArc": obj.get("eArc"),
-            "output": obj.get("output"),
+            "applicationVersion": obj.get("applicationVersion"),
+            "bootloaderVersion": obj.get("bootloaderVersion"),
+            "serialNumber": obj.get("serialNumber"),
+            "standType": obj.get("standType"),
+            "supportedAxes": obj.get("supportedAxes"),
         })
         return _obj

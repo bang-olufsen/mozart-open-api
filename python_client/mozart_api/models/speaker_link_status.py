@@ -20,6 +20,7 @@ import re  # noqa: F401
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic_core import to_jsonable_python
 from typing_extensions import Annotated, Self
 
 from mozart_api.models.speaker_link_member_status import SpeakerLinkMemberStatus
@@ -31,7 +32,7 @@ class SpeakerLinkStatus(BaseModel):
     SpeakerLinkStatus
     """  # noqa: E501
 
-    role_info: Annotated[SpeakerLinkRole, Field(alias="roleInfo")]
+    role_info: Annotated[Optional[SpeakerLinkRole], Field(alias="roleInfo")] = None
     speakers: List[SpeakerLinkMemberStatus]
     type: StrictStr
     __properties: ClassVar[List[str]] = ["roleInfo", "speakers", "type"]
@@ -46,7 +47,8 @@ class SpeakerLinkStatus(BaseModel):
         return value
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -57,8 +59,7 @@ class SpeakerLinkStatus(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:

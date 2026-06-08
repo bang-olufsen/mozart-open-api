@@ -176,8 +176,11 @@ from mozart_api.models.speech_enhance import SpeechEnhance
 from mozart_api.models.speech_enhance_feature import SpeechEnhanceFeature
 from mozart_api.models.speech_enhance_range import SpeechEnhanceRange
 from mozart_api.models.stand_connected import StandConnected
+from mozart_api.models.stand_info import StandInfo
 from mozart_api.models.stand_movement import StandMovement
+from mozart_api.models.stand_movement_status import StandMovementStatus
 from mozart_api.models.stand_position import StandPosition
+from mozart_api.models.stand_status import StandStatus
 from mozart_api.models.tone_touch import ToneTouch
 from mozart_api.models.tone_touch_type import ToneTouchType
 from mozart_api.models.tone_touch_type_range import ToneTouchTypeRange
@@ -441,8 +444,11 @@ __all__ = [
     "SpeechEnhanceFeature",
     "SpeechEnhanceRange",
     "StandConnected",
+    "StandInfo",
     "StandMovement",
+    "StandMovementStatus",
     "StandPosition",
+    "StandStatus",
     "ToneTouch",
     "ToneTouchType",
     "ToneTouchTypeRange",

@@ -20,6 +20,7 @@ import re  # noqa: F401
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic_core import to_jsonable_python
 from typing_extensions import Annotated, Self
 
 
@@ -29,12 +30,12 @@ class BeolinkPeer(BaseModel):
     """  # noqa: E501
 
     audio_transport: Annotated[
-        Optional[StrictStr],
+        StrictStr,
         Field(
             description='Specifies the audio transport protocol in use. Can be:   - `"v1"`: Use protocol version 1.   - `"v2"`: Use protocol version 2. ',
             alias="audioTransport",
         ),
-    ] = None
+    ]
     friendly_name: Annotated[StrictStr, Field(alias="friendlyName")]
     ip_address: Annotated[StrictStr, Field(description="IP address", alias="ipAddress")]
     jid: Annotated[StrictStr, Field(description="Beolink peer ID")]
@@ -46,7 +47,8 @@ class BeolinkPeer(BaseModel):
     ]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -57,8 +59,7 @@ class BeolinkPeer(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:

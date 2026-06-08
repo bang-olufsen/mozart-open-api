@@ -1,7 +1,8 @@
-"""Helper classes for using auto-generated API."""
+"""Helper class for using the auto-generated Mozart API."""
 
 import asyncio
 import contextlib
+import inspect
 import json
 import logging
 import re
@@ -202,16 +203,12 @@ def refactor_notification_name(notification_type: str) -> str:
 
 def check_valid_jid(jid: str) -> bool:
     """Check if a JID is valid."""
-    return bool(
-        re.fullmatch(
-            r"(^\d{4})[.](\d{7})[.](\d{8})(@products\.bang-olufsen\.com)$", jid
-        )
-    )
+    return bool(re.fullmatch(r"^\d{4}.\d{7}.\d{8}@products\.bang-olufsen\.com$", jid))
 
 
 def check_valid_serial_number(serial_number: str) -> bool:
     """Check if a serial_number is valid."""
-    return bool(re.fullmatch(r"\d{8}", serial_number))
+    return bool(re.fullmatch(r"^\d{8}$", serial_number))
 
 
 def get_highest_resolution_artwork(metadata: PlaybackContentMetadata) -> Art:
@@ -249,7 +246,7 @@ class BaseWebSocketResponse(TypedDict):
     """Base class for serialized WebSocket notifications."""
 
     eventType: str
-    eventData: dict
+    eventData: dict | str
 
 
 class MozartClient(MozartApi):
@@ -458,12 +455,10 @@ class MozartClient(MozartApi):
 
                     while self._websocket_listeners_active:
                         with contextlib.suppress(asyncio.TimeoutError):
-                            # Receive JSON in order to get the
-                            # Websocket notification name for deserialization
+                            # Receive JSON in order to get the Websocket notification name for deserialization
                             notification = await websocket.receive_json(timeout=TIMEOUT)
 
-                            # Ensure that any notifications received after the
-                            # disconnect command has been executed are not processed
+                            # Ensure that any notifications received after the disconnect command has been executed are not processed
                             if not self._websocket_listeners_active:
                                 break
 
@@ -540,7 +535,7 @@ class MozartClient(MozartApi):
         *args: BaseWebSocketResponse | dict | str | WebSocketEventType,
     ) -> None:
         """Trigger async or sync callback correctly."""
-        if asyncio.iscoroutinefunction(callback):
+        if inspect.iscoroutinefunction(callback):
             await callback(*args)
         else:
             callback(*args)

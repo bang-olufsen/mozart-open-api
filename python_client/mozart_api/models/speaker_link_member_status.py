@@ -21,6 +21,7 @@ from datetime import datetime
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic_core import to_jsonable_python
 from typing_extensions import Annotated, Self
 
 
@@ -36,7 +37,12 @@ class SpeakerLinkMemberStatus(BaseModel):
             alias="baseUrl",
         ),
     ] = None
-    health: StrictStr
+    health: Annotated[
+        StrictStr,
+        Field(
+            description="`good` Association with speaker completed and clock is synchronized with the clock of the primary.  `unknown` The health is not known. Association and clock sync may be in progress. "
+        ),
+    ]
     ip_address: Annotated[
         Optional[StrictStr], Field(description="IP address", alias="ipAddress")
     ] = None
@@ -78,12 +84,16 @@ class SpeakerLinkMemberStatus(BaseModel):
     @field_validator("serial_number")
     def serial_number_validate_regular_expression(cls, value):
         """Validates the regular expression"""
-        if not re.match(r"^\d{8}", value):
-            raise ValueError(r"must validate the regular expression /^\d{8}/")
+        if not isinstance(value, str):
+            value = str(value)
+
+        if not re.match(r"^\d{8}$", value):
+            raise ValueError(r"must validate the regular expression /^\d{8}$/")
         return value
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -94,8 +104,7 @@ class SpeakerLinkMemberStatus(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:

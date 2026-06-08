@@ -21,6 +21,7 @@ from typing import Any, ClassVar, Dict, List, Optional, Set, Union
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic_core import to_jsonable_python
 from typing_extensions import Annotated, Self
 
 from mozart_api.models.action_sound_profile import ActionSoundProfile
@@ -50,7 +51,7 @@ class Action(BaseModel):
         ),
     ] = None
     deezer_user_id: Annotated[
-        Optional[StrictStr],
+        Optional[Annotated[str, Field(strict=True)]],
         Field(
             description="Id of user only used for 'type=deezerFlow' and is optional",
             alias="deezerUserId",
@@ -70,7 +71,7 @@ class Action(BaseModel):
         Field(alias="listeningModeId"),
     ] = None
     preset_key: Annotated[
-        Optional[StrictStr],
+        Optional[Annotated[str, Field(strict=True)]],
         Field(description="Only used for 'type=sourcePreset'", alias="presetKey"),
     ] = None
     queue_item: Annotated[Optional[PlayQueueItem], Field(alias="queueItem")] = None
@@ -78,7 +79,7 @@ class Action(BaseModel):
         Optional[PlayQueueSettings], Field(alias="queueSettings")
     ] = None
     radio_station_id: Annotated[
-        Optional[StrictStr],
+        Optional[Annotated[str, Field(strict=True)]],
         Field(
             description="Id of RadioStation only used for 'type=radio'",
             alias="radioStationId",
@@ -146,6 +147,45 @@ class Action(BaseModel):
             )
         return value
 
+    @field_validator("deezer_user_id")
+    def deezer_user_id_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
+        if value is None:
+            return value
+
+        if not isinstance(value, str):
+            value = str(value)
+
+        if not re.match(r"^\d{10}$", value):
+            raise ValueError(r"must validate the regular expression /^\d{10}$/")
+        return value
+
+    @field_validator("preset_key")
+    def preset_key_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
+        if value is None:
+            return value
+
+        if not isinstance(value, str):
+            value = str(value)
+
+        if not re.match(r"^Preset[0-9]+$", value):
+            raise ValueError(r"must validate the regular expression /^Preset[0-9]+$/")
+        return value
+
+    @field_validator("radio_station_id")
+    def radio_station_id_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
+        if value is None:
+            return value
+
+        if not isinstance(value, str):
+            value = str(value)
+
+        if not re.match(r"^\d{16}$", value):
+            raise ValueError(r"must validate the regular expression /^\d{16}$/")
+        return value
+
     @field_validator("tone_name")
     def tone_name_validate_enum(cls, value):
         """Validates the enum"""
@@ -186,7 +226,8 @@ class Action(BaseModel):
         return value
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -197,8 +238,7 @@ class Action(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:

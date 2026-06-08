@@ -20,6 +20,7 @@ import re  # noqa: F401
 from typing import Any, ClassVar, Dict, List, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic_core import to_jsonable_python
 from typing_extensions import Annotated, Self
 
 
@@ -29,13 +30,26 @@ class SpeakerLinkRole(BaseModel):
     """  # noqa: E501
 
     channel: Optional[StrictStr] = None
+    clock_sync: Annotated[
+        Optional[StrictStr],
+        Field(
+            description="Only shown when secondary.  `good` The clock is synchronized with the clock of the primary.  `bad` The clock synchronization failed.  `unknown` The state is not known. Clock sync may be in progress. ",
+            alias="clockSync",
+        ),
+    ] = None
     desired: Optional[StrictStr] = None
     primary: Annotated[
         Optional[Annotated[str, Field(strict=True)]],
         Field(description="Speaker serial number"),
     ] = None
     role: StrictStr
-    __properties: ClassVar[List[str]] = ["channel", "desired", "primary", "role"]
+    __properties: ClassVar[List[str]] = [
+        "channel",
+        "clockSync",
+        "desired",
+        "primary",
+        "role",
+    ]
 
     @field_validator("channel")
     def channel_validate_enum(cls, value):
@@ -47,6 +61,16 @@ class SpeakerLinkRole(BaseModel):
             raise ValueError(
                 "must be one of enum values ('all', 'any', 'left', 'right')"
             )
+        return value
+
+    @field_validator("clock_sync")
+    def clock_sync_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(["unknown", "good", "bad"]):
+            raise ValueError("must be one of enum values ('unknown', 'good', 'bad')")
         return value
 
     @field_validator("desired")
@@ -67,8 +91,11 @@ class SpeakerLinkRole(BaseModel):
         if value is None:
             return value
 
-        if not re.match(r"^\d{8}", value):
-            raise ValueError(r"must validate the regular expression /^\d{8}/")
+        if not isinstance(value, str):
+            value = str(value)
+
+        if not re.match(r"^\d{8}$", value):
+            raise ValueError(r"must validate the regular expression /^\d{8}$/")
         return value
 
     @field_validator("role")
@@ -81,7 +108,8 @@ class SpeakerLinkRole(BaseModel):
         return value
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -92,8 +120,7 @@ class SpeakerLinkRole(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -130,6 +157,7 @@ class SpeakerLinkRole(BaseModel):
 
         _obj = cls.model_validate({
             "channel": obj.get("channel"),
+            "clockSync": obj.get("clockSync"),
             "desired": obj.get("desired"),
             "primary": obj.get("primary"),
             "role": obj.get("role"),
