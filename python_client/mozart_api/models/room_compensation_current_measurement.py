@@ -29,7 +29,10 @@ class RoomCompensationCurrentMeasurement(BaseModel):
     State and speaker ID of the currently running measurement. Is only relevant for advanced room compensation.
     """  # noqa: E501
 
-    speaker_id: Annotated[Optional[StrictStr], Field(alias="speakerId")] = None
+    speaker_id: Annotated[
+        Optional[StrictStr],
+        Field(alias="speakerId", json_schema_extra={"examples": ["FrontLeft"]}),
+    ] = None
     state: Annotated[
         Optional[StrictStr],
         Field(

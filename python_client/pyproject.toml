@@ -1,6 +1,6 @@
 [project]
 name = "mozart_api"
-version = "6.2.0.44.0"
+version = "6.2.0.44.1"
 description = "Mozart API"
 authors = [{ name = "BangOlufsen", email = "support@bang-olufsen.dk" }]
 readme = "README.md"

@@ -31,9 +31,22 @@ class BeolinkJoinResult(BaseModel):
     """  # noqa: E501
 
     error: Annotated[Optional[StrictStr], Field(description="Join error")] = None
-    jid: Annotated[StrictStr, Field(description="Beolink peer ID")]
+    jid: Annotated[
+        StrictStr,
+        Field(
+            description="Beolink peer ID",
+            json_schema_extra={
+                "examples": ["2714.1200304.26451293@products.bang-olufsen.com"]
+            },
+        ),
+    ]
     request_id: Annotated[
-        UUID, Field(description="Beolink request ID", alias="requestID")
+        UUID,
+        Field(
+            description="Beolink request ID",
+            alias="requestID",
+            json_schema_extra={"examples": ["48985a4f-a4de-4b44-9757-c9a7407b8882"]},
+        ),
     ]
     status: Annotated[StrictStr, Field(description="Overall join status")]
     type: Annotated[

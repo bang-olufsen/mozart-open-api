@@ -30,9 +30,22 @@ class BeolinkJoinRequest(BaseModel):
     BeolinkJoinRequest
     """  # noqa: E501
 
-    jid: Annotated[Optional[StrictStr], Field(description="Beolink peer ID")] = None
+    jid: Annotated[
+        Optional[StrictStr],
+        Field(
+            description="Beolink peer ID",
+            json_schema_extra={
+                "examples": ["2714.1200304.26451293@products.bang-olufsen.com"]
+            },
+        ),
+    ] = None
     request_id: Annotated[
-        UUID, Field(description="Beolink request ID", alias="requestID")
+        UUID,
+        Field(
+            description="Beolink request ID",
+            alias="requestID",
+            json_schema_extra={"examples": ["48985a4f-a4de-4b44-9757-c9a7407b8882"]},
+        ),
     ]
     result: Annotated[StrictStr, Field(description="Relative URL of the join result")]
     __properties: ClassVar[List[str]] = ["jid", "requestID", "result"]

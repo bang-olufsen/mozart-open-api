@@ -40,17 +40,27 @@ class SpeakerLinkMemberStatus(BaseModel):
     health: Annotated[
         StrictStr,
         Field(
-            description="`good` Association with speaker completed and clock is synchronized with the clock of the primary.  `unknown` The health is not known. Association and clock sync may be in progress. "
+            description="`good` Association with speaker completed and clock is synchronized with the clock of the primary.  `unknown` The health is not known. Association and clock sync may be in progress. ",
+            json_schema_extra={"examples": ["good"]},
         ),
     ]
     ip_address: Annotated[
-        Optional[StrictStr], Field(description="IP address", alias="ipAddress")
+        Optional[StrictStr],
+        Field(
+            description="IP address",
+            alias="ipAddress",
+            json_schema_extra={"examples": ["fe80::209:a7ff:fe78:f605"]},
+        ),
     ] = None
     network_type: Annotated[StrictStr, Field(alias="networkType")]
     product_type: Annotated[Optional[StrictStr], Field(alias="productType")] = None
     serial_number: Annotated[
         Annotated[str, Field(strict=True)],
-        Field(description="Speaker serial number", alias="serialNumber"),
+        Field(
+            description="Speaker serial number",
+            alias="serialNumber",
+            json_schema_extra={"examples": ["12345678"]},
+        ),
     ]
     updated_at: Annotated[
         datetime, Field(description="Timestamp in RFC3393 format", alias="updatedAt")

@@ -48,7 +48,11 @@ class RoomCompensationFeature(BaseModel):
         ),
     ] = None
     range: Annotated[
-        List[StrictStr], Field(description="Possible values for the `value` field")
+        List[StrictStr],
+        Field(
+            description="Possible values for the `value` field",
+            json_schema_extra={"examples": [["internal", "external"]]},
+        ),
     ]
     __properties: ClassVar[List[str]] = ["value", "default", "maxItems", "range"]
 

@@ -35,12 +35,16 @@ class SpeakerLinkRole(BaseModel):
         Field(
             description="Only shown when secondary.  `good` The clock is synchronized with the clock of the primary.  `bad` The clock synchronization failed.  `unknown` The state is not known. Clock sync may be in progress. ",
             alias="clockSync",
+            json_schema_extra={"examples": ["good"]},
         ),
     ] = None
     desired: Optional[StrictStr] = None
     primary: Annotated[
         Optional[Annotated[str, Field(strict=True)]],
-        Field(description="Speaker serial number"),
+        Field(
+            description="Speaker serial number",
+            json_schema_extra={"examples": ["12345678"]},
+        ),
     ] = None
     role: StrictStr
     __properties: ClassVar[List[str]] = [

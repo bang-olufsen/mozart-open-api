@@ -32,7 +32,8 @@ class SourceTypeEnum(BaseModel):
     value: Annotated[
         Optional[StrictStr],
         Field(
-            description="- beolink - bluetooth - dlna - qplay - airPlay - lineIn - chromeCast - uriStreamer - netRadio - local - generator - spotify - spdif - pl - wpl - tv - deezer - classicsAdapter - usbIn - tidal - tidalConnect - unknown"
+            description="- beolink - bluetooth - dlna - qplay - airPlay - lineIn - chromeCast - uriStreamer - netRadio - local - generator - spotify - spdif - pl - wpl - tv - deezer - classicsAdapter - usbIn - tidal - tidalConnect - unknown",
+            json_schema_extra={"examples": ["netRadio"]},
         ),
     ] = None
     __properties: ClassVar[List[str]] = ["value"]

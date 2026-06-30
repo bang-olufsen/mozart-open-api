@@ -34,7 +34,12 @@ class BeolinkExperiencesResult(BaseModel):
 
     experiences: List[BeolinkExperience]
     request_id: Annotated[
-        UUID, Field(description="Beolink request ID", alias="requestID")
+        UUID,
+        Field(
+            description="Beolink request ID",
+            alias="requestID",
+            json_schema_extra={"examples": ["48985a4f-a4de-4b44-9757-c9a7407b8882"]},
+        ),
     ]
     status: Annotated[
         StrictStr,

@@ -87,7 +87,18 @@ class Action(BaseModel):
     ] = None
     sound_profile: Annotated[
         Optional[Dict[str, ActionSoundProfile]],
-        Field(description="Only used for 'type=soundProfile'", alias="soundProfile"),
+        Field(
+            description="Only used for 'type=soundProfile'",
+            alias="soundProfile",
+            json_schema_extra={
+                "examples": [
+                    {
+                        "speakerId1": {"directivity": "directivity1"},
+                        "speakerId2": {"directivity": "directivity1"},
+                    }
+                ]
+            },
+        ),
     ] = None
     source: Optional[SourceTypeEnum] = None
     speaker_group_id: Annotated[Optional[UUID], Field(alias="speakerGroupId")] = None

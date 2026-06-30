@@ -34,9 +34,18 @@ class BeolinkListener(BaseModel):
         Field(
             description='Specifies the audio transport protocol in use. Can be:   - `"v1"`: Use protocol version 1.   - `"v2"`: Use protocol version 2. ',
             alias="audioTransport",
+            json_schema_extra={"examples": ["v2"]},
         ),
     ]
-    jid: Annotated[StrictStr, Field(description="Beolink peer ID")]
+    jid: Annotated[
+        StrictStr,
+        Field(
+            description="Beolink peer ID",
+            json_schema_extra={
+                "examples": ["2714.1200304.26451293@products.bang-olufsen.com"]
+            },
+        ),
+    ]
     __properties: ClassVar[List[str]] = ["audioTransport", "jid"]
 
     model_config = ConfigDict(

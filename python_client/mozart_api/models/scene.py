@@ -36,6 +36,15 @@ class Scene(BaseModel):
         Field(
             description="An ordered list of Actions to run on the product",
             alias="actionList",
+            json_schema_extra={
+                "examples": [
+                    [
+                        {"type": "volume", "volumeLevel": 35},
+                        {"radioStationId": "8779112938791514", "type": "radio"},
+                        {"stopDuration": 1300, "type": "stop"},
+                    ]
+                ]
+            },
         ),
     ]
     client_context: Annotated[

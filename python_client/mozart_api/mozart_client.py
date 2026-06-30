@@ -6,8 +6,8 @@ import inspect
 import json
 import logging
 import re
-from collections import defaultdict
 from collections.abc import Awaitable, Callable
+from enum import StrEnum
 from ssl import SSLContext
 from types import TracebackType
 from typing import Literal, Self, TypedDict
@@ -109,45 +109,50 @@ from mozart_api.rest import RESTClientObject
 
 # Generated section start
 
-NOTIFICATION_TYPES = {
-    "active_hdmi_input_signal",
-    "active_listening_mode",
-    "active_speaker_group",
-    "alarm_timer",
-    "alarm_triggered",
-    "battery",
-    "beo_remote_button",
-    "beolink_experiences_result",
-    "beolink_join_result",
-    "button",
-    "channel_survey_status",
-    "classics_adapter_content",
-    "curtains",
-    "hdmi_video_format_signal",
-    "notification",
-    "playback_error",
-    "playback_metadata",
-    "playback_progress",
-    "playback_source",
-    "playback_state",
-    "power_state",
-    "powerlink_connection_state",
-    "puc_install_remote_id_status",
-    "role",
-    "room_compensation_current_measurement_event",
-    "room_compensation_state",
-    "software_update_state",
-    "sound_settings",
-    "source_change",
-    "speaker_group_changed",
-    "speaker_link_status_changed",
-    "stand_connected",
-    "stand_position",
-    "tv_bn_o_mode",
-    "tv_info",
-    "volume",
-    "wisa_out_state",
-}
+
+class WebSocketEventTypes(StrEnum):
+    """Available WebSocket notification event types."""
+
+    ACTIVE_HDMI_INPUT_SIGNAL = "WebSocketEventActiveHdmiInputSignal"
+    ACTIVE_LISTENING_MODE = "WebSocketEventActiveListeningMode"
+    ACTIVE_SPEAKER_GROUP = "WebSocketEventActiveSpeakerGroup"
+    ALARM_TIMER = "WebSocketEventAlarmTimer"
+    ALARM_TRIGGERED = "WebSocketEventAlarmTriggered"
+    BATTERY = "WebSocketEventBattery"
+    BEO_REMOTE_BUTTON = "WebSocketEventBeoRemoteButton"
+    BEOLINK_EXPERIENCES_RESULT = "WebSocketEventBeolinkExperiencesResult"
+    BEOLINK_JOIN_RESULT = "WebSocketEventBeolinkJoinResult"
+    BUTTON = "WebSocketEventButton"
+    CHANNEL_SURVEY_STATUS = "WebSocketEventChannelSurveyStatus"
+    CLASSICS_ADAPTER_CONTENT = "WebSocketEventClassicsAdapterContent"
+    CURTAINS = "WebSocketEventCurtains"
+    HDMI_VIDEO_FORMAT_SIGNAL = "WebSocketEventHdmiVideoFormatSignal"
+    NOTIFICATION = "WebSocketEventNotification"
+    PLAYBACK_ERROR = "WebSocketEventPlaybackError"
+    PLAYBACK_METADATA = "WebSocketEventPlaybackMetadata"
+    PLAYBACK_PROGRESS = "WebSocketEventPlaybackProgress"
+    PLAYBACK_SOURCE = "WebSocketEventPlaybackSource"
+    PLAYBACK_STATE = "WebSocketEventPlaybackState"
+    POWER_STATE = "WebSocketEventPowerState"
+    POWERLINK_CONNECTION_STATE = "WebSocketEventPowerlinkConnectionState"
+    PUC_INSTALL_REMOTE_ID_STATUS = "WebSocketEventPucInstallRemoteIdStatus"
+    ROLE = "WebSocketEventRole"
+    ROOM_COMPENSATION_CURRENT_MEASUREMENT_EVENT = (
+        "WebSocketEventRoomCompensationCurrentMeasurementEvent"
+    )
+    ROOM_COMPENSATION_STATE = "WebSocketEventRoomCompensationState"
+    SOFTWARE_UPDATE_STATE = "WebSocketEventSoftwareUpdateState"
+    SOUND_SETTINGS = "WebSocketEventSoundSettings"
+    SOURCE_CHANGE = "WebSocketEventSourceChange"
+    SPEAKER_GROUP_CHANGED = "WebSocketEventSpeakerGroupChanged"
+    SPEAKER_LINK_STATUS_CHANGED = "WebSocketEventSpeakerLinkStatusChanged"
+    STAND_CONNECTED = "WebSocketEventStandConnected"
+    STAND_POSITION = "WebSocketEventStandPosition"
+    TV_BN_O_MODE = "WebSocketEventTvBnOMode"
+    TV_INFO = "WebSocketEventTvInfo"
+    VOLUME = "WebSocketEventVolume"
+    WISA_OUT_STATE = "WebSocketEventWisaOutState"
+
 
 WebSocketEventType = type[
     WebSocketEventActiveHdmiInputSignal
@@ -273,8 +278,7 @@ class MozartClient(MozartApi):
             Callable[[BaseWebSocketResponse], Awaitable[None] | None] | None
         ) = None
 
-        self._notification_callbacks: dict[str, Callable | None] = defaultdict()
-        self._notification_callbacks.default_factory = lambda: None
+        self._notification_callbacks: dict[WebSocketEventTypes, Callable | None] = {}
 
         # Configure MozartApi object.
         self.configuration = Configuration(host=f"http://{self.host}")
@@ -524,9 +528,9 @@ class MozartClient(MozartApi):
             await self._trigger_callback(self._on_all_notifications_raw, notification)
 
         # Handle specific notifications if defined
-        triggered_notification = self._notification_callbacks[notification_type]
-
-        if triggered_notification is not None:
+        if triggered_notification := self._notification_callbacks.get(
+            WebSocketEventTypes(notification_type)
+        ):
             await self._trigger_callback(triggered_notification, deserialized_data)
 
     async def _trigger_callback(
@@ -575,7 +579,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventActiveHdmiInputSignal notifications."""
-        self._notification_callbacks["WebSocketEventActiveHdmiInputSignal"] = (
+        self._notification_callbacks[WebSocketEventTypes.ACTIVE_HDMI_INPUT_SIGNAL] = (
             on_active_hdmi_input_signal_notification
         )
 
@@ -586,7 +590,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventActiveListeningMode notifications."""
-        self._notification_callbacks["WebSocketEventActiveListeningMode"] = (
+        self._notification_callbacks[WebSocketEventTypes.ACTIVE_LISTENING_MODE] = (
             on_active_listening_mode_notification
         )
 
@@ -597,7 +601,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventActiveSpeakerGroup notifications."""
-        self._notification_callbacks["WebSocketEventActiveSpeakerGroup"] = (
+        self._notification_callbacks[WebSocketEventTypes.ACTIVE_SPEAKER_GROUP] = (
             on_active_speaker_group_notification
         )
 
@@ -608,7 +612,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventAlarmTimer notifications."""
-        self._notification_callbacks["WebSocketEventAlarmTimer"] = (
+        self._notification_callbacks[WebSocketEventTypes.ALARM_TIMER] = (
             on_alarm_timer_notification
         )
 
@@ -619,7 +623,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventAlarmTriggered notifications."""
-        self._notification_callbacks["WebSocketEventAlarmTriggered"] = (
+        self._notification_callbacks[WebSocketEventTypes.ALARM_TRIGGERED] = (
             on_alarm_triggered_notification
         )
 
@@ -627,7 +631,9 @@ class MozartClient(MozartApi):
         self, on_battery_notification: Callable[[BatteryState], Awaitable[None] | None]
     ) -> None:
         """Set callback for WebSocketEventBattery notifications."""
-        self._notification_callbacks["WebSocketEventBattery"] = on_battery_notification
+        self._notification_callbacks[WebSocketEventTypes.BATTERY] = (
+            on_battery_notification
+        )
 
     def get_beo_remote_button_notifications(
         self,
@@ -636,7 +642,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventBeoRemoteButton notifications."""
-        self._notification_callbacks["WebSocketEventBeoRemoteButton"] = (
+        self._notification_callbacks[WebSocketEventTypes.BEO_REMOTE_BUTTON] = (
             on_beo_remote_button_notification
         )
 
@@ -647,7 +653,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventBeolinkExperiencesResult notifications."""
-        self._notification_callbacks["WebSocketEventBeolinkExperiencesResult"] = (
+        self._notification_callbacks[WebSocketEventTypes.BEOLINK_EXPERIENCES_RESULT] = (
             on_beolink_experiences_result_notification
         )
 
@@ -658,7 +664,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventBeolinkJoinResult notifications."""
-        self._notification_callbacks["WebSocketEventBeolinkJoinResult"] = (
+        self._notification_callbacks[WebSocketEventTypes.BEOLINK_JOIN_RESULT] = (
             on_beolink_join_result_notification
         )
 
@@ -666,7 +672,9 @@ class MozartClient(MozartApi):
         self, on_button_notification: Callable[[ButtonEvent], Awaitable[None] | None]
     ) -> None:
         """Set callback for WebSocketEventButton notifications."""
-        self._notification_callbacks["WebSocketEventButton"] = on_button_notification
+        self._notification_callbacks[WebSocketEventTypes.BUTTON] = (
+            on_button_notification
+        )
 
     def get_channel_survey_status_notifications(
         self,
@@ -675,7 +683,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventChannelSurveyStatus notifications."""
-        self._notification_callbacks["WebSocketEventChannelSurveyStatus"] = (
+        self._notification_callbacks[WebSocketEventTypes.CHANNEL_SURVEY_STATUS] = (
             on_channel_survey_status_notification
         )
 
@@ -686,7 +694,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventClassicsAdapterContent notifications."""
-        self._notification_callbacks["WebSocketEventClassicsAdapterContent"] = (
+        self._notification_callbacks[WebSocketEventTypes.CLASSICS_ADAPTER_CONTENT] = (
             on_classics_adapter_content_notification
         )
 
@@ -697,7 +705,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventCurtains notifications."""
-        self._notification_callbacks["WebSocketEventCurtains"] = (
+        self._notification_callbacks[WebSocketEventTypes.CURTAINS] = (
             on_curtains_notification
         )
 
@@ -708,7 +716,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventHdmiVideoFormatSignal notifications."""
-        self._notification_callbacks["WebSocketEventHdmiVideoFormatSignal"] = (
+        self._notification_callbacks[WebSocketEventTypes.HDMI_VIDEO_FORMAT_SIGNAL] = (
             on_hdmi_video_format_signal_notification
         )
 
@@ -719,7 +727,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventNotification notifications."""
-        self._notification_callbacks["WebSocketEventNotification"] = (
+        self._notification_callbacks[WebSocketEventTypes.NOTIFICATION] = (
             on_notification_notification
         )
 
@@ -730,7 +738,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventPlaybackError notifications."""
-        self._notification_callbacks["WebSocketEventPlaybackError"] = (
+        self._notification_callbacks[WebSocketEventTypes.PLAYBACK_ERROR] = (
             on_playback_error_notification
         )
 
@@ -741,7 +749,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventPlaybackMetadata notifications."""
-        self._notification_callbacks["WebSocketEventPlaybackMetadata"] = (
+        self._notification_callbacks[WebSocketEventTypes.PLAYBACK_METADATA] = (
             on_playback_metadata_notification
         )
 
@@ -752,7 +760,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventPlaybackProgress notifications."""
-        self._notification_callbacks["WebSocketEventPlaybackProgress"] = (
+        self._notification_callbacks[WebSocketEventTypes.PLAYBACK_PROGRESS] = (
             on_playback_progress_notification
         )
 
@@ -761,7 +769,7 @@ class MozartClient(MozartApi):
         on_playback_source_notification: Callable[[Source], Awaitable[None] | None],
     ) -> None:
         """Set callback for WebSocketEventPlaybackSource notifications."""
-        self._notification_callbacks["WebSocketEventPlaybackSource"] = (
+        self._notification_callbacks[WebSocketEventTypes.PLAYBACK_SOURCE] = (
             on_playback_source_notification
         )
 
@@ -772,7 +780,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventPlaybackState notifications."""
-        self._notification_callbacks["WebSocketEventPlaybackState"] = (
+        self._notification_callbacks[WebSocketEventTypes.PLAYBACK_STATE] = (
             on_playback_state_notification
         )
 
@@ -781,7 +789,7 @@ class MozartClient(MozartApi):
         on_power_state_notification: Callable[[PowerStateEnum], Awaitable[None] | None],
     ) -> None:
         """Set callback for WebSocketEventPowerState notifications."""
-        self._notification_callbacks["WebSocketEventPowerState"] = (
+        self._notification_callbacks[WebSocketEventTypes.POWER_STATE] = (
             on_power_state_notification
         )
 
@@ -792,7 +800,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventPowerlinkConnectionState notifications."""
-        self._notification_callbacks["WebSocketEventPowerlinkConnectionState"] = (
+        self._notification_callbacks[WebSocketEventTypes.POWERLINK_CONNECTION_STATE] = (
             on_powerlink_connection_state_notification
         )
 
@@ -803,15 +811,15 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventPucInstallRemoteIdStatus notifications."""
-        self._notification_callbacks["WebSocketEventPucInstallRemoteIdStatus"] = (
-            on_puc_install_remote_id_status_notification
-        )
+        self._notification_callbacks[
+            WebSocketEventTypes.PUC_INSTALL_REMOTE_ID_STATUS
+        ] = on_puc_install_remote_id_status_notification
 
     def get_role_notifications(
         self, on_role_notification: Callable[[SpeakerRoleEnum], Awaitable[None] | None]
     ) -> None:
         """Set callback for WebSocketEventRole notifications."""
-        self._notification_callbacks["WebSocketEventRole"] = on_role_notification
+        self._notification_callbacks[WebSocketEventTypes.ROLE] = on_role_notification
 
     def get_room_compensation_current_measurement_event_notifications(
         self,
@@ -821,7 +829,7 @@ class MozartClient(MozartApi):
     ) -> None:
         """Set callback for WebSocketEventRoomCompensationCurrentMeasurementEvent notifications."""
         self._notification_callbacks[
-            "WebSocketEventRoomCompensationCurrentMeasurementEvent"
+            WebSocketEventTypes.ROOM_COMPENSATION_CURRENT_MEASUREMENT_EVENT
         ] = on_room_compensation_current_measurement_event_notification
 
     def get_room_compensation_state_notifications(
@@ -831,7 +839,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventRoomCompensationState notifications."""
-        self._notification_callbacks["WebSocketEventRoomCompensationState"] = (
+        self._notification_callbacks[WebSocketEventTypes.ROOM_COMPENSATION_STATE] = (
             on_room_compensation_state_notification
         )
 
@@ -842,7 +850,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventSoftwareUpdateState notifications."""
-        self._notification_callbacks["WebSocketEventSoftwareUpdateState"] = (
+        self._notification_callbacks[WebSocketEventTypes.SOFTWARE_UPDATE_STATE] = (
             on_software_update_state_notification
         )
 
@@ -853,7 +861,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventSoundSettings notifications."""
-        self._notification_callbacks["WebSocketEventSoundSettings"] = (
+        self._notification_callbacks[WebSocketEventTypes.SOUND_SETTINGS] = (
             on_sound_settings_notification
         )
 
@@ -861,7 +869,7 @@ class MozartClient(MozartApi):
         self, on_source_change_notification: Callable[[Source], Awaitable[None] | None]
     ) -> None:
         """Set callback for WebSocketEventSourceChange notifications."""
-        self._notification_callbacks["WebSocketEventSourceChange"] = (
+        self._notification_callbacks[WebSocketEventTypes.SOURCE_CHANGE] = (
             on_source_change_notification
         )
 
@@ -870,7 +878,7 @@ class MozartClient(MozartApi):
         on_speaker_group_changed_notification: Callable[[str], Awaitable[None] | None],
     ) -> None:
         """Set callback for WebSocketEventSpeakerGroupChanged notifications."""
-        self._notification_callbacks["WebSocketEventSpeakerGroupChanged"] = (
+        self._notification_callbacks[WebSocketEventTypes.SPEAKER_GROUP_CHANGED] = (
             on_speaker_group_changed_notification
         )
 
@@ -881,9 +889,9 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventSpeakerLinkStatusChanged notifications."""
-        self._notification_callbacks["WebSocketEventSpeakerLinkStatusChanged"] = (
-            on_speaker_link_status_changed_notification
-        )
+        self._notification_callbacks[
+            WebSocketEventTypes.SPEAKER_LINK_STATUS_CHANGED
+        ] = on_speaker_link_status_changed_notification
 
     def get_stand_connected_notifications(
         self,
@@ -892,7 +900,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventStandConnected notifications."""
-        self._notification_callbacks["WebSocketEventStandConnected"] = (
+        self._notification_callbacks[WebSocketEventTypes.STAND_CONNECTED] = (
             on_stand_connected_notification
         )
 
@@ -903,7 +911,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventStandPosition notifications."""
-        self._notification_callbacks["WebSocketEventStandPosition"] = (
+        self._notification_callbacks[WebSocketEventTypes.STAND_POSITION] = (
             on_stand_position_notification
         )
 
@@ -914,7 +922,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventTvBnOMode notifications."""
-        self._notification_callbacks["WebSocketEventTvBnOMode"] = (
+        self._notification_callbacks[WebSocketEventTypes.TV_BN_O_MODE] = (
             on_tv_bn_o_mode_notification
         )
 
@@ -923,13 +931,17 @@ class MozartClient(MozartApi):
         on_tv_info_notification: Callable[[TvInfoEventData], Awaitable[None] | None],
     ) -> None:
         """Set callback for WebSocketEventTvInfo notifications."""
-        self._notification_callbacks["WebSocketEventTvInfo"] = on_tv_info_notification
+        self._notification_callbacks[WebSocketEventTypes.TV_INFO] = (
+            on_tv_info_notification
+        )
 
     def get_volume_notifications(
         self, on_volume_notification: Callable[[VolumeState], Awaitable[None] | None]
     ) -> None:
         """Set callback for WebSocketEventVolume notifications."""
-        self._notification_callbacks["WebSocketEventVolume"] = on_volume_notification
+        self._notification_callbacks[WebSocketEventTypes.VOLUME] = (
+            on_volume_notification
+        )
 
     def get_wisa_out_state_notifications(
         self,
@@ -938,7 +950,7 @@ class MozartClient(MozartApi):
         ],
     ) -> None:
         """Set callback for WebSocketEventWisaOutState notifications."""
-        self._notification_callbacks["WebSocketEventWisaOutState"] = (
+        self._notification_callbacks[WebSocketEventTypes.WISA_OUT_STATE] = (
             on_wisa_out_state_notification
         )
 

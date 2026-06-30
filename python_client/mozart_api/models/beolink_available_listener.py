@@ -29,7 +29,15 @@ class BeolinkAvailableListener(BaseModel):
     BeolinkAvailableListener
     """  # noqa: E501
 
-    jid: Annotated[StrictStr, Field(description="Beolink peer ID")]
+    jid: Annotated[
+        StrictStr,
+        Field(
+            description="Beolink peer ID",
+            json_schema_extra={
+                "examples": ["2714.1200304.26451293@products.bang-olufsen.com"]
+            },
+        ),
+    ]
     __properties: ClassVar[List[str]] = ["jid"]
 
     model_config = ConfigDict(

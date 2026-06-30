@@ -39,7 +39,10 @@ class StandMovement(BaseModel):
     """  # noqa: E501
 
     angle: Optional[Union[StrictFloat, StrictInt]] = None
-    ignore_endstop: Annotated[Optional[StrictBool], Field(alias="ignoreEndstop")] = None
+    ignore_endstop: Annotated[
+        Optional[StrictBool],
+        Field(alias="ignoreEndstop", json_schema_extra={"examples": [False]}),
+    ] = None
     stand_motion: Annotated[Optional[StrictStr], Field(alias="standMotion")] = None
     __properties: ClassVar[List[str]] = ["angle", "ignoreEndstop", "standMotion"]
 

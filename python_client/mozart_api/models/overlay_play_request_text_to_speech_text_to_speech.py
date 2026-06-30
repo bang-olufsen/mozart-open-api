@@ -32,7 +32,8 @@ class OverlayPlayRequestTextToSpeechTextToSpeech(BaseModel):
     lang: Annotated[
         Optional[StrictStr],
         Field(
-            description="An optional specification of the language to use. The default value is ultimately decided by the BeoCloud API, but currently it defaults to `en-us`. "
+            description="An optional specification of the language to use. The default value is ultimately decided by the BeoCloud API, but currently it defaults to `en-us`. ",
+            json_schema_extra={"examples": ["en-us"]},
         ),
     ] = None
     text: Annotated[
