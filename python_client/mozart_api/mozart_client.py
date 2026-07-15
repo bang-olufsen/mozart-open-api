@@ -208,12 +208,12 @@ def refactor_notification_name(notification_type: str) -> str:
 
 def check_valid_jid(jid: str) -> bool:
     """Check if a JID is valid."""
-    return bool(re.fullmatch(r"^\d{4}.\d{7}.\d{8}@products\.bang-olufsen\.com$", jid))
+    return bool(re.fullmatch(r"\d{4}\.\d{7}\.\d{8}@products\.bang-olufsen\.com", jid))
 
 
 def check_valid_serial_number(serial_number: str) -> bool:
     """Check if a serial_number is valid."""
-    return bool(re.fullmatch(r"^\d{8}$", serial_number))
+    return bool(re.fullmatch(r"\d{8}", serial_number))
 
 
 def get_highest_resolution_artwork(metadata: PlaybackContentMetadata) -> Art:
@@ -225,26 +225,27 @@ def get_highest_resolution_artwork(metadata: PlaybackContentMetadata) -> Art:
     # Dict for sorting images that have size defined by a string
     art_size = {"small": 1, "medium": 2, "large": 3}
 
+    # Contains tuples, containing the size of the image and the original index
     images = []
 
     # Images either have a key for specifying resolution or a "size" for the image.
-    for image in metadata.art:
+    for i, image in enumerate(metadata.art):
         # Skip any invalid artwork
         if not image.url:
             continue
         # Netradio.
         if image.key:
-            images.append(int(image.key.split("x")[0]))
+            images.append((int(image.key.split("x")[0]), i))
         # Everything else.
         elif image.size:
-            images.append(art_size[image.size])
+            images.append((art_size[image.size], i))
 
     # Check if only invalid images were provided
     if not images:
         return Art()
 
     # Choose the largest image.
-    return metadata.art[images.index(max(images))]
+    return metadata.art[max(images)[1]]
 
 
 class BaseWebSocketResponse(TypedDict):

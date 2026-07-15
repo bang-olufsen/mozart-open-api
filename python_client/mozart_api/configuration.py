@@ -554,7 +554,7 @@ class Configuration:
             "OS: {env}\n"
             "Python Version: {pyversion}\n"
             "Version of the API: 0.2.0\n"
-            "SDK Package Version: 6.2.0.44.1".format(
+            "SDK Package Version: 6.2.0.44.2".format(
                 env=sys.platform, pyversion=sys.version
             )
         )
