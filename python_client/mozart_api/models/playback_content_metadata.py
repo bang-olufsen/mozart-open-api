@@ -221,8 +221,7 @@ class PlaybackContentMetadata(BaseModel):
         _items = []
         if self.art:
             for _item_art in self.art:
-                if _item_art:
-                    _items.append(_item_art.to_dict())
+                _items.append(_item_art.to_dict() if _item_art is not None else None)
             _dict["art"] = _items
         # override the default output from pydantic by calling `to_dict()` of remote_leader
         if self.remote_leader:

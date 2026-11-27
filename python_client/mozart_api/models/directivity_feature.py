@@ -100,8 +100,9 @@ class DirectivityFeature(BaseModel):
         _items = []
         if self.range:
             for _item_range in self.range:
-                if _item_range:
-                    _items.append(_item_range.to_dict())
+                _items.append(
+                    _item_range.to_dict() if _item_range is not None else None
+                )
             _dict["range"] = _items
         return _dict
 

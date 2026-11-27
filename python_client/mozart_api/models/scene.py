@@ -123,8 +123,11 @@ class Scene(BaseModel):
         _items = []
         if self.action_list:
             for _item_action_list in self.action_list:
-                if _item_action_list:
-                    _items.append(_item_action_list.to_dict())
+                _items.append(
+                    _item_action_list.to_dict()
+                    if _item_action_list is not None
+                    else None
+                )
             _dict["actionList"] = _items
         # set to None if client_context (nullable) is None
         # and model_fields_set contains the field

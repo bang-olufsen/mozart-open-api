@@ -227,7 +227,7 @@ class SettingsApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -241,7 +241,7 @@ class SettingsApi:
         # process the body parameter
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
@@ -451,7 +451,7 @@ class SettingsApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -465,7 +465,7 @@ class SettingsApi:
         # process the body parameter
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
@@ -678,7 +678,7 @@ class SettingsApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -692,7 +692,7 @@ class SettingsApi:
         # process the body parameter
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
@@ -918,7 +918,7 @@ class SettingsApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -934,20 +934,22 @@ class SettingsApi:
             _body_params = home_control_ixp
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
 
         # set the HTTP header `Content-Type`
         if _content_type:
-            _header_params["Content-Type"] = _content_type
+            self.api_client._set_header(_header_params, "Content-Type", _content_type)
         else:
             _default_content_type = self.api_client.select_header_content_type([
                 "application/json"
             ])
             if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+                self.api_client._set_header(
+                    _header_params, "Content-Type", _default_content_type
+                )
 
         # authentication setting
         _auth_settings: List[str] = []
@@ -973,7 +975,7 @@ class SettingsApi:
         home_control_uri: Annotated[
             HomeControlUri,
             Field(
-                description="The new uri for HomeControl dashboard and IXP start page"
+                description="The new uri for HomeControl dashboard and/or the IXP start page. Omitting the uri value will keep the current uri value and only update the ixp value. Omitting the ixp value will keep the current ixp value and only update the uri value. Setting the uri value to an empty string will disable the HomeControl dashboard but not the IXP start page. Setting the ixp value to an empty string will disable the IXP start page but not the HomeControl dashboard. "
             ),
         ],
         _request_timeout: Union[
@@ -988,10 +990,10 @@ class SettingsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> None:
-        """Set the uri for HomeControl dashboard and Immersive Experience (IXP) start page
+        """Set the uri for HomeControl dashboard and/or set the Immersive Experience (IXP) start page.
 
 
-        :param home_control_uri: The new uri for HomeControl dashboard and IXP start page (required)
+        :param home_control_uri: The new uri for HomeControl dashboard and/or the IXP start page. Omitting the uri value will keep the current uri value and only update the ixp value. Omitting the ixp value will keep the current ixp value and only update the uri value. Setting the uri value to an empty string will disable the HomeControl dashboard but not the IXP start page. Setting the ixp value to an empty string will disable the IXP start page but not the HomeControl dashboard.  (required)
         :type home_control_uri: HomeControlUri
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1042,7 +1044,7 @@ class SettingsApi:
         home_control_uri: Annotated[
             HomeControlUri,
             Field(
-                description="The new uri for HomeControl dashboard and IXP start page"
+                description="The new uri for HomeControl dashboard and/or the IXP start page. Omitting the uri value will keep the current uri value and only update the ixp value. Omitting the ixp value will keep the current ixp value and only update the uri value. Setting the uri value to an empty string will disable the HomeControl dashboard but not the IXP start page. Setting the ixp value to an empty string will disable the IXP start page but not the HomeControl dashboard. "
             ),
         ],
         _request_timeout: Union[
@@ -1057,10 +1059,10 @@ class SettingsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> ApiResponse[None]:
-        """Set the uri for HomeControl dashboard and Immersive Experience (IXP) start page
+        """Set the uri for HomeControl dashboard and/or set the Immersive Experience (IXP) start page.
 
 
-        :param home_control_uri: The new uri for HomeControl dashboard and IXP start page (required)
+        :param home_control_uri: The new uri for HomeControl dashboard and/or the IXP start page. Omitting the uri value will keep the current uri value and only update the ixp value. Omitting the ixp value will keep the current ixp value and only update the uri value. Setting the uri value to an empty string will disable the HomeControl dashboard but not the IXP start page. Setting the ixp value to an empty string will disable the IXP start page but not the HomeControl dashboard.  (required)
         :type home_control_uri: HomeControlUri
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1111,7 +1113,7 @@ class SettingsApi:
         home_control_uri: Annotated[
             HomeControlUri,
             Field(
-                description="The new uri for HomeControl dashboard and IXP start page"
+                description="The new uri for HomeControl dashboard and/or the IXP start page. Omitting the uri value will keep the current uri value and only update the ixp value. Omitting the ixp value will keep the current ixp value and only update the uri value. Setting the uri value to an empty string will disable the HomeControl dashboard but not the IXP start page. Setting the ixp value to an empty string will disable the IXP start page but not the HomeControl dashboard. "
             ),
         ],
         _request_timeout: Union[
@@ -1126,10 +1128,10 @@ class SettingsApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Set the uri for HomeControl dashboard and Immersive Experience (IXP) start page
+        """Set the uri for HomeControl dashboard and/or set the Immersive Experience (IXP) start page.
 
 
-        :param home_control_uri: The new uri for HomeControl dashboard and IXP start page (required)
+        :param home_control_uri: The new uri for HomeControl dashboard and/or the IXP start page. Omitting the uri value will keep the current uri value and only update the ixp value. Omitting the ixp value will keep the current ixp value and only update the uri value. Setting the uri value to an empty string will disable the HomeControl dashboard but not the IXP start page. Setting the ixp value to an empty string will disable the IXP start page but not the HomeControl dashboard.  (required)
         :type home_control_uri: HomeControlUri
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1185,7 +1187,7 @@ class SettingsApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -1201,20 +1203,22 @@ class SettingsApi:
             _body_params = home_control_uri
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
 
         # set the HTTP header `Content-Type`
         if _content_type:
-            _header_params["Content-Type"] = _content_type
+            self.api_client._set_header(_header_params, "Content-Type", _content_type)
         else:
             _default_content_type = self.api_client.select_header_content_type([
                 "application/json"
             ])
             if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+                self.api_client._set_header(
+                    _header_params, "Content-Type", _default_content_type
+                )
 
         # authentication setting
         _auth_settings: List[str] = []

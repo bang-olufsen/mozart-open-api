@@ -114,6 +114,9 @@ from mozart_api.models.remote_menu_item_properties import RemoteMenuItemProperti
 from mozart_api.models.remote_ui_key_state import RemoteUIKeyState
 from mozart_api.models.rendering_state import RenderingState
 from mozart_api.models.room_compensation import RoomCompensation
+from mozart_api.models.room_compensation_coefficients import (
+    RoomCompensationCoefficients,
+)
 from mozart_api.models.room_compensation_current_measurement import (
     RoomCompensationCurrentMeasurement,
 )
@@ -388,6 +391,7 @@ __all__ = [
     "RemoteUIKeyState",
     "RenderingState",
     "RoomCompensation",
+    "RoomCompensationCoefficients",
     "RoomCompensationCurrentMeasurement",
     "RoomCompensationDebug",
     "RoomCompensationEnabled",

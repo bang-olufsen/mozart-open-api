@@ -953,9 +953,14 @@ paths:
         - mozart
     put:
       operationId: set-remote-home-control-uri
-      summary: Set the uri for HomeControl dashboard and Immersive Experience (IXP) start page
+      summary: Set the uri for HomeControl dashboard and/or set the Immersive Experience (IXP) start page.
       requestBody:
-        description: The new uri for HomeControl dashboard and IXP start page
+        description: |
+          The new uri for HomeControl dashboard and/or the IXP start page.
+          Omitting the uri value will keep the current uri value and only update the ixp value.
+          Omitting the ixp value will keep the current ixp value and only update the uri value.
+          Setting the uri value to an empty string will disable the HomeControl dashboard but not the IXP start page.
+          Setting the ixp value to an empty string will disable the IXP start page but not the HomeControl dashboard.
         required: true
         content:
           application/json:
@@ -3178,6 +3183,19 @@ components:
           $ref: '#/components/schemas/RoomCompensationValue'
       required:
         - value
+    RoomCompensationCoefficients:
+      description: Cascaded biquad coefficients and speaker type for a specific speaker.
+      type: object
+      properties:
+        coefficients:
+          description: Array of cascaded biquad filter coefficients
+          type: array
+          items:
+            format: double
+            type: number
+        speakerType:
+          description: Type of the speaker
+          type: string
     RoomCompensationCurrentMeasurement:
       description: |
         State and speaker ID of the currently running measurement.
@@ -3374,6 +3392,14 @@ components:
     RoomCompensationResult:
       type: object
       properties:
+        coefficients:
+          description: |
+            Calculated room compensation coefficients for each speaker.
+            Present only when room compensation was successfully calculated.
+            Maps speaker IDs to their coefficient data.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RoomCompensationCoefficients'
         compensation:
           type: array
           items:
@@ -4049,6 +4075,10 @@ components:
           nullable: true
         role:
           $ref: '#/components/schemas/SpeakerRole'
+        selectedOutput:
+          description: The name of the selected output corresponding to this speaker
+          type: string
+          default: ''
         type:
           type: string
           nullable: true
@@ -4102,6 +4132,32 @@ components:
           type: string
         serialNumber:
           $ref: '#/components/schemas/SerialNumber'
+        state:
+          description: |
+            The precise phase of the association for this secondary. 
+            `health` (above) collapses several phases to `unknown`. 
+            This `state` lets a client tell them apart and know deterministically what it is waiting for, 
+            rather than relying on a timeout:
+            - `added` Secondary is part of the association; the primary has not yet located it on the network.
+            - `resolved` The primary has found the secondary's address.
+            - `associating` The primary has asked the secondary to take the secondary role. 
+               The secondary is now switching networks (leaving the home WiFi and
+               joining the primary's access point) and reconnecting. No further event is
+               expected from the secondary until it reconnects, so `updatedAt` is
+               re-stamped periodically as a liveness heartbeat while in this phase.
+            - `associated` The secondary has reconnected to the primary. It reaches
+              `health: good` once its clock is synchronized; until then `health` stays
+              `unknown` while `state` is already `associated`, so a client can
+              distinguish "connected, syncing clock" from "still joining".
+            - `taken` The secondary is associated with a different primary.
+          type: string
+          example: associated
+          enum:
+            - added
+            - resolved
+            - associating
+            - associated
+            - taken
         updatedAt:
           $ref: '#/components/schemas/Timestamp'
       required:
@@ -4532,6 +4588,7 @@ components:
         eventType:
           type: string
     WebSocketEventBeoRemoteButton:
+      description: This notification is sent on the /remoteControl WebSocket notification channel.
       type: object
       properties:
         eventData:

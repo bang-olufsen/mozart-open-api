@@ -62,6 +62,13 @@ class SpeakerLinkMemberStatus(BaseModel):
             json_schema_extra={"examples": ["12345678"]},
         ),
     ]
+    state: Annotated[
+        Optional[StrictStr],
+        Field(
+            description='The precise phase of the association for this secondary.  `health` (above) collapses several phases to `unknown`.  This `state` lets a client tell them apart and know deterministically what it is waiting for,  rather than relying on a timeout: - `added` Secondary is part of the association; the primary has not yet located it on the network. - `resolved` The primary has found the secondary\'s address. - `associating` The primary has asked the secondary to take the secondary role.     The secondary is now switching networks (leaving the home WiFi and    joining the primary\'s access point) and reconnecting. No further event is    expected from the secondary until it reconnects, so `updatedAt` is    re-stamped periodically as a liveness heartbeat while in this phase. - `associated` The secondary has reconnected to the primary. It reaches   `health: good` once its clock is synchronized; until then `health` stays   `unknown` while `state` is already `associated`, so a client can   distinguish "connected, syncing clock" from "still joining". - `taken` The secondary is associated with a different primary. ',
+            json_schema_extra={"examples": ["associated"]},
+        ),
+    ] = None
     updated_at: Annotated[
         datetime, Field(description="Timestamp in RFC3393 format", alias="updatedAt")
     ]
@@ -72,6 +79,7 @@ class SpeakerLinkMemberStatus(BaseModel):
         "networkType",
         "productType",
         "serialNumber",
+        "state",
         "updatedAt",
     ]
 
@@ -91,14 +99,29 @@ class SpeakerLinkMemberStatus(BaseModel):
             raise ValueError("must be one of enum values ('none', 'wired', 'wireless')")
         return value
 
-    @field_validator("serial_number")
+    @field_validator("serial_number", mode="before")
     def serial_number_validate_regular_expression(cls, value):
         """Validates the regular expression"""
-        if not isinstance(value, str):
-            value = str(value)
-
-        if not re.match(r"^\d{8}$", value):
+        if isinstance(value, str) and not re.match(r"^\d{8}$", value):
             raise ValueError(r"must validate the regular expression /^\d{8}$/")
+        return value
+
+    @field_validator("state")
+    def state_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set([
+            "added",
+            "resolved",
+            "associating",
+            "associated",
+            "taken",
+        ]):
+            raise ValueError(
+                "must be one of enum values ('added', 'resolved', 'associating', 'associated', 'taken')"
+            )
         return value
 
     model_config = ConfigDict(
@@ -166,6 +189,7 @@ class SpeakerLinkMemberStatus(BaseModel):
             "networkType": obj.get("networkType"),
             "productType": obj.get("productType"),
             "serialNumber": obj.get("serialNumber"),
+            "state": obj.get("state"),
             "updatedAt": obj.get("updatedAt"),
         })
         return _obj

@@ -28,7 +28,7 @@ from mozart_api.models.beo_remote_button import BeoRemoteButton
 
 class WebSocketEventBeoRemoteButton(BaseModel):
     """
-    WebSocketEventBeoRemoteButton
+    This notification is sent on the /remoteControl WebSocket notification channel.
     """  # noqa: E501
 
     event_data: Annotated[Optional[BeoRemoteButton], Field(alias="eventData")] = None

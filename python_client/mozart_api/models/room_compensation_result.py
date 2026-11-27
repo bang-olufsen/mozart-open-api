@@ -24,6 +24,9 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from pydantic_core import to_jsonable_python
 from typing_extensions import Annotated, Self
 
+from mozart_api.models.room_compensation_coefficients import (
+    RoomCompensationCoefficients,
+)
 from mozart_api.models.room_compensation_response import RoomCompensationResponse
 from mozart_api.models.speaker_group import SpeakerGroup
 
@@ -33,6 +36,12 @@ class RoomCompensationResult(BaseModel):
     RoomCompensationResult
     """  # noqa: E501
 
+    coefficients: Annotated[
+        Optional[Dict[str, RoomCompensationCoefficients]],
+        Field(
+            description="Calculated room compensation coefficients for each speaker. Present only when room compensation was successfully calculated. Maps speaker IDs to their coefficient data. "
+        ),
+    ] = None
     compensation: Optional[List[RoomCompensationResponse]] = None
     measured_response: Annotated[
         Optional[List[RoomCompensationResponse]], Field(alias="measuredResponse")
@@ -46,6 +55,7 @@ class RoomCompensationResult(BaseModel):
     ] = None
     time_stamp: Annotated[Optional[datetime], Field(alias="timeStamp")] = None
     __properties: ClassVar[List[str]] = [
+        "coefficients",
         "compensation",
         "measuredResponse",
         "placement",
@@ -103,26 +113,45 @@ class RoomCompensationResult(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each value in coefficients (dict)
+        _field_dict = {}
+        if self.coefficients:
+            for _key_coefficients in self.coefficients:
+                _field_dict[_key_coefficients] = (
+                    self.coefficients[_key_coefficients].to_dict()
+                    if self.coefficients[_key_coefficients] is not None
+                    else None
+                )
+            _dict["coefficients"] = _field_dict
         # override the default output from pydantic by calling `to_dict()` of each item in compensation (list)
         _items = []
         if self.compensation:
             for _item_compensation in self.compensation:
-                if _item_compensation:
-                    _items.append(_item_compensation.to_dict())
+                _items.append(
+                    _item_compensation.to_dict()
+                    if _item_compensation is not None
+                    else None
+                )
             _dict["compensation"] = _items
         # override the default output from pydantic by calling `to_dict()` of each item in measured_response (list)
         _items = []
         if self.measured_response:
             for _item_measured_response in self.measured_response:
-                if _item_measured_response:
-                    _items.append(_item_measured_response.to_dict())
+                _items.append(
+                    _item_measured_response.to_dict()
+                    if _item_measured_response is not None
+                    else None
+                )
             _dict["measuredResponse"] = _items
         # override the default output from pydantic by calling `to_dict()` of each item in reference_response (list)
         _items = []
         if self.reference_response:
             for _item_reference_response in self.reference_response:
-                if _item_reference_response:
-                    _items.append(_item_reference_response.to_dict())
+                _items.append(
+                    _item_reference_response.to_dict()
+                    if _item_reference_response is not None
+                    else None
+                )
             _dict["referenceResponse"] = _items
         # override the default output from pydantic by calling `to_dict()` of speaker_group_suggestion
         if self.speaker_group_suggestion:
@@ -139,6 +168,12 @@ class RoomCompensationResult(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "coefficients": dict(
+                (_k, RoomCompensationCoefficients.from_dict(_v))
+                for _k, _v in obj["coefficients"].items()
+            )
+            if obj.get("coefficients") is not None
+            else None,
             "compensation": [
                 RoomCompensationResponse.from_dict(_item)
                 for _item in obj["compensation"]

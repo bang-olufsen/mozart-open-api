@@ -90,8 +90,9 @@ class SpeakerLinkStatus(BaseModel):
         _items = []
         if self.speakers:
             for _item_speakers in self.speakers:
-                if _item_speakers:
-                    _items.append(_item_speakers.to_dict())
+                _items.append(
+                    _item_speakers.to_dict() if _item_speakers is not None else None
+                )
             _dict["speakers"] = _items
         return _dict
 

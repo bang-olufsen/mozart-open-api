@@ -83,8 +83,9 @@ class RoomCompensationErrorDetails(BaseModel):
         _items = []
         if self.error_list:
             for _item_error_list in self.error_list:
-                if _item_error_list:
-                    _items.append(_item_error_list.to_dict())
+                _items.append(
+                    _item_error_list.to_dict() if _item_error_list is not None else None
+                )
             _dict["errorList"] = _items
         return _dict
 

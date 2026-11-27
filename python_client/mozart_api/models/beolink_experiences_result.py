@@ -97,8 +97,11 @@ class BeolinkExperiencesResult(BaseModel):
         _items = []
         if self.experiences:
             for _item_experiences in self.experiences:
-                if _item_experiences:
-                    _items.append(_item_experiences.to_dict())
+                _items.append(
+                    _item_experiences.to_dict()
+                    if _item_experiences is not None
+                    else None
+                )
             _dict["experiences"] = _items
         return _dict
 

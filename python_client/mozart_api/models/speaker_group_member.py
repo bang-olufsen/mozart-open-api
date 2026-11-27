@@ -55,6 +55,14 @@ class SpeakerGroupMember(BaseModel):
         ),
     ] = None
     role: Optional[StrictStr] = None
+    selected_output: Annotated[
+        Optional[StrictStr],
+        Field(
+            default="",
+            description="The name of the selected output corresponding to this speaker",
+            alias="selectedOutput",
+        ),
+    ]
     type: Optional[StrictStr] = None
     __properties: ClassVar[List[str]] = [
         "distance",
@@ -64,6 +72,7 @@ class SpeakerGroupMember(BaseModel):
         "location",
         "redirectionLevel",
         "role",
+        "selectedOutput",
         "type",
     ]
 
@@ -166,6 +175,9 @@ class SpeakerGroupMember(BaseModel):
             else None,
             "redirectionLevel": obj.get("redirectionLevel"),
             "role": obj.get("role"),
+            "selectedOutput": obj.get("selectedOutput")
+            if obj.get("selectedOutput") is not None
+            else "",
             "type": obj.get("type"),
         })
         return _obj

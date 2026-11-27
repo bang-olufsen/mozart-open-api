@@ -94,8 +94,11 @@ class SceneTriggerBaseProperties(BaseModel):
         _items = []
         if self.action_list:
             for _item_action_list in self.action_list:
-                if _item_action_list:
-                    _items.append(_item_action_list.to_dict())
+                _items.append(
+                    _item_action_list.to_dict()
+                    if _item_action_list is not None
+                    else None
+                )
             _dict["actionList"] = _items
         return _dict
 

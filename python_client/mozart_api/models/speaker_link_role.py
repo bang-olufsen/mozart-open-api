@@ -89,16 +89,13 @@ class SpeakerLinkRole(BaseModel):
             )
         return value
 
-    @field_validator("primary")
+    @field_validator("primary", mode="before")
     def primary_validate_regular_expression(cls, value):
         """Validates the regular expression"""
         if value is None:
             return value
 
-        if not isinstance(value, str):
-            value = str(value)
-
-        if not re.match(r"^\d{8}$", value):
+        if isinstance(value, str) and not re.match(r"^\d{8}$", value):
             raise ValueError(r"must validate the regular expression /^\d{8}$/")
         return value
 

@@ -158,42 +158,33 @@ class Action(BaseModel):
             )
         return value
 
-    @field_validator("deezer_user_id")
+    @field_validator("deezer_user_id", mode="before")
     def deezer_user_id_validate_regular_expression(cls, value):
         """Validates the regular expression"""
         if value is None:
             return value
 
-        if not isinstance(value, str):
-            value = str(value)
-
-        if not re.match(r"^\d{10}$", value):
+        if isinstance(value, str) and not re.match(r"^\d{10}$", value):
             raise ValueError(r"must validate the regular expression /^\d{10}$/")
         return value
 
-    @field_validator("preset_key")
+    @field_validator("preset_key", mode="before")
     def preset_key_validate_regular_expression(cls, value):
         """Validates the regular expression"""
         if value is None:
             return value
 
-        if not isinstance(value, str):
-            value = str(value)
-
-        if not re.match(r"^Preset[0-9]+$", value):
+        if isinstance(value, str) and not re.match(r"^Preset[0-9]+$", value):
             raise ValueError(r"must validate the regular expression /^Preset[0-9]+$/")
         return value
 
-    @field_validator("radio_station_id")
+    @field_validator("radio_station_id", mode="before")
     def radio_station_id_validate_regular_expression(cls, value):
         """Validates the regular expression"""
         if value is None:
             return value
 
-        if not isinstance(value, str):
-            value = str(value)
-
-        if not re.match(r"^\d{16}$", value):
+        if isinstance(value, str) and not re.match(r"^\d{16}$", value):
             raise ValueError(r"must validate the regular expression /^\d{16}$/")
         return value
 
@@ -283,10 +274,11 @@ class Action(BaseModel):
         _field_dict = {}
         if self.sound_profile:
             for _key_sound_profile in self.sound_profile:
-                if self.sound_profile[_key_sound_profile]:
-                    _field_dict[_key_sound_profile] = self.sound_profile[
-                        _key_sound_profile
-                    ].to_dict()
+                _field_dict[_key_sound_profile] = (
+                    self.sound_profile[_key_sound_profile].to_dict()
+                    if self.sound_profile[_key_sound_profile] is not None
+                    else None
+                )
             _dict["soundProfile"] = _field_dict
         # override the default output from pydantic by calling `to_dict()` of source
         if self.source:

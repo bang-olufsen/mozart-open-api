@@ -251,7 +251,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -267,7 +267,7 @@ class SoundApi:
         # process the body parameter
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
@@ -477,7 +477,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -491,7 +491,7 @@ class SoundApi:
         # process the body parameter
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
@@ -704,7 +704,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -718,7 +718,7 @@ class SoundApi:
         # process the body parameter
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
@@ -928,7 +928,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -942,7 +942,7 @@ class SoundApi:
         # process the body parameter
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
@@ -1152,7 +1152,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -1166,7 +1166,7 @@ class SoundApi:
         # process the body parameter
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
@@ -1379,7 +1379,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -1393,7 +1393,7 @@ class SoundApi:
         # process the body parameter
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
@@ -1625,7 +1625,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -1641,20 +1641,22 @@ class SoundApi:
             _body_params = volume_level
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
 
         # set the HTTP header `Content-Type`
         if _content_type:
-            _header_params["Content-Type"] = _content_type
+            self.api_client._set_header(_header_params, "Content-Type", _content_type)
         else:
             _default_content_type = self.api_client.select_header_content_type([
                 "application/json"
             ])
             if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+                self.api_client._set_header(
+                    _header_params, "Content-Type", _default_content_type
+                )
 
         # authentication setting
         _auth_settings: List[str] = []
@@ -1886,7 +1888,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -1902,20 +1904,22 @@ class SoundApi:
             _body_params = advanced_beamforming
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
 
         # set the HTTP header `Content-Type`
         if _content_type:
-            _header_params["Content-Type"] = _content_type
+            self.api_client._set_header(_header_params, "Content-Type", _content_type)
         else:
             _default_content_type = self.api_client.select_header_content_type([
                 "application/json"
             ])
             if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+                self.api_client._set_header(
+                    _header_params, "Content-Type", _default_content_type
+                )
 
         # authentication setting
         _auth_settings: List[str] = []
@@ -2138,7 +2142,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -2154,20 +2158,22 @@ class SoundApi:
             _body_params = bass
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
 
         # set the HTTP header `Content-Type`
         if _content_type:
-            _header_params["Content-Type"] = _content_type
+            self.api_client._set_header(_header_params, "Content-Type", _content_type)
         else:
             _default_content_type = self.api_client.select_header_content_type([
                 "application/json"
             ])
             if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+                self.api_client._set_header(
+                    _header_params, "Content-Type", _default_content_type
+                )
 
         # authentication setting
         _auth_settings: List[str] = []
@@ -2390,7 +2396,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -2406,20 +2412,22 @@ class SoundApi:
             _body_params = directivity
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
 
         # set the HTTP header `Content-Type`
         if _content_type:
-            _header_params["Content-Type"] = _content_type
+            self.api_client._set_header(_header_params, "Content-Type", _content_type)
         else:
             _default_content_type = self.api_client.select_header_content_type([
                 "application/json"
             ])
             if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+                self.api_client._set_header(
+                    _header_params, "Content-Type", _default_content_type
+                )
 
         # authentication setting
         _auth_settings: List[str] = []
@@ -2642,7 +2650,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -2658,20 +2666,22 @@ class SoundApi:
             _body_params = loudness
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
 
         # set the HTTP header `Content-Type`
         if _content_type:
-            _header_params["Content-Type"] = _content_type
+            self.api_client._set_header(_header_params, "Content-Type", _content_type)
         else:
             _default_content_type = self.api_client.select_header_content_type([
                 "application/json"
             ])
             if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+                self.api_client._set_header(
+                    _header_params, "Content-Type", _default_content_type
+                )
 
         # authentication setting
         _auth_settings: List[str] = []
@@ -2894,7 +2904,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -2910,20 +2920,22 @@ class SoundApi:
             _body_params = treble
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
 
         # set the HTTP header `Content-Type`
         if _content_type:
-            _header_params["Content-Type"] = _content_type
+            self.api_client._set_header(_header_params, "Content-Type", _content_type)
         else:
             _default_content_type = self.api_client.select_header_content_type([
                 "application/json"
             ])
             if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+                self.api_client._set_header(
+                    _header_params, "Content-Type", _default_content_type
+                )
 
         # authentication setting
         _auth_settings: List[str] = []
@@ -3152,7 +3164,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -3169,13 +3181,15 @@ class SoundApi:
 
         # set the HTTP header `Content-Type`
         if _content_type:
-            _header_params["Content-Type"] = _content_type
+            self.api_client._set_header(_header_params, "Content-Type", _content_type)
         else:
             _default_content_type = self.api_client.select_header_content_type([
                 "application/json"
             ])
             if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+                self.api_client._set_header(
+                    _header_params, "Content-Type", _default_content_type
+                )
 
         # authentication setting
         _auth_settings: List[str] = []
@@ -3404,7 +3418,7 @@ class SoundApi:
 
         _path_params: Dict[str, str] = {}
         _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _header_params: Dict[str, Any] = self.api_client._merge_headers(_headers)
         _form_params: List[Tuple[str, str]] = []
         _files: Dict[
             str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
@@ -3420,20 +3434,22 @@ class SoundApi:
             _body_params = volume_settings
 
         # set the HTTP header `Accept`
-        if "Accept" not in _header_params:
+        if not any(key.lower() == "accept" for key in _header_params):
             _header_params["Accept"] = self.api_client.select_header_accept([
                 "application/json"
             ])
 
         # set the HTTP header `Content-Type`
         if _content_type:
-            _header_params["Content-Type"] = _content_type
+            self.api_client._set_header(_header_params, "Content-Type", _content_type)
         else:
             _default_content_type = self.api_client.select_header_content_type([
                 "application/json"
             ])
             if _default_content_type is not None:
-                _header_params["Content-Type"] = _default_content_type
+                self.api_client._set_header(
+                    _header_params, "Content-Type", _default_content_type
+                )
 
         # authentication setting
         _auth_settings: List[str] = []

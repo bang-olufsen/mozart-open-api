@@ -10,7 +10,7 @@ info:
     ![Python version](https://img.shields.io/pypi/pyversions/mozart-api)
 
 
-    The Mozart API is an async REST API with WebSocket notification channel for immediate state information from Mozart devices. Currently the API is distributed as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-6.2.0.44.yaml).
+    The Mozart API is an async REST API with WebSocket notification channel for immediate state information from Mozart devices. Currently the API is distributed as a [Python package](https://pypi.org/project/mozart-api) and as an OpenAPI document that can be found in the [Github repository](https://github.com/bang-olufsen/mozart-open-api/blob/main/mozart-api-6.5.0.26.yaml).
 
 
     Supported by:
@@ -28,10 +28,17 @@ info:
     - [Beosound Theatre](https://www.bang-olufsen.com/en/dk/soundbars/beosound-theatre)
 
 
-    This API documentation has been generated for version 6.2.0.44 of the Mozart platform and API generation version 6.2.0.44.2.
+    This API documentation has been generated for version 6.5.0.26 of the Mozart platform and API generation version 6.5.0.26.0.
 
     ## Python API
-    The Python package has been generated using the [OpenAPI Generator](https://openapi-generator.tech/) version 7.23.0. On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
+    The Python package has been generated using the [OpenAPI Generator](https://openapi-generator.tech/) version 7.28.0. On top of the generated API, a helper file, mozart_client.py, has been made that makes the API more pythonic. We recommend using this.
+
+    Additionally, the following manually created modules are included:
+
+    - `mozart_api.const`: Constants and types, such as the `WebSocketEventTypes` enum, the `WebSocketEventType` type alias, `BaseWebSocketResponse` and MDNS constants.
+    - `mozart_api.util`: Helper functions, such as `check_valid_jid`, `check_valid_serial_number`, `split_jid` and `get_highest_resolution_artwork`.
+
+    All of these, as well as `MozartClient`, can also be imported directly from the top-level `mozart_api` package.
 
     Another file, mozart_cli.py, has been made for using the Mozart API in a simple CLI program. This has been set as the "entry point" for the Python package.
 
@@ -68,8 +75,9 @@ info:
     ```python
     import asyncio
 
+    from mozart_api.const import WebSocketEventType
     from mozart_api.models import VolumeLevel, VolumeState
-    from mozart_api.mozart_client import MozartClient, WebSocketEventType
+    from mozart_api.mozart_client import MozartClient
 
 
     def all_notifications(notification: WebSocketEventType, notification_type: str) -> None:
@@ -124,8 +132,9 @@ info:
     ```python
     import asyncio
 
+    from mozart_api.const import WebSocketEventType
     from mozart_api.models import VolumeLevel, VolumeState
-    from mozart_api.mozart_client import MozartClient, WebSocketEventType
+    from mozart_api.mozart_client import MozartClient
 
 
     def all_notifications(notification: WebSocketEventType, notification_type: str) -> None:
@@ -178,28 +187,28 @@ info:
 
     A callback can be set for each of the WebSocket notifications. The callbacks can be functions or awaitable functions. To receive `WebSocketEventBeoRemoteButton` notifications requires that `remote_control=True` is defined when running the `connect_notifications()` method.
 
-    All notification types are available as a set of strings in the NOTIFICATION_TYPES constant.
+    Use `reconnect=True` when running the `connect_notifications()` method to automatically reconnect if the connection is lost. The WebSocket listeners can be stopped with the `disconnect_notifications()` method.
+
+    All notification types are available in the `WebSocketEventTypes` StrEnum in `mozart_api.const`:
+
+    ```python
+    >>> from mozart_api.const import WebSocketEventTypes
+    >>> WebSocketEventTypes.VOLUME
+    <WebSocketEventTypes.VOLUME: 'WebSocketEventVolume'>
+    ```
 
     #### Helper methods and functions
 
-    A number of helper functions are available in the `mozart_client.py` file. These functions handle basic tasks, but do not interact with the REST API or WebSocket listener directly.
+    A number of helper functions are available in the `mozart_api.util` module. These functions handle basic tasks, but do not interact with the REST API or WebSocket listener directly.
 
     Additionaly, helper methods are available in the `MozartClient` object and expand upon the basic functionality of a REST method.
-
-    ##### refactor_notification_name
-
-    The `refactor_notification_name` function transforms a WebSocket notification name to a simpler snake_case name:
-
-    ```python
-    >>> refactor_notification_name("WebSocketEventBeoRemoteButton")
-    'beo_remote_button'
-    ```
 
     ##### check_valid_jid
 
     The `check_valid_jid` determines if an input string is a valid Beolink JID:
 
     ```python
+    >>> from mozart_api.util import check_valid_jid
     >>> check_valid_jid("1234.1234567.12345678@products.bang-olufsen.com")
     True
     >>> check_valid_jid("1234567.12345678@products.bang-olufsen.com")
@@ -211,15 +220,30 @@ info:
     The `check_valid_serial_number` determines if an input string is a valid serial number:
 
     ```python
+    >>> from mozart_api.util import check_valid_serial_number
     >>> check_valid_serial_number("12345678")
     True
     >>> check_valid_serial_number("1234567")
     False
     ```
 
+    ##### split_jid
+
+    The `split_jid` function splits a Beolink JID into its item number, type number and serial number:
+
+    ```python
+    >>> from mozart_api.util import split_jid
+    >>> split_jid("1234.1234567.12345678@products.bang-olufsen.com")
+    ('1234', '1234567', '12345678')
+    ```
+
     ##### get_highest_resolution_artwork
 
     The `get_highest_resolution_artwork` function gets the highest resolution artwork available from provided `PlaybackContentMetadata`.
+
+    ##### check_device_connection
+
+    The `check_device_connection` method checks if both the REST API and the WebSocket notification channel of a device are reachable and returns a `bool`. If `raise_error=True` is defined, an `ExceptionGroup` containing the connection errors is raised instead of returning `False`.
 
     ##### async_get_beolink_join_result
 
@@ -316,7 +340,7 @@ info:
 
     The `get_all_notifications` method will set a callback on all WebSocket notifications received.
 
-    The notification_type will return the name of the event with the `WebSocketEvent` prefix removed and the rest converted to snake_case: `WebSocketEventAlarmTriggered` ➞ `alarm_triggered`
+    The notification_type will return the name of the event with the `WebSocketEvent` prefix removed: `WebSocketEventAlarmTriggered` ➞ `AlarmTriggered`
 
     <!-- title: "All notifications example"
     lineNumbers: true
@@ -325,7 +349,8 @@ info:
     ```python
     import asyncio
 
-    from mozart_api.mozart_client import MozartClient, WebSocketEventType
+    from mozart_api.const import WebSocketEventType
+    from mozart_api.mozart_client import MozartClient
 
 
     async def test_api() -> None:
@@ -361,7 +386,8 @@ info:
     ```python
     import asyncio
 
-    from mozart_api.mozart_client import BaseWebSocketResponse, MozartClient
+    from mozart_api.const import BaseWebSocketResponse
+    from mozart_api.mozart_client import MozartClient
 
 
     async def test_api() -> None:
@@ -390,6 +416,8 @@ info:
     Mozart devices can be found through MDNS using the service name: `_bangolufsen._tcp.local.`
 
     The service provides everything immediately necessary for using the device, including IP address, all components for the Beolink JID, model name, friendly name, software version and more.
+
+    The service type and TXT record keys are available as constants in `mozart_api.const`: `MDNS_SERVICE_TYPE`, `MDNS_TYPE_NUMBER`, `MDNS_ITEM_NUMBER`, `MDNS_SERIAL_NUMBER`, `MDNS_FRIENDLY_NAME` and `MDNS_SOFTWARE_VERSION`.
 
     ### Example CLI program
 
@@ -2004,7 +2032,7 @@ paths:
         - mozart
     put:
       operationId: set-remote-home-control-uri
-      summary: Set the uri for HomeControl dashboard and Immersive Experience (IXP) start page
+      summary: Set the uri for HomeControl dashboard and/or set the Immersive Experience (IXP) start page.
       description: |-
         Use the `set-remote-home-control-uri` method in the Python package with one of:
         ```mozart_client
@@ -2017,7 +2045,12 @@ paths:
         await settings_api.set_remote_home_control_uri()
         ```
       requestBody:
-        description: The new uri for HomeControl dashboard and IXP start page
+        description: |
+          The new uri for HomeControl dashboard and/or the IXP start page.
+          Omitting the uri value will keep the current uri value and only update the ixp value.
+          Omitting the ixp value will keep the current ixp value and only update the uri value.
+          Setting the uri value to an empty string will disable the HomeControl dashboard but not the IXP start page.
+          Setting the ixp value to an empty string will disable the IXP start page but not the HomeControl dashboard.
         required: true
         content:
           application/json:
@@ -4504,6 +4537,19 @@ components:
           $ref: '#/components/schemas/RoomCompensationValue'
       required:
         - value
+    RoomCompensationCoefficients:
+      description: Cascaded biquad coefficients and speaker type for a specific speaker.
+      type: object
+      properties:
+        coefficients:
+          description: Array of cascaded biquad filter coefficients
+          type: array
+          items:
+            format: double
+            type: number
+        speakerType:
+          description: Type of the speaker
+          type: string
     RoomCompensationCurrentMeasurement:
       description: |
         State and speaker ID of the currently running measurement.
@@ -4700,6 +4746,14 @@ components:
     RoomCompensationResult:
       type: object
       properties:
+        coefficients:
+          description: |
+            Calculated room compensation coefficients for each speaker.
+            Present only when room compensation was successfully calculated.
+            Maps speaker IDs to their coefficient data.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RoomCompensationCoefficients'
         compensation:
           type: array
           items:
@@ -5375,6 +5429,10 @@ components:
           nullable: true
         role:
           $ref: '#/components/schemas/SpeakerRole'
+        selectedOutput:
+          description: The name of the selected output corresponding to this speaker
+          type: string
+          default: ''
         type:
           type: string
           nullable: true
@@ -5428,6 +5486,32 @@ components:
           type: string
         serialNumber:
           $ref: '#/components/schemas/SerialNumber'
+        state:
+          description: |
+            The precise phase of the association for this secondary. 
+            `health` (above) collapses several phases to `unknown`. 
+            This `state` lets a client tell them apart and know deterministically what it is waiting for, 
+            rather than relying on a timeout:
+            - `added` Secondary is part of the association; the primary has not yet located it on the network.
+            - `resolved` The primary has found the secondary's address.
+            - `associating` The primary has asked the secondary to take the secondary role. 
+               The secondary is now switching networks (leaving the home WiFi and
+               joining the primary's access point) and reconnecting. No further event is
+               expected from the secondary until it reconnects, so `updatedAt` is
+               re-stamped periodically as a liveness heartbeat while in this phase.
+            - `associated` The secondary has reconnected to the primary. It reaches
+              `health: good` once its clock is synchronized; until then `health` stays
+              `unknown` while `state` is already `associated`, so a client can
+              distinguish "connected, syncing clock" from "still joining".
+            - `taken` The secondary is associated with a different primary.
+          type: string
+          example: associated
+          enum:
+            - added
+            - resolved
+            - associating
+            - associated
+            - taken
         updatedAt:
           $ref: '#/components/schemas/Timestamp'
       required:
@@ -6273,6 +6357,7 @@ components:
           type: string
     WebSocketEventBeoRemoteButton:
       description: |-
+        This notification is sent on the /remoteControl WebSocket notification channel.
         Usage examples:
 
         <!--

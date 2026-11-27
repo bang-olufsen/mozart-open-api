@@ -5,12 +5,10 @@ import contextlib
 import inspect
 import json
 import logging
-import re
 from collections.abc import Awaitable, Callable
-from enum import StrEnum
 from ssl import SSLContext
 from types import TracebackType
-from typing import Literal, Self, TypedDict
+from typing import Literal, Self
 from uuid import UUID
 
 from aiohttp import ClientSession, ClientTimeout
@@ -20,18 +18,21 @@ from aiohttp.client_exceptions import (
     ServerTimeoutError,
     WSMessageTypeError,
 )
-from inflection import underscore
 
 from mozart_api.api.mozart_api import MozartApi
 from mozart_api.api_client import ApiClient
 from mozart_api.configuration import Configuration
+from mozart_api.const import (
+    BaseWebSocketResponse,
+    WebSocketEventType,
+    WebSocketEventTypes,
+)
 from mozart_api.exceptions import ApiException, NotFoundException
 
 # Generated section start
 from mozart_api.models import (
     AlarmTimerEventData,
     AlarmTriggeredInfo,
-    Art,
     BatteryState,
     BeolinkExperiencesResult,
     BeolinkJoinResult,
@@ -63,43 +64,6 @@ from mozart_api.models import (
     TvBnOModeStatus,
     TvInfoEventData,
     VolumeState,
-    WebSocketEventActiveHdmiInputSignal,
-    WebSocketEventActiveListeningMode,
-    WebSocketEventActiveSpeakerGroup,
-    WebSocketEventAlarmTimer,
-    WebSocketEventAlarmTriggered,
-    WebSocketEventBattery,
-    WebSocketEventBeolinkExperiencesResult,
-    WebSocketEventBeolinkJoinResult,
-    WebSocketEventBeoRemoteButton,
-    WebSocketEventButton,
-    WebSocketEventChannelSurveyStatus,
-    WebSocketEventClassicsAdapterContent,
-    WebSocketEventCurtains,
-    WebSocketEventHdmiVideoFormatSignal,
-    WebSocketEventNotification,
-    WebSocketEventPlaybackError,
-    WebSocketEventPlaybackMetadata,
-    WebSocketEventPlaybackProgress,
-    WebSocketEventPlaybackSource,
-    WebSocketEventPlaybackState,
-    WebSocketEventPowerlinkConnectionState,
-    WebSocketEventPowerState,
-    WebSocketEventPucInstallRemoteIdStatus,
-    WebSocketEventRole,
-    WebSocketEventRoomCompensationCurrentMeasurementEvent,
-    WebSocketEventRoomCompensationState,
-    WebSocketEventSoftwareUpdateState,
-    WebSocketEventSoundSettings,
-    WebSocketEventSourceChange,
-    WebSocketEventSpeakerGroupChanged,
-    WebSocketEventSpeakerLinkStatusChanged,
-    WebSocketEventStandConnected,
-    WebSocketEventStandPosition,
-    WebSocketEventTvBnOMode,
-    WebSocketEventTvInfo,
-    WebSocketEventVolume,
-    WebSocketEventWisaOutState,
     WebsocketNotificationTag,
     WisaOutState,
 )
@@ -107,152 +71,9 @@ from mozart_api.models import (
 # Generated section end
 from mozart_api.rest import RESTClientObject
 
-# Generated section start
-
-
-class WebSocketEventTypes(StrEnum):
-    """Available WebSocket notification event types."""
-
-    ACTIVE_HDMI_INPUT_SIGNAL = "WebSocketEventActiveHdmiInputSignal"
-    ACTIVE_LISTENING_MODE = "WebSocketEventActiveListeningMode"
-    ACTIVE_SPEAKER_GROUP = "WebSocketEventActiveSpeakerGroup"
-    ALARM_TIMER = "WebSocketEventAlarmTimer"
-    ALARM_TRIGGERED = "WebSocketEventAlarmTriggered"
-    BATTERY = "WebSocketEventBattery"
-    BEO_REMOTE_BUTTON = "WebSocketEventBeoRemoteButton"
-    BEOLINK_EXPERIENCES_RESULT = "WebSocketEventBeolinkExperiencesResult"
-    BEOLINK_JOIN_RESULT = "WebSocketEventBeolinkJoinResult"
-    BUTTON = "WebSocketEventButton"
-    CHANNEL_SURVEY_STATUS = "WebSocketEventChannelSurveyStatus"
-    CLASSICS_ADAPTER_CONTENT = "WebSocketEventClassicsAdapterContent"
-    CURTAINS = "WebSocketEventCurtains"
-    HDMI_VIDEO_FORMAT_SIGNAL = "WebSocketEventHdmiVideoFormatSignal"
-    NOTIFICATION = "WebSocketEventNotification"
-    PLAYBACK_ERROR = "WebSocketEventPlaybackError"
-    PLAYBACK_METADATA = "WebSocketEventPlaybackMetadata"
-    PLAYBACK_PROGRESS = "WebSocketEventPlaybackProgress"
-    PLAYBACK_SOURCE = "WebSocketEventPlaybackSource"
-    PLAYBACK_STATE = "WebSocketEventPlaybackState"
-    POWER_STATE = "WebSocketEventPowerState"
-    POWERLINK_CONNECTION_STATE = "WebSocketEventPowerlinkConnectionState"
-    PUC_INSTALL_REMOTE_ID_STATUS = "WebSocketEventPucInstallRemoteIdStatus"
-    ROLE = "WebSocketEventRole"
-    ROOM_COMPENSATION_CURRENT_MEASUREMENT_EVENT = (
-        "WebSocketEventRoomCompensationCurrentMeasurementEvent"
-    )
-    ROOM_COMPENSATION_STATE = "WebSocketEventRoomCompensationState"
-    SOFTWARE_UPDATE_STATE = "WebSocketEventSoftwareUpdateState"
-    SOUND_SETTINGS = "WebSocketEventSoundSettings"
-    SOURCE_CHANGE = "WebSocketEventSourceChange"
-    SPEAKER_GROUP_CHANGED = "WebSocketEventSpeakerGroupChanged"
-    SPEAKER_LINK_STATUS_CHANGED = "WebSocketEventSpeakerLinkStatusChanged"
-    STAND_CONNECTED = "WebSocketEventStandConnected"
-    STAND_POSITION = "WebSocketEventStandPosition"
-    TV_BN_O_MODE = "WebSocketEventTvBnOMode"
-    TV_INFO = "WebSocketEventTvInfo"
-    VOLUME = "WebSocketEventVolume"
-    WISA_OUT_STATE = "WebSocketEventWisaOutState"
-
-
-WebSocketEventType = type[
-    WebSocketEventActiveHdmiInputSignal
-    | WebSocketEventActiveListeningMode
-    | WebSocketEventActiveSpeakerGroup
-    | WebSocketEventAlarmTimer
-    | WebSocketEventAlarmTriggered
-    | WebSocketEventBattery
-    | WebSocketEventBeoRemoteButton
-    | WebSocketEventBeolinkExperiencesResult
-    | WebSocketEventBeolinkJoinResult
-    | WebSocketEventButton
-    | WebSocketEventChannelSurveyStatus
-    | WebSocketEventClassicsAdapterContent
-    | WebSocketEventCurtains
-    | WebSocketEventHdmiVideoFormatSignal
-    | WebSocketEventNotification
-    | WebSocketEventPlaybackError
-    | WebSocketEventPlaybackMetadata
-    | WebSocketEventPlaybackProgress
-    | WebSocketEventPlaybackSource
-    | WebSocketEventPlaybackState
-    | WebSocketEventPowerState
-    | WebSocketEventPowerlinkConnectionState
-    | WebSocketEventPucInstallRemoteIdStatus
-    | WebSocketEventRole
-    | WebSocketEventRoomCompensationCurrentMeasurementEvent
-    | WebSocketEventRoomCompensationState
-    | WebSocketEventSoftwareUpdateState
-    | WebSocketEventSoundSettings
-    | WebSocketEventSourceChange
-    | WebSocketEventSpeakerGroupChanged
-    | WebSocketEventSpeakerLinkStatusChanged
-    | WebSocketEventStandConnected
-    | WebSocketEventStandPosition
-    | WebSocketEventTvBnOMode
-    | WebSocketEventTvInfo
-    | WebSocketEventVolume
-    | WebSocketEventWisaOutState
-]
-
-# Generated section end
-
 TIMEOUT = 5.0
 
 logger = logging.getLogger(__name__)
-
-
-def refactor_notification_name(notification_type: str) -> str:
-    """Remove WebSocketEvent prefix from string and convert to snake_case."""
-    return underscore(notification_type.removeprefix("WebSocketEvent"))
-
-
-def check_valid_jid(jid: str) -> bool:
-    """Check if a JID is valid."""
-    return bool(re.fullmatch(r"\d{4}\.\d{7}\.\d{8}@products\.bang-olufsen\.com", jid))
-
-
-def check_valid_serial_number(serial_number: str) -> bool:
-    """Check if a serial_number is valid."""
-    return bool(re.fullmatch(r"\d{8}", serial_number))
-
-
-def get_highest_resolution_artwork(metadata: PlaybackContentMetadata) -> Art:
-    """Get the highest resolution Art from provided PlaybackContentMetadata."""
-    # Return an empty Art if no artwork is in metadata to ensure no stale artwork
-    if not metadata.art:
-        return Art()
-
-    # Dict for sorting images that have size defined by a string
-    art_size = {"small": 1, "medium": 2, "large": 3}
-
-    # Contains tuples, containing the size of the image and the original index
-    images = []
-
-    # Images either have a key for specifying resolution or a "size" for the image.
-    for i, image in enumerate(metadata.art):
-        # Skip any invalid artwork
-        if not image.url:
-            continue
-        # Netradio.
-        if image.key:
-            images.append((int(image.key.split("x")[0]), i))
-        # Everything else.
-        elif image.size:
-            images.append((art_size[image.size], i))
-
-    # Check if only invalid images were provided
-    if not images:
-        return Art()
-
-    # Choose the largest image.
-    return metadata.art[max(images)[1]]
-
-
-class BaseWebSocketResponse(TypedDict):
-    """Base class for serialized WebSocket notifications."""
-
-    eventType: str
-    eventData: dict | str
 
 
 class MozartClient(MozartApi):
@@ -497,6 +318,9 @@ class MozartClient(MozartApi):
 
     async def _on_message(self, notification: BaseWebSocketResponse) -> None:
         """Handle WebSocket notifications."""
+        if self._on_all_notifications_raw:
+            await self._trigger_callback(self._on_all_notifications_raw, notification)
+
         # Get the object type and deserialized object.
         try:
             notification_type = notification["eventType"]
@@ -521,12 +345,9 @@ class MozartClient(MozartApi):
         if self._on_all_notifications:
             await self._trigger_callback(
                 self._on_all_notifications,
-                notification,
-                refactor_notification_name(notification_type),
+                deserialized_data,
+                notification_type.removeprefix("WebSocketEvent"),
             )
-
-        if self._on_all_notifications_raw:
-            await self._trigger_callback(self._on_all_notifications_raw, notification)
 
         # Handle specific notifications if defined
         if triggered_notification := self._notification_callbacks.get(

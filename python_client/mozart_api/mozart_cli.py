@@ -15,14 +15,17 @@ from aioconsole import ainput
 from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
 
 from mozart_api import __version__
-from mozart_api.models import BeolinkJoinRequest, VolumeLevel, VolumeMute
-from mozart_api.mozart_client import (
-    MozartClient,
+from mozart_api.const import (
+    MDNS_FRIENDLY_NAME,
+    MDNS_SERIAL_NUMBER,
+    MDNS_SERVICE_TYPE,
+    MDNS_SOFTWARE_VERSION,
     WebSocketEventType,
-    check_valid_serial_number,
 )
+from mozart_api.models import BeolinkJoinRequest, VolumeLevel, VolumeMute
+from mozart_api.mozart_client import MozartClient
+from mozart_api.util import check_valid_serial_number
 
-MOZART_MDNS_TYPE: Final[str] = "_bangolufsen._tcp.local."
 MDNS_TIMEOUT: Final[int] = 10
 DISCOVER_MODE: Final[str] = "discover"
 VERSION_MODE: Final[str] = "version"
@@ -140,11 +143,15 @@ class MozartListener(ServiceListener):
 
         # Create MozartDevice object from MDNS discovered information.
         ip_address = info.parsed_addresses()[0]
-        serial_number = cast("bytes", info.properties.get(b"sn")).decode("utf-8")
+        serial_number = cast("bytes", info.properties.get(MDNS_SERIAL_NUMBER)).decode(
+            "utf-8"
+        )
         model_name = cast("str", info.server)[:-16].replace("-", " ")
-        sw_version = cast("bytes", info.properties.get(b"fv")).decode("utf-8")
+        sw_version = cast("bytes", info.properties.get(MDNS_SOFTWARE_VERSION)).decode(
+            "utf-8"
+        )
 
-        friendly_name = info.properties.get(b"fn")
+        friendly_name = info.properties.get(MDNS_FRIENDLY_NAME)
 
         mozart_device = MozartDevice(
             friendly_name.decode("utf-8") if friendly_name is not None else None,
@@ -174,10 +181,10 @@ def discover_devices(mode: str, timeout: int, verbose: bool) -> list[MozartDevic
 
     zeroconf = Zeroconf()
     listener = MozartListener(mode, verbose, event)
-    browser = ServiceBrowser(zeroconf, MOZART_MDNS_TYPE, listener)
+    browser = ServiceBrowser(zeroconf, MDNS_SERVICE_TYPE, listener)
 
     if mode == "discover" or verbose:
-        logger.error("Discovering Mozart devices. Scanning _bangolufsen._tcp.local.")
+        logger.error("Discovering Mozart devices. Scanning %s", MDNS_SERVICE_TYPE)
 
     if timeout == -1:
         with contextlib.suppress(KeyboardInterrupt):
@@ -323,16 +330,16 @@ class MozartApiCli:
 
     async def _run_api(self) -> None:
         """Run async API command handling."""
-        # Generate MozartApi object for calling API endpoints.
-        self.mozart_client = MozartClient(self._host)
+        # Create MozartClient for calling API endpoints.
+        self._mozart_client = MozartClient(self._host)
 
         # Connect to the websocket notification channel if defined
         if self._websocket:
             logger.error("Connecting to WebSocket channel")
-            self.mozart_client.get_all_notifications(self.all_notifications)
-            self.mozart_client.get_on_connection(self.on_connection)
-            self.mozart_client.get_on_connection_lost(self.on_connection_lost)
-            await self.mozart_client.connect_notifications(
+            self._mozart_client.get_all_notifications(self.all_notifications)
+            self._mozart_client.get_on_connection(self.on_connection)
+            self._mozart_client.get_on_connection_lost(self.on_connection_lost)
+            await self._mozart_client.connect_notifications(
                 remote_control=True, reconnect=True
             )
 
@@ -346,22 +353,22 @@ class MozartApiCli:
                 await ainput(
                     "Listening to WebSocket events. Press the 'enter' key to exit CLI.\n\r"
                 )
-            self.mozart_client.disconnect_notifications()
+            self._mozart_client.disconnect_notifications()
 
-        await self.mozart_client.close_api_client()
+        await self._mozart_client.close_api_client()
 
     async def _beolink_join(self) -> BeolinkJoinRequest | None:
         """Showcase async API usage of the Beolink command."""
         # If no JID is specified, then join an active experience if available
         if len(self._command_args) == 0:
-            status = await self.mozart_client.join_latest_beolink_experience()
+            status = await self._mozart_client.join_latest_beolink_experience()
 
         else:
             serial_number = self._command_args[0]
 
             # Check if a device with specified serial number
             # is available as a peer and get JID if available
-            peers = await self.mozart_client.get_beolink_peers()
+            peers = await self._mozart_client.get_beolink_peers()
 
             # The peers may be outdated and still have now unavailable devices.
             if len(peers) == 0:
@@ -370,7 +377,7 @@ class MozartApiCli:
 
             jid = next(peer for peer in peers if serial_number in peer.jid).jid
 
-            status = await self.mozart_client.join_beolink_peer(jid=jid)
+            status = await self._mozart_client.join_beolink_peer(jid=jid)
 
         return status
 
@@ -403,22 +410,24 @@ class MozartApiCli:
 
         if self._command == "preset":
             preset_id = int(self._command_args[0])
-            await self.mozart_client.activate_preset(id=preset_id)
+            await self._mozart_client.activate_preset(id=preset_id)
 
         elif self._command in ("play", "pause", "next", "previous"):
-            await self.mozart_client.post_playback_command(command=self._command)
+            await self._mozart_client.post_playback_command(command=self._command)
 
         elif self._command == "mute":
-            await self.mozart_client.set_volume_mute(volume_mute=VolumeMute(muted=True))
+            await self._mozart_client.set_volume_mute(
+                volume_mute=VolumeMute(muted=True)
+            )
 
         elif self._command == "unmute":
-            await self.mozart_client.set_volume_mute(
+            await self._mozart_client.set_volume_mute(
                 volume_mute=VolumeMute(muted=False),
             )
 
         elif self._command == "volume":
             volume_level = int(self._command_args[0])
-            await self.mozart_client.set_current_volume_level(
+            await self._mozart_client.set_current_volume_level(
                 volume_level=VolumeLevel(level=volume_level),
             )
 
@@ -427,19 +436,19 @@ class MozartApiCli:
 
         # Currently show battery state, product state
         elif self._command == "info":
-            battery_state = await self.mozart_client.get_battery_state()
+            battery_state = await self._mozart_client.get_battery_state()
             logger.info(
                 "Info - battery state:\n\r%s",
                 pprint.pformat(battery_state.model_dump()),
             )
 
-            power_state = await self.mozart_client.get_product_state()
+            power_state = await self._mozart_client.get_product_state()
             logger.info(
                 "Info - product state:\n\r%s", pprint.pformat(power_state.model_dump())
             )
 
         elif self._command == "allstandby":
-            await self.mozart_client.post_beolink_allstandby()
+            await self._mozart_client.post_beolink_allstandby()
 
         else:
             logger.error("Invalid command %s.", self._command)
@@ -450,7 +459,7 @@ class MozartApiCli:
             # Wait for the join-result to be available
             await asyncio.sleep(1)
             if status:
-                join_result = await self.mozart_client.get_beolink_join_result(
+                join_result = await self._mozart_client.get_beolink_join_result(
                     id=status.request_id
                 )
                 logger.info(
